@@ -1,0 +1,36 @@
+Server:
+    Addr: :443
+    #HTTPSRedirectAddr: :80
+    Host: zone.effero.net
+    Certificates:
+        Mode: static # static or auto
+        Static: # ignored in auto mode
+            Cert: cert.pem
+            Key: key.pem
+        #Auto: # ignored in static mode
+            #ContactEmail: foo@bar.com
+            #CertificateCacheDir: ~/autocerts
+            #Hosts:
+                #- example1.com
+                #- example2.com
+        #Client: client_ca.pem
+        BehindReverseProxy: true
+
+PasswordHashEncryptionKey: key # 32 bytes base64 encoded key
+
+IDObfuscationKey: key # 56 bytes base64 encoded key
+
+Mailgun:
+    Domain: domain
+    APIKey: key
+
+PostgreSQL:
+    Database: budget
+    User: budget
+    #Password:
+    Host: localhost
+    SSLMode: disable # disable, require, verify-ca or verify-full
+    ConnectTimeout: 3 # timeout in second
+    PreparedStatementCacheEnabled: false
+    MaxIdleConns: 10
+    MaxOpenConns: 0
