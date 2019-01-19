@@ -13,7 +13,7 @@ fi
 
 cd $GOPATH/src/bitbucket.org/beati/$PROJECT
 
-go run -tags=dev bundle-assets/main.go
+go run -tags=dev $PROJECT-server/assets/bundle/main.go
 err=$?
 if [ $err -ne 0 ]; then
 	exit $err

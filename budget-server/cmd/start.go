@@ -11,8 +11,9 @@ import (
 
 // startCmd represents the start command
 var startCmd = &cobra.Command{
-	Use:   "start",
-	Short: "Start the server",
+	Use:          "start",
+	Short:        "Start the server",
+	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		initConfig()
 
