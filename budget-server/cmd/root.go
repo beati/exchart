@@ -50,11 +50,13 @@ func initConfig() {
 		// Search config in home directory with name ".budget-server" (without extension).
 		viper.AddConfigPath(home)
 		viper.AddConfigPath(".")
-		viper.SetConfigName(".budget-server")
+		viper.SetConfigName("budget_config")
 	}
 
 	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
+	err := viper.ReadInConfig()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
 	}
 }

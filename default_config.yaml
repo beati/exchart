@@ -1,7 +1,7 @@
 Server:
     Addr: :443
     #HTTPSRedirectAddr: :80
-    Host: zone.effero.net
+    Host: budget
     Certificates:
         Mode: static # static or auto
         Static: # ignored in auto mode

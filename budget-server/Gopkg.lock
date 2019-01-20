@@ -2,6 +2,14 @@
 
 
 [[projects]]
+  digest = "1:0f98f59e9a2f4070d66f0c9c39561f68fcd1dc837b22a852d28d0003aebd1b1e"
+  name = "github.com/boltdb/bolt"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "2f1ce7a837dcb8da3ec595b1dac9d0632f0f99e8"
+  version = "v1.3.1"
+
+[[projects]]
   digest = "1:abeb38ade3f32a92943e5be54f55ed6d6e3b6602761d74b4aab4c9dd45c18abd"
   name = "github.com/fsnotify/fsnotify"
   packages = ["."]
@@ -10,9 +18,12 @@
   version = "v1.4.7"
 
 [[projects]]
-  digest = "1:b8d8afedc1ea9028d6b8a037a61acaf5bac8ffb1ceb4b285a0af6654bfc62f16"
+  digest = "1:b702ef0f626558e20ce8e4bc7a61755c833995fb1baa5ebdb7a4f9e17e3f7b0e"
   name = "github.com/go-chi/chi"
-  packages = ["."]
+  packages = [
+    ".",
+    "middleware",
+  ]
   pruneopts = "UT"
   revision = "e95203758b2a6ec24a8e97124d5719ffe5ec1374"
   version = "v4.0.0"
@@ -43,6 +54,25 @@
   pruneopts = "UT"
   revision = "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
   version = "v1.0"
+
+[[projects]]
+  digest = "1:0a69a1c0db3591fcefb47f115b224592c8dfa4368b7ba9fae509d5e16cdc95c8"
+  name = "github.com/konsorten/go-windows-terminal-sequences"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "5c8c8bd35d3832f5d134ae1e1e375b69a4d25242"
+  version = "v1.0.1"
+
+[[projects]]
+  digest = "1:8ef506fc2bb9ced9b151dafa592d4046063d744c646c1bbe801982ce87e4bc24"
+  name = "github.com/lib/pq"
+  packages = [
+    ".",
+    "oid",
+  ]
+  pruneopts = "UT"
+  revision = "4ded0e9383f75c197b3a2aaa6d590ac52df6fd79"
+  version = "v1.0.0"
 
 [[projects]]
   digest = "1:c568d7727aa262c32bdf8a3f7db83614f7af0ed661474b24588de635c20024c7"
@@ -101,6 +131,14 @@
   revision = "6a9ea43bcacdf716a5c1b38efff722c07adf0069"
 
 [[projects]]
+  digest = "1:87c2e02fb01c27060ccc5ba7c5a407cc91147726f8f40b70cceeedbc52b1f3a8"
+  name = "github.com/sirupsen/logrus"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "e1e72e9de974bd926e5c56f83753fba2df402ce5"
+  version = "v1.3.0"
+
+[[projects]]
   digest = "1:d707dbc1330c0ed177d4642d6ae102d5e2c847ebd0eb84562d0dc4f024531cfc"
   name = "github.com/spf13/afero"
   packages = [
@@ -153,6 +191,21 @@
 
 [[projects]]
   branch = "master"
+  digest = "1:77659b59be85ce2e9155e100d202ce2195fce021806814c234922ff1ec0817d5"
+  name = "golang.org/x/crypto"
+  packages = [
+    "acme",
+    "acme/autocert",
+    "bcrypt",
+    "blowfish",
+    "hkdf",
+    "ssh/terminal",
+  ]
+  pruneopts = "UT"
+  revision = "ff983b9c42bc9fbf91556e191cc8efb585c16908"
+
+[[projects]]
+  branch = "master"
   digest = "1:d85c27d6ba6e4025225eed536f3ff7c5455d0857a0585c80d7510f7eee6fc68e"
   name = "golang.org/x/net"
   packages = [
@@ -160,13 +213,16 @@
     "idna",
   ]
   pruneopts = "UT"
-  revision = "915654e7eabcea33ae277abbecf52f0d8b7a9fdc"
+  revision = "ed066c81e75eba56dd9bd2139ade88125b855585"
 
 [[projects]]
   branch = "master"
-  digest = "1:f6f6d9d6f80c9e32acc0f4f3b904e0b9f5b18a7757c2ef941121bd79a10e7bdf"
+  digest = "1:43cde116ff48f299eddb7e6515677e6d0a2c915854bb05a333877f07c3bb3033"
   name = "golang.org/x/sys"
-  packages = ["unix"]
+  packages = [
+    "unix",
+    "windows",
+  ]
   pruneopts = "UT"
   revision = "11f53e03133963fb11ae0588e08b5e0b85be8be5"
 
@@ -201,16 +257,44 @@
   revision = "51d6538a90f86fe93ac480b35f37b2be17fef232"
   version = "v2.2.2"
 
+[[projects]]
+  digest = "1:d5bd92f7ffbb15c70b1f3758b7d4a0c09a18839d293a9bc689c567ea8f8d2fa7"
+  name = "upper.io/db.v3"
+  packages = [
+    ".",
+    "internal/cache",
+    "internal/cache/hashstructure",
+    "internal/immutable",
+    "internal/sqladapter",
+    "internal/sqladapter/compat",
+    "internal/sqladapter/exql",
+    "lib/reflectx",
+    "lib/sqlbuilder",
+    "postgresql",
+  ]
+  pruneopts = "UT"
+  revision = "2f58dea678dbdcd3710158e8572025ef4d2c6df7"
+  version = "v3.5.7"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/boltdb/bolt",
     "github.com/go-chi/chi",
+    "github.com/go-chi/chi/middleware",
     "github.com/mitchellh/go-homedir",
     "github.com/shurcooL/httpgzip",
     "github.com/shurcooL/vfsgen",
+    "github.com/sirupsen/logrus",
     "github.com/spf13/cobra",
     "github.com/spf13/viper",
+    "golang.org/x/crypto/acme/autocert",
+    "golang.org/x/crypto/bcrypt",
+    "golang.org/x/crypto/blowfish",
+    "golang.org/x/crypto/hkdf",
+    "upper.io/db.v3/lib/sqlbuilder",
+    "upper.io/db.v3/postgresql",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
