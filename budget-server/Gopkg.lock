@@ -238,14 +238,18 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:77659b59be85ce2e9155e100d202ce2195fce021806814c234922ff1ec0817d5"
+  digest = "1:71a3a27b60241ca9cfb87bb4c969c6900656164b5ccf22697896d2284d067a1d"
   name = "golang.org/x/crypto"
   packages = [
     "acme",
     "acme/autocert",
     "bcrypt",
     "blowfish",
+    "chacha20poly1305",
     "hkdf",
+    "internal/chacha20",
+    "internal/subtle",
+    "poly1305",
     "ssh/terminal",
   ]
   pruneopts = "UT"
@@ -266,9 +270,10 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:43cde116ff48f299eddb7e6515677e6d0a2c915854bb05a333877f07c3bb3033"
+  digest = "1:b9e94016f3758eb0bbe8f7883fed88136abce8d358ca9d159be34651e8172031"
   name = "golang.org/x/sys"
   packages = [
+    "cpu",
     "unix",
     "windows",
   ]
@@ -341,7 +346,7 @@
     "github.com/spf13/viper",
     "golang.org/x/crypto/acme/autocert",
     "golang.org/x/crypto/bcrypt",
-    "golang.org/x/crypto/blowfish",
+    "golang.org/x/crypto/chacha20poly1305",
     "golang.org/x/crypto/hkdf",
     "upper.io/db.v3/lib/sqlbuilder",
     "upper.io/db.v3/postgresql",

@@ -1,9 +1,14 @@
 package session
 
 import (
+	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"net/http"
+	"strings"
 	"time"
+
+	"golang.org/x/crypto/chacha20poly1305"
 
 	"bitbucket.org/beati/budget/budget-server/domain"
 	"bitbucket.org/beati/budget/budget-server/lib/nonce"
@@ -59,7 +64,7 @@ func (m *Manager) New(userID domain.EntityID, w http.ResponseWriter, v interface
 	}
 
 	s := newSession(v)
-	cookieValue, err := s.encode(userKey)
+	cookieValue, err := s.encode(userKey, userID)
 	if err != nil {
 		return err
 	}
@@ -95,15 +100,33 @@ func (m *Manager) Clear(w http.ResponseWriter) error {
 }
 
 // Get retrieve session data in v.
-func (m *Manager) Get(r *http.Request, v interface{}) error {
-	/*
-		cookie, err := r.Cookie(m.name)
-		if err != nil {
-			return ErrNotFound
-		}
-	*/
+func (m *Manager) Get(r *http.Request, v interface{}) (domain.EntityID, error) {
+	cookie, err := r.Cookie(m.name)
+	if err != nil {
+		return 0, err
+	}
 
-	return nil
+	values := strings.SplitN(cookie.Value, ":", 2)
+	if len(values) != 2 {
+		return 0, errors.New("invalid session")
+	}
+
+	userID, err := domain.ParseEntityID(values[0])
+	if err != nil {
+		return 0, err
+	}
+
+	userKey, err := m.keyStore.Get(userID)
+	if err != nil {
+		return 0, err
+	}
+
+	s := &session{
+		Value: v,
+	}
+	s.decode(userKey, values[1], userID)
+
+	return userID, nil
 }
 
 // Revoke change the encryption key of a user. This invalidate previsously created sessions.
@@ -114,6 +137,11 @@ func (m *Manager) Revoke(userID domain.EntityID) error {
 	}
 
 	return m.keyStore.Set(userID, userKey)
+}
+
+// Delete deletes a user from the Manager.
+func (m *Manager) Delete(userID domain.EntityID) error {
+	return m.keyStore.Delete(userID)
 }
 
 type session struct {
@@ -128,11 +156,44 @@ func newSession(value interface{}) *session {
 	}
 }
 
-func (s *session) encode(key []byte) (string, error) {
-	data, err := json.Marshal(s)
+func (s *session) decode(key []byte, data string, userID domain.EntityID) error {
+	ciphertext, err := base64.RawURLEncoding.DecodeString(data)
+	if err != nil {
+		return err
+	}
+
+	aead, err := chacha20poly1305.NewX(key)
+	if err != nil {
+		return err
+	}
+
+	userIDBytes := userID.Bytes()
+	plaintext, err := aead.Open(nil, ciphertext[:aead.NonceSize()], ciphertext[aead.NonceSize():], userIDBytes[:])
+	if err != nil {
+		return err
+	}
+
+	return json.Unmarshal(plaintext, s)
+}
+
+func (s *session) encode(key []byte, userID domain.EntityID) (string, error) {
+	plaintext, err := json.Marshal(s)
 	if err != nil {
 		return "", err
 	}
 
-	return "", nil
+	aead, err := chacha20poly1305.NewX(key)
+	if err != nil {
+		return "", err
+	}
+
+	n, err := nonce.Key(aead.NonceSize())
+	if err != nil {
+		return "", err
+	}
+
+	userIDBytes := userID.Bytes()
+	ciphertext := aead.Seal(plaintext[:0], n, plaintext, userIDBytes[:])
+
+	return base64.RawURLEncoding.EncodeToString(append(n, ciphertext...)), nil
 }
