@@ -3,26 +3,29 @@ package nonce
 import (
 	"crypto/rand"
 	"encoding/base64"
-	"io"
 )
 
-var encoder = base64.URLEncoding.WithPadding('#')
-
-// Nonce return size random bytes encoded as a string usable in URLs and cookies.
-func Nonce(size int) string {
-	return encoder.EncodeToString(nonce(size))
-}
-
-// Base64 return size random bytes base64 encoded.
-func Base64(size int) string {
-	return base64.StdEncoding.EncodeToString(nonce(size))
-}
-
-func nonce(size int) []byte {
+// Key returns size random bytes.
+func Key(size int) ([]byte, error) {
 	b := make([]byte, size)
-	_, err := io.ReadFull(rand.Reader, b)
+	_, err := rand.Read(b)
+	return b, err
+}
+
+// Nonce returns size random bytes encoded as a string usable in URLs and cookies.
+func Nonce(size int) (string, error) {
+	b, err := Key(size)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
-	return b
+	return base64.RawStdEncoding.EncodeToString(b), nil
+}
+
+// Base64 returns size random bytes base64 encoded.
+func Base64(size int) (string, error) {
+	b, err := Key(size)
+	if err != nil {
+		return "", err
+	}
+	return base64.StdEncoding.EncodeToString(b), nil
 }
