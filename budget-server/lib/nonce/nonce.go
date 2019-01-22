@@ -5,16 +5,22 @@ import (
 	"encoding/base64"
 )
 
-// Key returns size random bytes.
-func Key(size int) ([]byte, error) {
+// Read fills b with random bytes.
+func Read(b []byte) error {
+	_, err := rand.Read(b)
+	return err
+}
+
+// Nonce returns size random bytes.
+func Nonce(size int) ([]byte, error) {
 	b := make([]byte, size)
 	_, err := rand.Read(b)
 	return b, err
 }
 
-// Nonce returns size random bytes encoded as a string usable in URLs and cookies.
-func Nonce(size int) (string, error) {
-	b, err := Key(size)
+// URL returns size random bytes encoded as a string usable in URLs and cookies.
+func URL(size int) (string, error) {
+	b, err := Nonce(size)
 	if err != nil {
 		return "", err
 	}
@@ -23,7 +29,7 @@ func Nonce(size int) (string, error) {
 
 // Base64 returns size random bytes base64 encoded.
 func Base64(size int) (string, error) {
-	b, err := Key(size)
+	b, err := Nonce(size)
 	if err != nil {
 		return "", err
 	}

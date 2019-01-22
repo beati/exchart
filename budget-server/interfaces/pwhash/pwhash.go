@@ -110,7 +110,7 @@ func (pwh Hash) Verify(hash, password string) error {
 	expectedMac := mac.Sum(nil)
 
 	if !hmac.Equal(expectedMac, data[authenticatedSize:]) {
-		return errors.New("bad hmac")
+		return usecases.ErrBadCredentials
 	}
 
 	iv := data[:aes.BlockSize]

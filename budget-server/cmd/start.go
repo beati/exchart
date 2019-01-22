@@ -49,8 +49,6 @@ var startCmd = &cobra.Command{
 			return err
 		}
 
-		http.DefaultClient.Timeout = 10 * time.Second
-
 		logger := logrus.New()
 		logger.Formatter = &logrus.JSONFormatter{}
 

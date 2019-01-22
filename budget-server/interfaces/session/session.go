@@ -1,9 +1,9 @@
 package session
 
 import (
+	"crypto/subtle"
 	"encoding/base64"
 	"encoding/json"
-	"errors"
 	"net/http"
 	"strings"
 	"time"
@@ -25,7 +25,7 @@ type KeyStore interface {
 type Manager struct {
 	domain   string
 	name     string
-	validity time.Duration
+	maxAge   int
 	keyStore KeyStore
 }
 
@@ -34,14 +34,9 @@ func NewManager(domain, name string, validity time.Duration, keyStore KeyStore) 
 	return &Manager{
 		domain:   domain,
 		name:     name,
-		validity: validity,
+		maxAge:   int(validity / time.Second),
 		keyStore: keyStore,
 	}
-}
-
-// MaxAge returns the Max-Age attribute of session cookie set by the Manager.
-func (m *Manager) MaxAge() int {
-	return int(m.validity / time.Second)
 }
 
 // New creates a new session with v as data.
@@ -52,7 +47,7 @@ func (m *Manager) New(userID domain.EntityID, w http.ResponseWriter, v interface
 	}
 
 	if userKey == nil {
-		userKey, err = nonce.Key(32)
+		userKey, err = nonce.Nonce(32)
 		if err != nil {
 			return err
 		}
@@ -74,9 +69,24 @@ func (m *Manager) New(userID domain.EntityID, w http.ResponseWriter, v interface
 		Value:    userID.String() + ":" + cookieValue,
 		Path:     "/",
 		Domain:   m.domain,
-		MaxAge:   m.MaxAge(),
+		MaxAge:   m.maxAge,
 		Secure:   true,
 		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+	})
+
+	xsrfToken, err := nonce.URL(32)
+	if err != nil {
+		return err
+	}
+	http.SetCookie(w, &http.Cookie{
+		Name:     "XSRF-TOKEN",
+		Value:    xsrfToken,
+		Path:     "/",
+		Domain:   m.domain,
+		MaxAge:   m.maxAge,
+		Secure:   true,
+		HttpOnly: false,
 		SameSite: http.SameSiteStrictMode,
 	})
 
@@ -96,24 +106,45 @@ func (m *Manager) Clear(w http.ResponseWriter) error {
 		SameSite: http.SameSiteStrictMode,
 	})
 
+	http.SetCookie(w, &http.Cookie{
+		Name:     "XSRF-TOKEN",
+		Value:    "cleared",
+		Path:     "/",
+		Domain:   m.domain,
+		MaxAge:   -1,
+		Secure:   true,
+		HttpOnly: false,
+		SameSite: http.SameSiteStrictMode,
+	})
+
 	return nil
 }
 
 // Get retrieve session data in v.
 func (m *Manager) Get(r *http.Request, v interface{}) (domain.EntityID, error) {
+	if r.Method != "GET" && r.Method != "HEAD" {
+		csrfCookie, err := r.Cookie("XSRF-TOKEN")
+		if err != nil {
+			return 0, domain.ErrNotAllowed
+		}
+		if subtle.ConstantTimeCompare([]byte(csrfCookie.Value), []byte(r.Header.Get("X-XSRF-TOKEN"))) != 1 {
+			return 0, domain.ErrNotAllowed
+		}
+	}
+
 	cookie, err := r.Cookie(m.name)
 	if err != nil {
-		return 0, err
+		return 0, domain.ErrNotAllowed
 	}
 
 	values := strings.SplitN(cookie.Value, ":", 2)
 	if len(values) != 2 {
-		return 0, errors.New("invalid session")
+		return 0, domain.ErrNotAllowed
 	}
 
 	userID, err := domain.ParseEntityID(values[0])
 	if err != nil {
-		return 0, err
+		return 0, domain.ErrNotAllowed
 	}
 
 	userKey, err := m.keyStore.Get(userID)
@@ -121,17 +152,24 @@ func (m *Manager) Get(r *http.Request, v interface{}) (domain.EntityID, error) {
 		return 0, err
 	}
 
+	if userKey == nil {
+		return 0, domain.ErrNotAllowed
+	}
+
 	s := &session{
 		Value: v,
 	}
-	s.decode(userKey, values[1], userID)
+	err = s.decode(userKey, values[1], userID)
+	if err != nil {
+		return 0, err
+	}
 
 	return userID, nil
 }
 
 // Revoke change the encryption key of a user. This invalidate previsously created sessions.
 func (m *Manager) Revoke(userID domain.EntityID) error {
-	userKey, err := nonce.Key(32)
+	userKey, err := nonce.Nonce(32)
 	if err != nil {
 		return err
 	}
@@ -159,7 +197,7 @@ func newSession(value interface{}) *session {
 func (s *session) decode(key []byte, data string, userID domain.EntityID) error {
 	ciphertext, err := base64.RawURLEncoding.DecodeString(data)
 	if err != nil {
-		return err
+		return domain.ErrNotAllowed
 	}
 
 	aead, err := chacha20poly1305.NewX(key)
@@ -170,7 +208,7 @@ func (s *session) decode(key []byte, data string, userID domain.EntityID) error 
 	userIDBytes := userID.Bytes()
 	plaintext, err := aead.Open(nil, ciphertext[:aead.NonceSize()], ciphertext[aead.NonceSize():], userIDBytes[:])
 	if err != nil {
-		return err
+		return domain.ErrNotAllowed
 	}
 
 	return json.Unmarshal(plaintext, s)
@@ -187,7 +225,7 @@ func (s *session) encode(key []byte, userID domain.EntityID) (string, error) {
 		return "", err
 	}
 
-	n, err := nonce.Key(aead.NonceSize())
+	n, err := nonce.Nonce(aead.NonceSize())
 	if err != nil {
 		return "", err
 	}

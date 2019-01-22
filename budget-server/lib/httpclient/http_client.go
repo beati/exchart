@@ -5,7 +5,12 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 )
+
+func init() {
+	http.DefaultClient.Timeout = 10 * time.Second
+}
 
 // PostForm is like http.PostForm but with context.
 func PostForm(ctx context.Context, url string, data url.Values) (resp *http.Response, err error) {

@@ -2,7 +2,6 @@ package webservice
 
 import (
 	"context"
-	"crypto/subtle"
 	"encoding/json"
 	"net/http"
 	"net/url"
@@ -10,13 +9,13 @@ import (
 	"github.com/go-chi/chi"
 
 	"bitbucket.org/beati/budget/budget-server/domain"
-	"bitbucket.org/beati/budget/budget-server/lib/session"
+	"bitbucket.org/beati/budget/budget-server/interfaces/session"
 	"bitbucket.org/beati/budget/budget-server/usecases"
 )
 
 type sessionData struct {
-	UserID domain.EntityID
-	CharID domain.EntityID
+	UserID    domain.EntityID
+	AccountID domain.EntityID
 }
 
 var sessionDataContextKey = &contextKey{"session_data"}
@@ -45,6 +44,7 @@ func (uapi *userAPI) addUser(w http.ResponseWriter, r *http.Request) (interface{
 	params := struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
+		Name     string `json:name`
 	}{}
 	err := json.NewDecoder(r.Body).Decode(&params)
 	if err != nil {
@@ -55,15 +55,15 @@ func (uapi *userAPI) addUser(w http.ResponseWriter, r *http.Request) (interface{
 		r.Context(),
 		params.Email,
 		params.Password,
+		params.Name,
 	)
 }
 
-func (uapi *userAPI) validateEmail(w http.ResponseWriter, r *http.Request) (interface{}, error) {
+func (uapi *userAPI) verifyEmail(w http.ResponseWriter, r *http.Request) (interface{}, error) {
 	params := struct {
 		ID     domain.EntityID `json:"id"`
-		Email  string          `json:"email"`
-		Token  string          `json:"token"`
 		Action string          `json:"action"`
+		Token  string          `json:"token"`
 	}{}
 	err := json.NewDecoder(r.Body).Decode(&params)
 	if err != nil {
@@ -71,8 +71,8 @@ func (uapi *userAPI) validateEmail(w http.ResponseWriter, r *http.Request) (inte
 	}
 
 	switch params.Action {
-	case "validate":
-		return nil, uapi.userInteractor.ValidateUserEmail(r.Context(), params.ID, params.Email, params.Token)
+	case "verify":
+		return nil, uapi.userInteractor.VerifyUserEmail(r.Context(), params.ID, params.Token)
 	case "cancel":
 		return nil, uapi.userInteractor.CancelUserEmail(r.Context(), params.ID, params.Token)
 	default:
@@ -151,25 +151,16 @@ func (uapi *userAPI) authenticate(w http.ResponseWriter, r *http.Request) (inter
 		return nil, err
 	}
 
-	http.SetCookie(w, &http.Cookie{
-		Name:     "XSRF-TOKEN",
-		Value:    session.CreateID(),
-		Path:     "/",
-		MaxAge:   uapi.sessionManager.MaxAge(),
-		Secure:   true,
-		HttpOnly: false,
-	})
-
 	s := sessionData{
-		UserID: user.ID,
-		CharID: user.AccountID,
+		UserID:    user.ID,
+		AccountID: user.AccountID,
 	}
 
-	return nil, uapi.sessionManager.New(w, &s)
+	return nil, uapi.sessionManager.New(user.ID, w, &s)
 }
 
 func (uapi *userAPI) unauthenticate(w http.ResponseWriter, r *http.Request) (interface{}, error) {
-	return nil, uapi.sessionManager.Clear(w, r)
+	return nil, uapi.sessionManager.Clear(w)
 }
 
 func (uapi *userAPI) routes(r chi.Router, authMiddleware func(http.Handler) http.Handler) {
@@ -182,7 +173,7 @@ func (uapi *userAPI) routes(r chi.Router, authMiddleware func(http.Handler) http
 	rateLimited.Mount("/user", user)
 
 	validate := chi.NewRouter()
-	validate.Post("/", wrap(uapi.validateEmail))
+	validate.Post("/", wrap(uapi.verifyEmail))
 	rateLimited.Mount("/email", validate)
 
 	password := chi.NewRouter()
@@ -216,25 +207,13 @@ type authHandler struct {
 }
 
 func (h *authHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "GET" && r.Method != "HEAD" {
-		csrfCookie, err := r.Cookie("XSRF-TOKEN")
-		if err != nil {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-		if subtle.ConstantTimeCompare([]byte(csrfCookie.Value), []byte(r.Header.Get("X-XSRF-TOKEN"))) != 1 {
-			w.WriteHeader(http.StatusUnauthorized)
-			return
-		}
-	}
-
 	s := sessionData{}
-	err := h.sessionManager.Get(r, &s)
-	if err == session.ErrNotFound {
-		w.WriteHeader(http.StatusUnauthorized)
+	userID, err := h.sessionManager.Get(r, &s)
+	if err == domain.ErrNotAllowed {
+		w.WriteHeader(http.StatusForbidden)
 		return
 	} else if err != nil {
-		Logger(r).Error(err)
+		Logger(r).WithField("code", http.StatusInternalServerError).Error(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

@@ -3,14 +3,14 @@ package webservice
 import (
 	"github.com/go-chi/chi"
 
-	"bitbucket.org/beati/budget/budget-server/lib/session"
 	"bitbucket.org/beati/budget/budget-server/usecases"
+	"bitbucket.org/beati/effero/effero/session"
 )
 
 // Routes returns a router configured with all api endpoints.
 func Routes(
 	allowedOrigins []string,
-	sessionStore *session.Manager,
+	sessionManager *session.Manager,
 	userIntercator *usecases.UserInteractor,
 ) chi.Router {
 	checkOrigin := checkOriginMiddleware(allowedOrigins)

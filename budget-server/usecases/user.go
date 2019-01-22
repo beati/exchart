@@ -3,9 +3,8 @@ package usecases
 import (
 	"bytes"
 	"context"
-	"crypto/hmac"
 	"crypto/rand"
-	"crypto/sha256"
+	"crypto/sha512"
 	"encoding/base64"
 	"encoding/binary"
 	"errors"
@@ -16,8 +15,18 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	"bitbucket.org/beati/budget/budget-server/domain"
-	"bitbucket.org/beati/budget/budget-server/lib/nonce"
 )
+
+// A User represents a user of the application.
+type User struct {
+	ID                 domain.EntityID `db:"user_id,omitempty"`
+	AccountID          domain.EntityID `db:"account_id"`
+	Email              string          `db:"email"`
+	PasswordHash       string          `db:"password_hash"`
+	PasswordResetToken string          `db:"password_reset_token"`
+	ChangeEmailToken   string          `db:"change_email_token"`
+	EmailVerified      bool            `db:"email_verified"`
+}
 
 // A UserTx interface is used to interact with a persistence solution.
 type UserTx interface {
@@ -28,28 +37,10 @@ type UserTx interface {
 	DeleteUser(userID domain.EntityID) error
 }
 
-// A PasswordHash interface is used to hash and verify password.
-type PasswordHash interface {
-	Hash(password string) (string, error)
-	Verify(hash, password string) error
-}
-
-// A User represents a user of the application.
-type User struct {
-	ID                   domain.EntityID `db:"user_id,omitempty"`
-	AccountID            domain.EntityID `db:"account_id"`
-	Email                string          `db:"email"`
-	PasswordHash         string          `db:"password_hash"`
-	PasswordResetToken   string          `db:"password_reset_token"`
-	EmailVerificationKey string          `db:"email_verification_key"`
-	EmailVerified        bool            `db:"email_verified"`
-}
-
 // NewUser returns a new user.
 func NewUser(email, password string, hash PasswordHash) (*User, error) {
 	user := &User{
-		Email:                email,
-		EmailVerificationKey: nonce.Base64(32),
+		Email: email,
 	}
 
 	err := user.SetPassword(hash, password)
@@ -77,59 +68,112 @@ func (user *User) SetPassword(hash PasswordHash, password string) error {
 	return nil
 }
 
-// EmailValidationToken returns a validation token for email.
-func (user *User) EmailValidationToken(email string) (string, error) {
-	mac, err := user.signEmail(email)
+const tokenSecretSize = 16
+
+// SetPasswordResetToken returns a token for password reset.
+func (user *User) SetPasswordResetToken() (string, error) {
+	buf := bytes.NewBuffer(make([]byte, 0, 8+tokenSecretSize))
+	validity := time.Now().Add(time.Hour).Unix()
+	err := binary.Write(buf, binary.BigEndian, validity)
 	if err != nil {
 		return "", err
 	}
-	return base64.RawURLEncoding.EncodeToString(mac), nil
-}
-
-// VerifyEmailValidationToken returns nil if token is a valid token for email.
-func (user *User) VerifyEmailValidationToken(email, token string) error {
-	expectedMAC, err := user.signEmail(email)
+	_, err = io.CopyN(buf, rand.Reader, 16)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	mac, err := base64.RawURLEncoding.DecodeString(token)
+	token := buf.Bytes()
+	expanded := sha512.Sum512(token)
+	hashedToken, err := bcrypt.GenerateFromPassword(expanded[:], bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+
+	user.PasswordResetToken = string(hashedToken)
+	return base64.RawURLEncoding.EncodeToString(token), nil
+}
+
+// VerifyPasswordResetToken returns nil if token is valid.
+func (user *User) VerifyPasswordResetToken(token string) error {
+	tokenData, err := base64.RawURLEncoding.DecodeString(token)
 	if err != nil {
 		return domain.ErrBadParameters
 	}
 
-	if !hmac.Equal(mac, expectedMAC) {
+	tokenBuf := bytes.NewBuffer(tokenData)
+	var validityUnix int64
+	err = binary.Read(tokenBuf, binary.BigEndian, &validityUnix)
+	if err != nil {
+		return domain.ErrBadParameters
+	}
+	validity := time.Unix(validityUnix, 0)
+
+	if time.Now().After(validity) {
+		return domain.ErrNotAllowed
+	}
+
+	expanded := sha512.Sum512(tokenData)
+	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordResetToken), expanded[:])
+	if err != nil {
 		return domain.ErrNotAllowed
 	}
 	return nil
 }
 
-func (user *User) signEmail(email string) ([]byte, error) {
-	key, err := base64.StdEncoding.DecodeString(user.EmailVerificationKey)
+// SetChangeEmailToken returns a validation token for email.
+func (user *User) SetChangeEmailToken(email string) (string, error) {
+	buf := bytes.NewBuffer(make([]byte, 0, len(email)+tokenSecretSize))
+	_, err := io.WriteString(buf, email)
 	if err != nil {
-		return nil, err
+		return "", err
+	}
+	_, err = io.CopyN(buf, rand.Reader, tokenSecretSize)
+	if err != nil {
+		return "", err
 	}
 
-	mac := hmac.New(sha256.New, key)
-	_, _ = io.WriteString(mac, email)
-	return mac.Sum(nil), nil
+	token := buf.Bytes()
+	expanded := sha512.Sum512(token)
+	hashedToken, err := bcrypt.GenerateFromPassword(expanded[:], bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+
+	user.ChangeEmailToken = string(hashedToken)
+	return base64.RawURLEncoding.EncodeToString(token), nil
+}
+
+// VerifyChangeEmailToken returns the email contained in token if it is valid.
+func (user *User) VerifyChangeEmailToken(token string) (string, error) {
+	tokenData, err := base64.RawURLEncoding.DecodeString(token)
+	if err != nil {
+		return "", domain.ErrBadParameters
+	}
+
+	email := string(tokenData[tokenSecretSize:])
+
+	expanded := sha512.Sum512(tokenData)
+	err = bcrypt.CompareHashAndPassword([]byte(user.ChangeEmailToken), expanded[:])
+	if err != nil {
+		return "", domain.ErrNotAllowed
+	}
+	return email, nil
 }
 
 // A UserInteractor handles usecases related to users.
 type UserInteractor struct {
 	repo   Repository
 	hash   PasswordHash
-	clock  domain.Clock
 	mailer Mailer
 	host   string
 }
 
 // NewUserInteractor creates a new UserInteractor.
-func NewUserInteractor(repo Repository, hash PasswordHash, clock domain.Clock, mailer Mailer, host string) *UserInteractor {
+func NewUserInteractor(repo Repository, hash PasswordHash, mailer Mailer, host string) *UserInteractor {
 	return &UserInteractor{
 		repo:   repo,
 		hash:   hash,
-		clock:  clock,
 		mailer: mailer,
 		host:   host,
 	}
@@ -142,12 +186,17 @@ var validationEmail = template.Must(template.New("validationEmail").Parse(`
 `))
 
 // AddUser adds a new user to the application.
-func (interactor *UserInteractor) AddUser(ctx context.Context, email, password string) (err error) {
-	if email == "" || password == "" {
+func (interactor *UserInteractor) AddUser(ctx context.Context, email, password, name string) (err error) {
+	if email == "" || password == "" || name == "" {
 		return domain.ErrBadParameters
 	}
 
 	user, err := NewUser(email, password, interactor.hash)
+	if err != nil {
+		return
+	}
+
+	changeEmailToken, err := user.SetChangeEmailToken(user.Email)
 	if err != nil {
 		return
 	}
@@ -165,11 +214,6 @@ func (interactor *UserInteractor) AddUser(ctx context.Context, email, password s
 		return
 	}
 
-	token, err := user.EmailValidationToken(user.Email)
-	if err != nil {
-		return
-	}
-
 	emailData := struct {
 		Name   string
 		UserID domain.EntityID
@@ -181,7 +225,7 @@ func (interactor *UserInteractor) AddUser(ctx context.Context, email, password s
 		UserID: user.ID,
 		Host:   interactor.host,
 		Email:  user.Email,
-		Token:  token,
+		Token:  changeEmailToken,
 	}
 	var buffer bytes.Buffer
 	err = validationEmail.Execute(&buffer, emailData)
@@ -196,8 +240,8 @@ func (interactor *UserInteractor) AddUser(ctx context.Context, email, password s
 	})
 }
 
-// ValidateUserEmail check that email is owned by the user.
-func (interactor *UserInteractor) ValidateUserEmail(ctx context.Context, userID domain.EntityID, email, token string) (err error) {
+// VerifyUserEmail check that email is owned by the user.
+func (interactor *UserInteractor) VerifyUserEmail(ctx context.Context, userID domain.EntityID, token string) (err error) {
 	tx, err := interactor.repo.NewTx(ctx)
 	if err != nil {
 		return
@@ -209,18 +253,18 @@ func (interactor *UserInteractor) ValidateUserEmail(ctx context.Context, userID 
 		return
 	}
 
-	err = user.VerifyEmailValidationToken(email, token)
+	email, err := user.VerifyChangeEmailToken(token)
 	if err != nil {
 		return
 	}
 
+	user.ChangeEmailToken = ""
 	user.Email = email
-	user.EmailVerificationKey = nonce.Base64(32)
 	user.EmailVerified = true
 	return tx.UpdateUser(user)
 }
 
-// CancelUserEmail delete an acount from an email validation.
+// CancelUserEmail delete an account from an email validation.
 func (interactor *UserInteractor) CancelUserEmail(ctx context.Context, userID domain.EntityID, token string) (err error) {
 	tx, err := interactor.repo.NewTx(ctx)
 	if err != nil {
@@ -234,10 +278,10 @@ func (interactor *UserInteractor) CancelUserEmail(ctx context.Context, userID do
 	}
 
 	if user.EmailVerified {
-		return domain.ErrBadParameters
+		return domain.ErrNotAllowed
 	}
 
-	err = user.VerifyEmailValidationToken(user.Email, token)
+	_, err = user.VerifyChangeEmailToken(token)
 	if err != nil {
 		return
 	}
@@ -267,7 +311,12 @@ func (interactor *UserInteractor) ChangeUserEmail(ctx context.Context, userID do
 		return
 	}
 
-	token, err := user.EmailValidationToken(email)
+	token, err := user.SetChangeEmailToken(email)
+	if err != nil {
+		return
+	}
+
+	err = tx.UpdateUser(user)
 	if err != nil {
 		return
 	}
@@ -326,7 +375,7 @@ var passwordResetEmail = template.Must(template.New("passwordResetEmail").Parse(
 <a href="https://{{.Host}}/password?id={{.UserID}}&token={{.Token}}">Reset</a>
 `))
 
-// RequestPasswordReset sends am email with reset password infos to a user.
+// RequestPasswordReset sends an email with reset password infos to a user.
 func (interactor *UserInteractor) RequestPasswordReset(ctx context.Context, email string) (err error) {
 	tx, err := interactor.repo.NewTx(ctx)
 	if err != nil {
@@ -339,24 +388,8 @@ func (interactor *UserInteractor) RequestPasswordReset(ctx context.Context, emai
 		return
 	}
 
-	buf := bytes.NewBuffer(make([]byte, 0, 24))
-	validity := time.Now().Add(time.Hour).Unix()
-	err = binary.Write(buf, binary.BigEndian, validity)
-	if err != nil {
-		return
-	}
-	_, err = io.CopyN(buf, rand.Reader, 16)
-	if err != nil {
-		return
-	}
+	token, err := user.SetPasswordResetToken()
 
-	token := buf.Bytes()
-	hashedToken, err := bcrypt.GenerateFromPassword(token, bcrypt.DefaultCost)
-	if err != nil {
-		return
-	}
-
-	user.PasswordResetToken = string(hashedToken)
 	err = tx.UpdateUser(user)
 	if err != nil {
 		return
@@ -369,7 +402,7 @@ func (interactor *UserInteractor) RequestPasswordReset(ctx context.Context, emai
 	}{
 		UserID: user.ID,
 		Host:   interactor.host,
-		Token:  base64.RawURLEncoding.EncodeToString(token),
+		Token:  token,
 	}
 	var buffer bytes.Buffer
 	err = passwordResetEmail.Execute(&buffer, emailData)
@@ -386,23 +419,6 @@ func (interactor *UserInteractor) RequestPasswordReset(ctx context.Context, emai
 
 // ResetPassword reset the password of a user.
 func (interactor *UserInteractor) ResetPassword(ctx context.Context, userID domain.EntityID, token, newPassword string) (err error) {
-	tokenData, err := base64.RawURLEncoding.DecodeString(token)
-	if err != nil {
-		return
-	}
-
-	tokenBuf := bytes.NewBuffer(tokenData)
-	var validityUnix int64
-	err = binary.Read(tokenBuf, binary.BigEndian, &validityUnix)
-	if err != nil {
-		return
-	}
-	validity := time.Unix(validityUnix, 0)
-
-	if time.Now().After(validity) {
-		return domain.ErrNotAllowed
-	}
-
 	tx, err := interactor.repo.NewTx(ctx)
 	if err != nil {
 		return
@@ -414,9 +430,9 @@ func (interactor *UserInteractor) ResetPassword(ctx context.Context, userID doma
 		return
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordResetToken), tokenData)
+	err = user.VerifyPasswordResetToken(token)
 	if err != nil {
-		return domain.ErrNotAllowed
+		return
 	}
 
 	user.PasswordResetToken = ""
