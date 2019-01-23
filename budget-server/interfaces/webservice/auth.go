@@ -13,6 +13,55 @@ import (
 	"bitbucket.org/beati/budget/budget-server/usecases"
 )
 
+type authAPI struct {
+	sessionManager *session.Manager
+	userInteractor *usecases.UserInteractor
+}
+
+func newAuthAPI(sessionManager *session.Manager, userInteractor *usecases.UserInteractor) *authAPI {
+	return &authAPI{
+		sessionManager: sessionManager,
+		userInteractor: userInteractor,
+	}
+}
+
+func (aapi *authAPI) authenticate(w http.ResponseWriter, r *http.Request) (interface{}, error) {
+	params := struct {
+		Email    string
+		Password string
+	}{}
+	err := json.NewDecoder(r.Body).Decode(&params)
+	if err != nil {
+		return nil, domain.ErrBadParameters
+	}
+
+	user, err := aapi.userInteractor.Authenticate(r.Context(), params.Email, params.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	s := sessionData{
+		UserID:    user.ID,
+		AccountID: user.AccountID,
+	}
+
+	return nil, aapi.sessionManager.New(user.ID, w, &s)
+}
+
+func (aapi *authAPI) unauthenticate(w http.ResponseWriter, r *http.Request) (interface{}, error) {
+	return nil, aapi.sessionManager.Clear(w)
+}
+
+func (aapi *authAPI) routes(r chi.Router, authMiddleware func(http.Handler) http.Handler) {
+	auth := chi.NewRouter()
+	auth.With(authMiddleware).Get("/", wrap(func(w http.ResponseWriter, r *http.Request) (interface{}, error) {
+		return nil, nil
+	}))
+	auth.Post("/", wrap(aapi.authenticate))
+	auth.Delete("/", wrap(aapi.unauthenticate))
+	r.Mount("/auth", auth)
+}
+
 type sessionData struct {
 	UserID    domain.EntityID
 	AccountID domain.EntityID
@@ -26,170 +75,6 @@ func newContextWithSessionData(ctx context.Context, s sessionData) context.Conte
 
 func getSessionData(r *http.Request) sessionData {
 	return r.Context().Value(sessionDataContextKey).(sessionData)
-}
-
-type userAPI struct {
-	sessionManager *session.Manager
-	userInteractor *usecases.UserInteractor
-}
-
-func newUserAPI(sessionManager *session.Manager, userInteractor *usecases.UserInteractor) *userAPI {
-	return &userAPI{
-		sessionManager: sessionManager,
-		userInteractor: userInteractor,
-	}
-}
-
-func (uapi *userAPI) addUser(w http.ResponseWriter, r *http.Request) (interface{}, error) {
-	params := struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
-		Name     string `json:name`
-	}{}
-	err := json.NewDecoder(r.Body).Decode(&params)
-	if err != nil {
-		return nil, domain.ErrBadParameters
-	}
-
-	return nil, uapi.userInteractor.AddUser(
-		r.Context(),
-		params.Email,
-		params.Password,
-		params.Name,
-	)
-}
-
-func (uapi *userAPI) verifyEmail(w http.ResponseWriter, r *http.Request) (interface{}, error) {
-	params := struct {
-		ID     domain.EntityID `json:"id"`
-		Action string          `json:"action"`
-		Token  string          `json:"token"`
-	}{}
-	err := json.NewDecoder(r.Body).Decode(&params)
-	if err != nil {
-		return nil, domain.ErrBadParameters
-	}
-
-	switch params.Action {
-	case "verify":
-		return nil, uapi.userInteractor.VerifyUserEmail(r.Context(), params.ID, params.Token)
-	case "cancel":
-		return nil, uapi.userInteractor.CancelUserEmail(r.Context(), params.ID, params.Token)
-	default:
-		return nil, domain.ErrBadParameters
-	}
-}
-
-func (uapi *userAPI) changeEmail(w http.ResponseWriter, r *http.Request) (interface{}, error) {
-	params := struct {
-		Password string `json:"password"`
-		Email    string `json:"email"`
-	}{}
-	err := json.NewDecoder(r.Body).Decode(&params)
-	if err != nil {
-		return nil, domain.ErrBadParameters
-	}
-
-	session := getSessionData(r)
-
-	return nil, uapi.userInteractor.ChangeUserEmail(r.Context(), session.UserID, params.Password, params.Email)
-}
-
-func (uapi *userAPI) changePassword(w http.ResponseWriter, r *http.Request) (interface{}, error) {
-	params := struct {
-		OldPassword string `json:"old_password"`
-		NewPassword string `json:"new_password"`
-	}{}
-	err := json.NewDecoder(r.Body).Decode(&params)
-	if err != nil {
-		return nil, domain.ErrBadParameters
-	}
-
-	session := getSessionData(r)
-
-	return nil, uapi.userInteractor.ChangePassword(r.Context(), session.UserID, params.OldPassword, params.NewPassword)
-}
-
-func (uapi *userAPI) requestPasswordReset(w http.ResponseWriter, r *http.Request) (interface{}, error) {
-	params := struct {
-		Email string `json:"email"`
-	}{}
-	err := json.NewDecoder(r.Body).Decode(&params)
-	if err != nil {
-		return nil, domain.ErrBadParameters
-	}
-
-	return nil, uapi.userInteractor.RequestPasswordReset(r.Context(), params.Email)
-}
-
-func (uapi *userAPI) resetPassword(w http.ResponseWriter, r *http.Request) (interface{}, error) {
-	params := struct {
-		ID       domain.EntityID `json:"id"`
-		Password string          `json:"password"`
-		Token    string          `json:"token"`
-	}{}
-	err := json.NewDecoder(r.Body).Decode(&params)
-	if err != nil {
-		return nil, domain.ErrBadParameters
-	}
-
-	return nil, uapi.userInteractor.ResetPassword(r.Context(), params.ID, params.Token, params.Password)
-}
-
-func (uapi *userAPI) authenticate(w http.ResponseWriter, r *http.Request) (interface{}, error) {
-	params := struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}{}
-	err := json.NewDecoder(r.Body).Decode(&params)
-	if err != nil {
-		return nil, domain.ErrBadParameters
-	}
-
-	user, err := uapi.userInteractor.Authenticate(r.Context(), params.Email, params.Password)
-	if err != nil {
-		return nil, err
-	}
-
-	s := sessionData{
-		UserID:    user.ID,
-		AccountID: user.AccountID,
-	}
-
-	return nil, uapi.sessionManager.New(user.ID, w, &s)
-}
-
-func (uapi *userAPI) unauthenticate(w http.ResponseWriter, r *http.Request) (interface{}, error) {
-	return nil, uapi.sessionManager.Clear(w)
-}
-
-func (uapi *userAPI) routes(r chi.Router, authMiddleware func(http.Handler) http.Handler) {
-	rateLimited := chi.NewRouter()
-
-	user := chi.NewRouter()
-	user.Post("/", wrap(uapi.addUser))
-	user.With(authMiddleware).Post("/password", wrap(uapi.changePassword))
-	user.With(authMiddleware).Post("/email", wrap(uapi.changeEmail))
-	rateLimited.Mount("/user", user)
-
-	validate := chi.NewRouter()
-	validate.Post("/", wrap(uapi.verifyEmail))
-	rateLimited.Mount("/email", validate)
-
-	password := chi.NewRouter()
-	password.Post("/request_reset", wrap(uapi.requestPasswordReset))
-	password.Post("/reset", wrap(uapi.resetPassword))
-	rateLimited.Mount("/password", password)
-
-	auth := chi.NewRouter()
-	auth.With(authMiddleware).Get("/", wrap(func(w http.ResponseWriter, r *http.Request) (interface{}, error) {
-		return nil, nil
-	}))
-	auth.Post("/", wrap(uapi.authenticate))
-	auth.With(authMiddleware).Delete("/", wrap(uapi.unauthenticate))
-	rateLimited.Mount("/auth", auth)
-
-	r.Mount("/user", rateLimited)
 }
 
 func authMiddleware(sessionManager *session.Manager) func(http.Handler) http.Handler {

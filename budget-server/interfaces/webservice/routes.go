@@ -15,11 +15,13 @@ func Routes(
 ) chi.Router {
 	checkOrigin := checkOriginMiddleware(allowedOrigins)
 	auth := authMiddleware(sessionManager)
-	uapi := newUserAPI(sessionManager, userIntercator)
+	authAPI := newAuthAPI(sessionManager, userIntercator)
+	userAPI := newUserAPI(userIntercator)
 
 	r := chi.NewRouter()
 	r.Use(checkOrigin)
 	r.Use(contentTypeJSON)
-	uapi.routes(r, auth)
+	authAPI.routes(r, auth)
+	userAPI.routes(r, auth)
 	return r
 }
