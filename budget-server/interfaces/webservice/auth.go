@@ -218,6 +218,8 @@ func (h *authHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	s.UserID = userID
+
 	h.handler.ServeHTTP(w, r.WithContext(newContextWithSessionData(r.Context(), s)))
 }
 
