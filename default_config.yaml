@@ -16,9 +16,14 @@ Server:
         #Client: client_ca.pem
         BehindReverseProxy: true
 
-PasswordHashEncryptionKey: key # 32 bytes base64 encoded key
+IDObfuscationKey: key # 32 bytes base64 encoded key
 
-IDObfuscationKey: key # 56 bytes base64 encoded key
+Session:
+    Name: session
+    Validity: 31536000 # Sessions validity duration in seconds
+    KeyStoreDir: dir
+
+PasswordHashEncryptionKey: key # 32 bytes base64 encoded key
 
 Mailgun:
     Domain: domain

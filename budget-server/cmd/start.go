@@ -17,6 +17,12 @@ import (
 
 	"bitbucket.org/beati/budget/budget-server/assets"
 	"bitbucket.org/beati/budget/budget-server/domain"
+	"bitbucket.org/beati/budget/budget-server/interfaces/email/mailgun"
+	"bitbucket.org/beati/budget/budget-server/interfaces/persistence/postgres"
+	"bitbucket.org/beati/budget/budget-server/interfaces/pwhash"
+	"bitbucket.org/beati/budget/budget-server/interfaces/session"
+	"bitbucket.org/beati/budget/budget-server/interfaces/webservice"
+	"bitbucket.org/beati/budget/budget-server/usecases"
 )
 
 // startCmd represents the start command
@@ -52,9 +58,61 @@ var startCmd = &cobra.Command{
 		logger := logrus.New()
 		logger.Formatter = &logrus.JSONFormatter{}
 
+		postgresConfig := postgres.RepositoryConfig{}
+		err = viper.UnmarshalKey("PostgreSQL", &postgresConfig)
+		if err != nil {
+			return err
+		}
+		repo, err := postgres.NewRepository(&postgresConfig)
+		if err != nil {
+			return err
+		}
+
+		err = repo.IsSchemaUpToDate()
+		if err != nil {
+			return err
+		}
+
+		sessionConfig := struct {
+			Name        string
+			Validity    int
+			KeyStoreDir string
+		}{}
+		err = viper.UnmarshalKey("Session", &sessionConfig)
+		if err != nil {
+			return err
+		}
+		sessionKeyStore, err := session.NewBadgerKeyStore(sessionConfig.KeyStoreDir)
+		sessionManager := session.NewManager(serverConfig.Host, sessionConfig.Name, time.Duration(sessionConfig.Validity)*time.Second, sessionKeyStore)
+
+		var passwordHashEncryptionKey string
+		err = viper.UnmarshalKey("PasswordHashEncryptionKey", &passwordHashEncryptionKey)
+		if err != nil {
+			return err
+		}
+		pwHash, err := pwhash.New(passwordHashEncryptionKey)
+		if err != nil {
+			return err
+		}
+
+		mailgunConfig := struct {
+			Domain string
+			APIKey string
+		}{}
+		err = viper.UnmarshalKey("Mailgun", &mailgunConfig)
+		if err != nil {
+			return err
+		}
+		mailer := mailgun.New(mailgunConfig.APIKey, mailgunConfig.Domain, "Budget", "noreply")
+
+		userInteractor := usecases.NewUserInteractor(repo, pwHash, mailer, serverConfig.Host)
+
+		apiRouter := webservice.Routes([]string{serverConfig.Host}, sessionManager, userInteractor)
+
 		router := chi.NewRouter()
 		assetsHandler := assets.Handler("/")
 		router.Mount("/", assetsHandler)
+		router.Mount("/api", apiRouter)
 
 		if serverConfig.HTTPSRedirectAddr != "" {
 			startRedirectToHTTPS(serverConfig.HTTPSRedirectAddr, serverConfig.Host, logger)
@@ -119,10 +177,10 @@ func createTLSConfig(certConfig certificateConfig) (*tls.Config, error) {
 		},
 		CipherSuites: []uint16{
 			tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,
-			tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,
 			tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,
-			tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
 			tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,
+			tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,
+			tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
 			tls.TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,
 		},
 	}

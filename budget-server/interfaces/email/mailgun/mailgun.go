@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/url"
 
-	"bitbucket.org/beati/budget/budget-server/interfaces/httpclient"
+	"bitbucket.org/beati/budget/budget-server/lib/httpclient"
 	"bitbucket.org/beati/budget/budget-server/usecases"
 )
 
