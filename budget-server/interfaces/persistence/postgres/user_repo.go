@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	"github.com/lib/pq"
 	db "upper.io/db.v3"
 
 	"bitbucket.org/beati/budget/budget-server/domain"
@@ -30,6 +31,11 @@ func (tx Tx) GetUserByEmail(email string) (*usecases.User, error) {
 // AddUser implements usecases.UserTx.
 func (tx Tx) AddUser(user *usecases.User) error {
 	userID, err := tx.sqlTx.Collection("users").Insert(user)
+	if err, ok := err.(*pq.Error); ok {
+		if err.Code == pqErrorUniqueViolation {
+			return domain.ErrAlreadyExists
+		}
+	}
 	if err != nil {
 		return err
 	}

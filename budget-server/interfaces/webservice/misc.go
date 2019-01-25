@@ -31,35 +31,52 @@ func SecurityHeaders(h http.Handler) http.Handler {
 	})
 }
 
-func writeJSON(w io.Writer, resp interface{}) {
-	_, _ = w.Write([]byte(")]}',\n"))
-	if resp != nil {
-		data, err := json.Marshal(resp)
-		if err != nil {
-			panic(err)
-		}
-		_, _ = w.Write(data)
-	} else {
-		_, _ = w.Write([]byte("{}"))
+func writeJSON(w io.Writer, resp interface{}) error {
+	_, err := w.Write([]byte(")]}',\n"))
+	if err != nil {
+		return err
 	}
+	if resp != nil {
+		var data []byte
+		data, err = json.Marshal(resp)
+		if err != nil {
+			return err
+		}
+		_, err = w.Write(data)
+		if err != nil {
+			return err
+		}
+	} else {
+		_, err = w.Write([]byte("{}"))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func wrap(f func(w http.ResponseWriter, r *http.Request) (interface{}, error)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var code int
 		resp, err := f(w, r)
-		switch err {
-		case nil:
-			writeJSON(w, resp)
-			return
-		case usecases.ErrBadCredentials:
-			code = http.StatusUnauthorized
-		case domain.ErrNotAllowed:
-			code = http.StatusForbidden
-		case domain.ErrBadParameters:
-			code = http.StatusBadRequest
-		default:
-			code = http.StatusInternalServerError
+		if err != nil {
+			switch err {
+			case usecases.ErrBadCredentials:
+				code = http.StatusUnauthorized
+			case domain.ErrNotAllowed:
+				code = http.StatusForbidden
+			case domain.ErrBadParameters:
+				fallthrough
+			case domain.ErrAlreadyExists:
+				code = http.StatusBadRequest
+			default:
+				code = http.StatusInternalServerError
+			}
+		} else {
+			err = writeJSON(w, resp)
+			if err != nil {
+				code = http.StatusInternalServerError
+			}
 		}
 		Logger(r).WithField("code", code).Error(err)
 		w.WriteHeader(code)

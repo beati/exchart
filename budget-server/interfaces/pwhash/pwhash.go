@@ -89,7 +89,10 @@ func (pwh Hash) Hash(password string) (string, error) {
 	mode := cipher.NewCBCEncrypter(pwh.block, iv)
 	mode.CryptBlocks(plaintext, plaintext)
 
-	_, _ = mac.Write(data[:authenticatedSize])
+	_, err = mac.Write(data[:authenticatedSize])
+	if err != nil {
+		return "", err
+	}
 	data = mac.Sum(data)
 
 	return base64.StdEncoding.EncodeToString(data), nil
@@ -106,7 +109,10 @@ func (pwh Hash) Verify(hash, password string) error {
 	if len(data) < authenticatedSize+mac.Size() {
 		return errors.New("password hash to short")
 	}
-	_, _ = mac.Write(data[:authenticatedSize])
+	_, err = mac.Write(data[:authenticatedSize])
+	if err != nil {
+		return err
+	}
 	expectedMac := mac.Sum(nil)
 
 	if !hmac.Equal(expectedMac, data[authenticatedSize:]) {

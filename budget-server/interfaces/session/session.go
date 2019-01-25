@@ -122,14 +122,9 @@ func (m *Manager) Clear(w http.ResponseWriter) error {
 
 // Get retrieve session data in v.
 func (m *Manager) Get(r *http.Request, v interface{}) (domain.EntityID, error) {
-	if r.Method != "GET" && r.Method != "HEAD" {
-		csrfCookie, err := r.Cookie("XSRF-TOKEN")
-		if err != nil {
-			return 0, domain.ErrNotAllowed
-		}
-		if subtle.ConstantTimeCompare([]byte(csrfCookie.Value), []byte(r.Header.Get("X-XSRF-TOKEN"))) != 1 {
-			return 0, domain.ErrNotAllowed
-		}
+	err := checkXSRFToken(r)
+	if err != nil {
+		return 0, domain.ErrNotAllowed
 	}
 
 	cookie, err := r.Cookie(m.name)
@@ -165,6 +160,19 @@ func (m *Manager) Get(r *http.Request, v interface{}) (domain.EntityID, error) {
 	}
 
 	return userID, nil
+}
+
+func checkXSRFToken(r *http.Request) error {
+	if r.Method != "GET" && r.Method != "HEAD" {
+		csrfCookie, err := r.Cookie("XSRF-TOKEN")
+		if err != nil {
+			return domain.ErrNotAllowed
+		}
+		if subtle.ConstantTimeCompare([]byte(csrfCookie.Value), []byte(r.Header.Get("X-XSRF-TOKEN"))) != 1 {
+			return domain.ErrNotAllowed
+		}
+	}
+	return nil
 }
 
 // Revoke change the encryption key of a user. This invalidate previsously created sessions.

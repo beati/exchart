@@ -83,6 +83,9 @@ var startCmd = &cobra.Command{
 			return err
 		}
 		sessionKeyStore, err := session.NewBadgerKeyStore(sessionConfig.KeyStoreDir)
+		if err != nil {
+			return err
+		}
 		sessionManager := session.NewManager(serverConfig.Host, sessionConfig.Name, time.Duration(sessionConfig.Validity)*time.Second, sessionKeyStore)
 
 		var passwordHashEncryptionKey string
