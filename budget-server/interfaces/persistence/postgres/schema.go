@@ -9,11 +9,15 @@ import (
 )
 
 var schema = `
-DROP TABLE IF EXISTS schema_version, users CASCADE;
+DROP TABLE IF EXISTS schema_version, users, accounts CASCADE;
 
 CREATE TABLE schema_version (
 	version        integer NOT NULL,
-	migration_date timestamp NOT NULL
+	upgrade_date timestamp NOT NULL
+);
+
+CREATE TABLE accounts (
+	account_id bigserial PRIMARY KEY
 );
 
 CREATE TABLE users (
@@ -26,17 +30,13 @@ CREATE TABLE users (
 	email_verified       boolean NOT NULL
 );
 CREATE INDEX users_email ON users (email);
-
-CREATE TABLE accounts (
-	account_id bigserial PRIMARY KEY,
-);
 `
 
-var migrations = []func(tx sqlbuilder.Tx) error{}
+var upgrades = []func(tx sqlbuilder.Tx) error{}
 
 type schemaVersion struct {
-	Version       int       `db:"version"`
-	MigrationDate time.Time `db:"migration_date"`
+	Version     int       `db:"version"`
+	UpgradeDate time.Time `db:"upgrade_date"`
 }
 
 // InitDB initialize the database schema.
@@ -51,8 +51,8 @@ func (repo *Repository) InitDB(ctx context.Context) error {
 	})
 }
 
-// MigrateDB update the database schema.
-func (repo *Repository) MigrateDB(ctx context.Context) error {
+// UpgradeDB update the database schema.
+func (repo *Repository) UpgradeDB(ctx context.Context) error {
 	return repo.db.Tx(ctx, func(tx sqlbuilder.Tx) error {
 		currentVersion := schemaVersion{}
 		err := tx.Collection("schema_version").Find().OrderBy("-version").One(&currentVersion)
@@ -60,10 +60,10 @@ func (repo *Repository) MigrateDB(ctx context.Context) error {
 			return err
 		}
 
-		targetVersion := len(migrations)
+		targetVersion := len(upgrades)
 		if targetVersion > currentVersion.Version {
-			for i := currentVersion.Version; i < len(migrations); i++ {
-				err := migrations[i](tx)
+			for i := currentVersion.Version; i < len(upgrades); i++ {
+				err := upgrades[i](tx)
 				if err != nil {
 					return err
 				}
@@ -84,7 +84,7 @@ func (repo *Repository) IsSchemaUpToDate() error {
 		return err
 	}
 
-	targetVersion := len(migrations)
+	targetVersion := len(upgrades)
 	if targetVersion > currentVersion.Version {
 		return errors.New("database schema not up to date")
 	} else if targetVersion < currentVersion.Version {
@@ -95,8 +95,8 @@ func (repo *Repository) IsSchemaUpToDate() error {
 
 func insertCurrentVersion(tx sqlbuilder.Tx) error {
 	_, err := tx.Collection("schema_version").Insert(schemaVersion{
-		Version:       len(migrations),
-		MigrationDate: time.Now(),
+		Version:     len(upgrades),
+		UpgradeDate: time.Now(),
 	})
 	return err
 }

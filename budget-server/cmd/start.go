@@ -113,7 +113,7 @@ var startCmd = &cobra.Command{
 		apiRouter := webservice.Routes([]string{serverConfig.Host}, sessionManager, userInteractor)
 
 		router := chi.NewRouter()
-		assetsHandler := assets.Handler("/")
+		assetsHandler := assets.Handler("/", "/login", "/register")
 		router.Mount("/", assetsHandler)
 		router.Mount("/api", apiRouter)
 

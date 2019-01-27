@@ -24,8 +24,9 @@ WantedBy=multi-user.target
 
 // unitfileCmd represents the unitfile command
 var unitfileCmd = &cobra.Command{
-	Use:   "unitfile",
-	Short: "Print a systemd unit file",
+	Use:          "unitfile",
+	Short:        "Print a systemd unit file",
+	SilenceUsage: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Print(unitfile)
 	},

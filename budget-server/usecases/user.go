@@ -39,6 +39,10 @@ type UserTx interface {
 
 // NewUser returns a new user.
 func NewUser(email, password string, hash PasswordHash) (*User, error) {
+	if email == "" || password == "" {
+		return nil, domain.ErrBadParameters
+	}
+
 	user := &User{
 		Email: email,
 	}
@@ -187,8 +191,9 @@ var validationEmail = template.Must(template.New("validationEmail").Parse(`
 
 // AddUser adds a new user to the application.
 func (interactor *UserInteractor) AddUser(ctx context.Context, email, password, name string) (err error) {
-	if email == "" || password == "" || name == "" {
-		return domain.ErrBadParameters
+	account, err := domain.NewAccount(name)
+	if err != nil {
+		return
 	}
 
 	user, err := NewUser(email, password, interactor.hash)
@@ -207,7 +212,12 @@ func (interactor *UserInteractor) AddUser(ctx context.Context, email, password, 
 	}
 	defer tx.Close(&err)
 
-	user.AccountID = 0
+	err = tx.AddAccount(account)
+	if err != nil {
+		return
+	}
+
+	user.AccountID = account.ID
 
 	err = tx.AddUser(user)
 	if err != nil {
@@ -221,7 +231,7 @@ func (interactor *UserInteractor) AddUser(ctx context.Context, email, password, 
 		Email  string
 		Token  string
 	}{
-		Name:   "",
+		Name:   account.Name,
 		UserID: user.ID,
 		Host:   interactor.host,
 		Email:  user.Email,

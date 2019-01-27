@@ -50,7 +50,6 @@ export class AuthService {
             if (error instanceof HttpErrorResponse) {
                 if (error.status === StatusCode.Unauthorized) {
                     setLoggedIn(false)
-                    return
                 }
             }
             throw error

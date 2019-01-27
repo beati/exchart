@@ -1,17 +1,34 @@
 package cmd
 
 import (
+	"context"
+
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+
+	"bitbucket.org/beati/budget/budget-server/interfaces/persistence/postgres"
 )
 
 // upgradedbCmd represents the upgradedb command
 var upgradedbCmd = &cobra.Command{
-	Use:   "upgradedb",
-	Short: "Upgrade database",
+	Use:          "upgradedb",
+	Short:        "Upgrade database",
+	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		initConfig()
 
-		return nil
+		postgresConfig := postgres.RepositoryConfig{}
+		err := viper.UnmarshalKey("PostgreSQL", &postgresConfig)
+		if err != nil {
+			return err
+		}
+
+		repo, err := postgres.NewRepository(&postgresConfig)
+		if err != nil {
+			return err
+		}
+
+		return repo.UpgradeDB(context.Background())
 	},
 }
 
