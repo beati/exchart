@@ -17,14 +17,30 @@ CREATE TABLE schema_version (
 );
 
 CREATE TABLE accounts (
-	account_id bigserial PRIMARY KEY
+	account_id bigserial PRIMARY KEY,
+	name       text NOT NULL
 );
 
-CREATE TABLE joint_accounts (
-	joint_account_id bigserial PRIMARY KEY,
-	account_id_1     bigint REFERENCES accounts ON DELETE SET NULL,
-	account_id_2     bigint REFERENCES accounts ON DELETE SET NULL
+CREATE TABLE budgets (
+	budget_id    bigserial PRIMARY KEY,
+	main         boolean NOT NULL,
+	account_id_1 bigint REFERENCES accounts ON DELETE SET NULL,
+	account_id_2 bigint REFERENCES accounts ON DELETE SET NULL
 	CONSTRAINT CHECK (account_id_1 < account_id_2)
+);
+
+CREATE TABLE categories (
+	category_id bigserial PRIMARY KEY,
+	budget_id   bigint NOT NULL REFERENCES budgets ON DELETE CASCADE,
+	name        text
+);
+
+CREATE TABLE movement (
+	movement_id bigserial PRIMARY KEY,
+	category_id bigint NOT NULL REFERENCES categories ON DELETE CASCADE,
+	amount      bigint NOT NULL,
+	month       integer NOL NULL,
+	year        integer NOT NULL
 );
 
 CREATE TABLE users (
