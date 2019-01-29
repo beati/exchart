@@ -20,6 +20,13 @@ CREATE TABLE accounts (
 	account_id bigserial PRIMARY KEY
 );
 
+CREATE TABLE joint_accounts (
+	joint_account_id bigserial PRIMARY KEY,
+	account_id_1     bigint REFERENCES accounts ON DELETE SET NULL,
+	account_id_2     bigint REFERENCES accounts ON DELETE SET NULL
+	CONSTRAINT CHECK (account_id_1 < account_id_2)
+);
+
 CREATE TABLE users (
 	user_id              bigserial PRIMARY KEY,
 	account_id           bigint NOT NULL UNIQUE REFERENCES accounts ON DELETE CASCADE,
