@@ -1,2 +1,6 @@
-<form>
+<form (ngSubmit)="Register()">
+    <input type="email" name="Email" [(ngModel)]="RegisterFormData.Email">
+    <input type="password" name="Password" [(ngModel)]="RegisterFormData.Password">
+    <input type="text" name="Name" [(ngModel)]="RegisterFormData.Name">
+    <button type="submit">Register</button>
 </form>

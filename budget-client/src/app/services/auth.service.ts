@@ -41,7 +41,7 @@ export class AuthService {
 
     async Authenticate(email: string, password: string): Promise<void> {
         try {
-            await this.http.post<void>('/api/user/auth', {
+            await this.http.post<void>('/api/auth', {
                 Email: email,
                 Password: password,
             }).toPromise()
@@ -57,7 +57,7 @@ export class AuthService {
     }
 
     async Unauthenticate(): Promise<void> {
-        await this.http.delete<void>('/api/user/auth').toPromise()
+        await this.http.delete<void>('/api/auth').toPromise()
         setLoggedIn(false)
         this.UnauthenticationSig.next()
     }

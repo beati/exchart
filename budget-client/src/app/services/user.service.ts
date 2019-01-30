@@ -18,30 +18,30 @@ export class UserService {
         this.http = new HttpClientWrapper(httpClient, auth)
     }
 
-    async AddUser(email: string, password: string, accountName: string): Promise<void> {
-        await this.http.post<void>('/api/user/user', {
+    async Register(email: string, password: string, name: string): Promise<void> {
+        await this.http.post<void>('/api/user', {
             Email: email,
             Password: password,
-            AccountName: accountName,
+            Name: name,
         })
     }
 
     async ChangeEmail(password: string, email: string): Promise<void> {
-        await this.http.post<void>('/api/user/user/email', {
+        await this.http.post<void>('/api/user/email', {
             Password: password,
             Email: email,
         })
     }
 
     async ChangePassword(oldPassword: string, newPassword: string): Promise<void> {
-        await this.http.post<void>('/api/user/user/password', {
+        await this.http.post<void>('/api/user/password', {
             OldPassword: oldPassword,
             NewPassword: newPassword,
         })
     }
 
-    async ValidateEmail(id: string, email: string, token: string, action: string): Promise<void> {
-        await this.http.post<void>('/api/user/email', {
+    async VerifyEmail(id: string, email: string, token: string, action: string): Promise<void> {
+        await this.http.post<void>('/api/user/email/verify', {
             Action: action,
             ID: id,
             Email: email,

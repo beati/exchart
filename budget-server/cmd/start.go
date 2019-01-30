@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -113,6 +114,14 @@ var startCmd = &cobra.Command{
 		apiRouter := webservice.Routes([]string{serverConfig.Host}, sessionManager, userInteractor)
 
 		router := chi.NewRouter()
+		if serverConfig.BehindReverseProxy {
+			router.Use(middleware.RealIP)
+		}
+		router.Use(middleware.RequestID)
+		router.Use(webservice.LogMiddleware(logger))
+		router.Use(webservice.RecoverMiddleware)
+		router.Use(webservice.SecurityHeaders)
+
 		assetsHandler := assets.Handler("/", "/login", "/register")
 		router.Mount("/", assetsHandler)
 		router.Mount("/api", apiRouter)

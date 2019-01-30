@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 
-import { AuthService } from 'src/app/services/auth.service'
+import { AuthService } from '../../services/auth.service'
 
 @Component({
     selector: 'app-main',
@@ -18,8 +18,8 @@ export class MainComponent implements OnInit {
 
     ngOnInit(): void {
         this.auth.UnauthenticationSig.subscribe(
-            () => {
-                this.router.navigate(["/login"])
+            async (): Promise<void> => {
+                await this.router.navigate(['/login'])
             },
         )
 

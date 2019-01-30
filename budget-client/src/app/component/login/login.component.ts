@@ -2,9 +2,9 @@ import { HttpErrorResponse } from '@angular/common/http'
 import { Component, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 
-import { StatusCode } from 'src/app/services/http-client-wrapper'
+import { StatusCode } from '../../services/http-client-wrapper'
 
-import { AuthService } from 'src/app/services/auth.service'
+import { AuthService } from '../../services/auth.service'
 
 @Component({
     selector: 'app-login',
@@ -24,9 +24,9 @@ export class LoginComponent implements OnInit {
         private readonly auth: AuthService,
     ) {}
 
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         if (this.auth.LoggedIn()) {
-            this.router.navigate(["/"])
+            await this.router.navigate(['/'])
         }
     }
 
@@ -35,7 +35,7 @@ export class LoginComponent implements OnInit {
             this.LoginFormData.Submitting = true
             await this.auth.Authenticate(this.LoginFormData.Email, this.LoginFormData.Password)
             this.LoginFormData.Submitting = false
-            this.router.navigate(["/"])
+            await this.router.navigate(['/'])
         } catch (error) {
             this.LoginFormData.Submitting = false
             if (error instanceof HttpErrorResponse) {

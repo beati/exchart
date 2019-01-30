@@ -8,6 +8,6 @@ import { Component, OnInit } from '@angular/core'
 export class ShellComponent implements OnInit {
     constructor() {}
 
-    ngOnInit() {
+    async ngOnInit(): Promise<void> {
     }
 }
