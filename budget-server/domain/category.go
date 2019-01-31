@@ -1,7 +1,8 @@
 package domain
 
+// A Category represents a movement category.
 type Category struct {
-	CategoryID EntityID `db:"category_id"`
-	BudgetID   EntityID `db:"budget_id"`
-	Name       string   `db:"name"`
+	ID       EntityID `db:"category_id"`
+	BudgetID EntityID `db:"budget_id"`
+	Name     string   `db:"name"`
 }

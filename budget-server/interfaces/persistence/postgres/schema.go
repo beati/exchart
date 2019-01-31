@@ -25,23 +25,44 @@ CREATE TABLE budgets (
 	budget_id    bigserial PRIMARY KEY,
 	main         boolean NOT NULL,
 	account_id_1 bigint REFERENCES accounts ON DELETE SET NULL,
-	account_id_2 bigint REFERENCES accounts ON DELETE SET NULL
+	accepted_1   boolean NOT NULL,
+	account_id_2 bigint REFERENCES accounts ON DELETE SET NULL,
+	accepted_2   boolean NOT NULL,
+	disabled     boolean NOT NULL
+	UNIQUE (account_id_1, account_id_2),
 	CONSTRAINT CHECK (account_id_1 < account_id_2)
 );
+CREATE INDEX budgets_disabled ON budgets (disabled);
 
 CREATE TABLE categories (
 	category_id bigserial PRIMARY KEY,
 	budget_id   bigint NOT NULL REFERENCES budgets ON DELETE CASCADE,
 	name        text
 );
+CREATE INDEX categories_budget_id ON categories (budget_id);
 
-CREATE TABLE movement (
+CREATE TABLE movements (
 	movement_id bigserial PRIMARY KEY,
 	category_id bigint NOT NULL REFERENCES categories ON DELETE CASCADE,
 	amount      bigint NOT NULL,
-	month       integer NOL NULL,
-	year        integer NOT NULL
+	year        integer NOT NULL,
+	month       integer NOL NULL
 );
+CREATE INDEX movements_category_id ON movements (category_id);
+CREATE INDEX movements_year_month ON movements (year, month);
+
+CREATE TABLE recurring_movements (
+	movement_id bigserial PRIMARY KEY,
+	category_id bigint NOT NULL REFERENCES categories ON DELETE CASCADE,
+	amount      bigint NOT NULL,
+	period      integer NOT NULL,
+	first_year  integer NOT NULL,
+	last_year   integer NOT NULL,
+	first_month integer NOL NULL,
+	last_month  integer NOL NULL
+);
+CREATE INDEX recurring_movements_category_id ON recurring_movements (category_id);
+CREATE INDEX recurring_movements_year_month ON movements (first_year, last_year, first_month, last_month);
 
 CREATE TABLE users (
 	user_id              bigserial PRIMARY KEY,
@@ -52,7 +73,6 @@ CREATE TABLE users (
 	change_email_token   text NOT NULL,
 	email_verified       boolean NOT NULL
 );
-CREATE INDEX users_email ON users (email);
 `
 
 var upgrades = []func(tx sqlbuilder.Tx) error{}

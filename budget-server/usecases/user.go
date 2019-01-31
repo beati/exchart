@@ -173,7 +173,7 @@ type UserInteractor struct {
 	host   string
 }
 
-// NewUserInteractor creates a new UserInteractor.
+// NewUserInteractor returns a new UserInteractor.
 func NewUserInteractor(repo Repository, hash PasswordHash, mailer Mailer, host string) *UserInteractor {
 	return &UserInteractor{
 		repo:   repo,
@@ -213,6 +213,12 @@ func (interactor *UserInteractor) AddUser(ctx context.Context, email, password, 
 	defer tx.Close(&err)
 
 	err = tx.AddAccount(account)
+	if err != nil {
+		return
+	}
+
+	budget := domain.NewMainBudget(account.ID)
+	err = tx.AddBudget(budget)
 	if err != nil {
 		return
 	}
