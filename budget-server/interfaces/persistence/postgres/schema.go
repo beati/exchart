@@ -9,7 +9,7 @@ import (
 )
 
 var schema = `
-DROP TABLE IF EXISTS schema_version, users, accounts CASCADE;
+DROP TABLE IF EXISTS schema_version, users, budgets, categories, movements, recurring_movements, accounts CASCADE;
 
 CREATE TABLE schema_version (
 	version        integer NOT NULL,
@@ -28,9 +28,9 @@ CREATE TABLE budgets (
 	accepted_1   boolean NOT NULL,
 	account_id_2 bigint REFERENCES accounts ON DELETE SET NULL,
 	accepted_2   boolean NOT NULL,
-	disabled     boolean NOT NULL
+	disabled     boolean NOT NULL,
 	UNIQUE (account_id_1, account_id_2),
-	CONSTRAINT CHECK (account_id_1 < account_id_2)
+	CONSTRAINT account_id_order CHECK (account_id_1 = NULL OR account_id_2 = NULL OR account_id_1 < account_id_2)
 );
 CREATE INDEX budgets_disabled ON budgets (disabled);
 
@@ -46,7 +46,7 @@ CREATE TABLE movements (
 	category_id bigint NOT NULL REFERENCES categories ON DELETE CASCADE,
 	amount      bigint NOT NULL,
 	year        integer NOT NULL,
-	month       integer NOL NULL
+	month       integer NOT NULL
 );
 CREATE INDEX movements_category_id ON movements (category_id);
 CREATE INDEX movements_year_month ON movements (year, month);
@@ -58,11 +58,11 @@ CREATE TABLE recurring_movements (
 	period      integer NOT NULL,
 	first_year  integer NOT NULL,
 	last_year   integer NOT NULL,
-	first_month integer NOL NULL,
-	last_month  integer NOL NULL
+	first_month integer NOT NULL,
+	last_month  integer NOT NULL
 );
 CREATE INDEX recurring_movements_category_id ON recurring_movements (category_id);
-CREATE INDEX recurring_movements_year_month ON movements (first_year, last_year, first_month, last_month);
+CREATE INDEX recurring_movements_year_month ON recurring_movements (first_year, last_year, first_month, last_month);
 
 CREATE TABLE users (
 	user_id              bigserial PRIMARY KEY,

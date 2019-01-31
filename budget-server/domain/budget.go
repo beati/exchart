@@ -2,11 +2,11 @@ package domain
 
 // A Budget represents a budget. It can be the main budget of a user or a joint budget of two users.
 type Budget struct {
-	ID         EntityID `db:"budget_id"`
+	ID         EntityID `db:"budget_id,omitempty"`
 	Main       bool     `db:"main"`
-	AccountID1 EntityID `db:"account_id_1"`
+	AccountID1 EntityID `db:"account_id_1,omitempty"`
 	Accepted1  bool     `db:"accepted_1"`
-	AccountID2 EntityID `db:"account_id_2"`
+	AccountID2 EntityID `db:"account_id_2,omitempty"`
 	Accepted2  bool     `db:"accepted_2"`
 	Disabled   bool     `db:"disabled"`
 }
