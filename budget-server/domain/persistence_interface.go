@@ -4,5 +4,7 @@ package domain
 type Tx interface {
 	AccountTx
 	BudgetTx
+	CategoryTx
 	MovementTx
+	RecurringMovementTx
 }

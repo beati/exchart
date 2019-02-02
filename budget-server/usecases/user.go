@@ -280,7 +280,7 @@ func (interactor *UserInteractor) VerifyUserEmail(ctx context.Context, userID do
 	return tx.UpdateUser(user)
 }
 
-// CancelUserEmail delete an account from an email validation.
+// CancelUserEmail delete a user from an email validation.
 func (interactor *UserInteractor) CancelUserEmail(ctx context.Context, userID domain.EntityID, token string) (err error) {
 	tx, err := interactor.repo.NewTx(ctx)
 	if err != nil {

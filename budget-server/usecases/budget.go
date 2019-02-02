@@ -18,18 +18,80 @@ func NewBudgetInteractor(repo Repository) *BudgetInteractor {
 	}
 }
 
+// AddJointBudget adds a joint budget to an account.
 func (interactor *BudgetInteractor) AddJointBudget(ctx context.Context, accountID domain.EntityID, email string) (err error) {
-	return nil
+	tx, err := interactor.repo.NewTx(ctx)
+	if err != nil {
+		return
+	}
+	defer tx.Close(&err)
+
+	requestedUser, err := tx.GetUserByEmail(email)
+	if err != nil {
+		return
+	}
+
+	budget, err := domain.NewJointBudget(accountID, requestedUser.AccountID)
+	if err != nil {
+		return
+	}
+
+	err = tx.AddBudget(budget)
+	if err != domain.ErrAlreadyExists {
+		return
+	}
+
+	budget, err = tx.LockBudgetByAccountID(accountID, requestedUser.AccountID)
+	if err != nil {
+		return
+	}
+
+	err = budget.Enable(accountID)
+	if err != nil {
+		return
+	}
+
+	return tx.UpdateBudget(budget)
 }
 
+// AcceptJointBudget set a joint budget as accepted by the account associated with accountID.
 func (interactor *BudgetInteractor) AcceptJointBudget(ctx context.Context, accountID, budgetID domain.EntityID) (err error) {
-	return nil
+	tx, err := interactor.repo.NewTx(ctx)
+	if err != nil {
+		return
+	}
+	defer tx.Close(&err)
+
+	budget, err := tx.LockBudget(budgetID)
+	if err != nil {
+		return
+	}
+
+	err = budget.Accept(accountID)
+	if err != nil {
+		return
+	}
+
+	return tx.UpdateBudget(budget)
 }
 
-func (interactor *BudgetInteractor) CancelJointBudget(ctx context.Context, accountID, budgetID domain.EntityID) (err error) {
-	return nil
-}
-
+// DisableJointBudget set a joint budget as disabled.
 func (interactor *BudgetInteractor) DisableJointBudget(ctx context.Context, accountID, budgetID domain.EntityID) (err error) {
-	return nil
+	tx, err := interactor.repo.NewTx(ctx)
+	if err != nil {
+		return
+	}
+	defer tx.Close(&err)
+
+	budget, err := tx.LockBudget(budgetID)
+	if err != nil {
+		return
+	}
+
+	err = budget.Disable(accountID)
+	if err != nil {
+		return
+	}
+
+	return tx.UpdateBudget(budget)
 }

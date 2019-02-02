@@ -6,6 +6,7 @@ import (
 	"bitbucket.org/beati/budget/budget-server/domain"
 )
 
-func (interactor *BudgetInteractor) UpdateAccountName(ctx context.Context, accountID domain.EntityID, name string) (err error) {
+// UpdateAccount updates an account.
+func (interactor *BudgetInteractor) UpdateAccount(ctx context.Context, accountID domain.EntityID, name string) (err error) {
 	return nil
 }

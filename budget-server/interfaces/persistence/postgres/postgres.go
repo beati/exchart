@@ -10,7 +10,8 @@ import (
 )
 
 const (
-	pqErrorUniqueViolation = "23505"
+	pqErrorRestrictViolation = "23001"
+	pqErrorUniqueViolation   = "23505"
 )
 
 // A RepositoryConfig represents informations required to connect to a postgresql database.

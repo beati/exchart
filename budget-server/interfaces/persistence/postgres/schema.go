@@ -37,13 +37,13 @@ CREATE INDEX budgets_disabled ON budgets (disabled);
 CREATE TABLE categories (
 	category_id bigserial PRIMARY KEY,
 	budget_id   bigint NOT NULL REFERENCES budgets ON DELETE CASCADE,
-	name        text
+	name        text NOT NULL,
+	UNIQUE (budget_id, name)
 );
-CREATE INDEX categories_budget_id ON categories (budget_id);
 
 CREATE TABLE movements (
 	movement_id bigserial PRIMARY KEY,
-	category_id bigint NOT NULL REFERENCES categories ON DELETE CASCADE,
+	category_id bigint NOT NULL REFERENCES categories ON DELETE RESTRICT,
 	amount      bigint NOT NULL,
 	year        integer NOT NULL,
 	month       integer NOT NULL
@@ -52,8 +52,8 @@ CREATE INDEX movements_category_id ON movements (category_id);
 CREATE INDEX movements_year_month ON movements (year, month);
 
 CREATE TABLE recurring_movements (
-	movement_id bigserial PRIMARY KEY,
-	category_id bigint NOT NULL REFERENCES categories ON DELETE CASCADE,
+	recurring_movement_id bigserial PRIMARY KEY,
+	category_id bigint NOT NULL REFERENCES categories ON DELETE RESTRICT,
 	amount      bigint NOT NULL,
 	period      integer NOT NULL,
 	first_year  integer NOT NULL,
