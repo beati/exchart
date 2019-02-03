@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core'
 
 import { Subject } from 'rxjs'
 
-import { StatusCode } from './http-client-wrapper'
+import { StatusCode } from './http-wrapper.service'
 
 const setLoggedIn = (loggedIn: boolean): void => {
     localStorage.setItem('loggedIn', `${loggedIn}`)

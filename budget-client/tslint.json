@@ -61,10 +61,7 @@
             "LF"
         ],
         "match-default-export-name": true,
-        "max-line-length": [
-            true,
-            140
-        ],
+        "max-line-length": false,
         "member-access": [true, "no-public"],
         "member-ordering": [
             true,

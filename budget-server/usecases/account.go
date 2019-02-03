@@ -8,5 +8,16 @@ import (
 
 // UpdateAccount updates an account.
 func (interactor *BudgetInteractor) UpdateAccount(ctx context.Context, accountID domain.EntityID, name string) (err error) {
-	return nil
+	err = domain.IsAccountNameValid(name)
+	if err != nil {
+		return err
+	}
+
+	tx, err := interactor.repo.NewTx(ctx)
+	if err != nil {
+		return
+	}
+	defer tx.Close(&err)
+
+	return tx.SetAccountName(accountID, name)
 }

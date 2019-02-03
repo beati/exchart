@@ -1,22 +1,14 @@
-import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 
-import { HttpClientWrapper } from './http-client-wrapper'
-
-import { AuthService } from './auth.service'
+import { HttpWrapperService } from './http-wrapper.service'
 
 @Injectable({
     providedIn: 'root',
 })
 export class UserService {
-    http: HttpClientWrapper
-
     constructor(
-        httpClient: HttpClient,
-        auth: AuthService,
-    ) {
-        this.http = new HttpClientWrapper(httpClient, auth)
-    }
+        private readonly http: HttpWrapperService,
+    ) {}
 
     async Register(email: string, password: string, name: string): Promise<void> {
         await this.http.post<void>('/api/user', {

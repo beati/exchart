@@ -111,7 +111,9 @@ var startCmd = &cobra.Command{
 
 		userInteractor := usecases.NewUserInteractor(repo, pwHash, mailer, serverConfig.Host)
 
-		apiRouter := webservice.Routes([]string{serverConfig.Host}, sessionManager, userInteractor)
+		budgetInteractor := usecases.NewBudgetInteractor(repo)
+
+		apiRouter := webservice.Routes([]string{serverConfig.Host}, sessionManager, userInteractor, budgetInteractor)
 
 		router := chi.NewRouter()
 		if serverConfig.BehindReverseProxy {
