@@ -3,13 +3,6 @@ import { Injectable } from '@angular/core'
 
 import { AuthService } from './auth.service'
 
-export enum StatusCode {
-    BadRequest = 400,
-    Unauthorized = 401,
-    Forbidden = 403,
-    InternalServerError = 500,
-}
-
 @Injectable({
     providedIn: 'root',
 })

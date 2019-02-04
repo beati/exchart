@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http'
 import { Component, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 
-import { StatusCode } from '../../services/http-wrapper.service'
+import { StatusCode } from '../../services/http-status-codes'
 
 import { AuthService } from '../../services/auth.service'
 
