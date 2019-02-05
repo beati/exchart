@@ -11,17 +11,17 @@ const mobileBreakpoint = 900
     providedIn: 'root',
 })
 export class ResponsiveService {
-    DisplayTypeSig: Observable<DisplayType>
+    DisplayChange: Observable<DisplayType>
 
     constructor() {
-        this.DisplayTypeSig = fromEvent(window, 'resize').pipe(
+        this.DisplayChange = fromEvent(window, 'resize').pipe(
             map(() => {
-                return this.DisplayType()
+                return this.Display()
             }),
         )
     }
 
-    DisplayType(): DisplayType {
+    Display(): DisplayType {
         const width = window.innerWidth
         if (width <= mobileBreakpoint) {
             return DisplayType.Mobile

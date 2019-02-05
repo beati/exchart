@@ -2,15 +2,16 @@ import { HttpClientModule } from '@angular/common/http'
 import { NgModule } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { BrowserModule } from '@angular/platform-browser'
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 
 import { AppRoutingModule } from './app-routing.module'
 
 import { AppComponent } from './app.component'
-import { LandingPageComponent } from './component/landing-page/landing-page.component'
-import { LoginComponent } from './component/login/login.component'
-import { MainComponent } from './component/main/main.component'
-import { RegisterComponent } from './component/register/register.component'
-import { ShellComponent } from './component/shell/shell.component'
+import { LandingPageComponent } from './components/landing-page/landing-page.component'
+import { LoginComponent } from './components/login/login.component'
+import { MainComponent } from './components/main/main.component'
+import { RegisterComponent } from './components/register/register.component'
+import { ShellComponent } from './components/shell/shell.component'
 
 @NgModule({
     declarations: [
@@ -23,6 +24,7 @@ import { ShellComponent } from './component/shell/shell.component'
     ],
     imports: [
         AppRoutingModule,
+        BrowserAnimationsModule,
         BrowserModule,
         FormsModule,
         HttpClientModule,
