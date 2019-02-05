@@ -23,7 +23,7 @@ export class ResponsiveService {
 
     Display(): DisplayType {
         const width = window.innerWidth
-        if (width <= mobileBreakpoint) {
+        if (width < mobileBreakpoint) {
             return DisplayType.Mobile
         }
         return DisplayType.Desktop

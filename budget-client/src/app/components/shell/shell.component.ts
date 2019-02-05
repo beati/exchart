@@ -7,18 +7,17 @@ import { DisplayType, ResponsiveService } from '../../services/responsive.servic
     styleUrls: ['./shell.component.scss'],
 })
 export class ShellComponent implements OnInit {
-    DisplayType = DisplayType
-    Display: DisplayType
+    Mobile: boolean
 
     constructor(
         private readonly responsive: ResponsiveService,
     ) {}
 
     async ngOnInit(): Promise<void> {
-        this.Display = this.responsive.Display()
+        this.Mobile = this.responsive.Display() === DisplayType.Mobile
 
-        this.responsive.DisplayChange.subscribe((displayType) => {
-            this.Display = displayType
+        this.responsive.DisplayChange.subscribe((display) => {
+            this.Mobile = display === DisplayType.Mobile
         })
     }
 }

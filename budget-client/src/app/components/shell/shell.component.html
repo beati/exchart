@@ -1,2 +1,30 @@
-<div *ngIf="Display== DisplayType.Mobile">Mobile</div>
-<div *ngIf="Display== DisplayType.Desktop">Desktop</div>
+<mat-toolbar *ngIf="!Mobile" color="primary">
+    <button type="button" mat-icon-button (click)="drawer.toggle()">
+        <mat-icon>menu</mat-icon>
+    </button>
+    <span>Budget</span>
+</mat-toolbar>
+<mat-sidenav-container class="sidenav-container">
+    <mat-sidenav #drawer [mode]="Mobile ? 'over' : 'side'" [opened]="!Mobile">
+        Menu
+    </mat-sidenav>
+    <mat-sidenav-content>
+        <mat-toolbar *ngIf="Mobile" color="primary">
+            <button type="button" mat-icon-button (click)="drawer.toggle()">
+                <mat-icon>menu</mat-icon>
+            </button>
+            <span>Budget</span>
+        </mat-toolbar>
+        <div *ngIf="Mobile">Mobile</div>
+        <div *ngIf="!Mobile">Desktop</div>
+
+        <ng-container *ngIf="Mobile">
+            <button type="button" mat-fab color="accent" class="add-fab-position">
+                <mat-icon>add</mat-icon>
+            </button>
+            <button type="button" mat-fab color="warn" class="remove-fab-position">
+                <mat-icon>remove</mat-icon>
+            </button>
+        </ng-container>
+    </mat-sidenav-content>
+</mat-sidenav-container>

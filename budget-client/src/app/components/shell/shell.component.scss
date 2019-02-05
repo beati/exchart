@@ -1,0 +1,21 @@
+.sidenav-container {
+    height: 100%;
+}
+
+@media screen and (min-width: 900px) {
+    .sidenav-container {
+        height: calc(100% - 64px);
+    }
+}
+
+.add-fab-position {
+    position: fixed;
+    bottom: calc(16px + 56px + 16px);
+    right: 16px;
+}
+
+.remove-fab-position {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+}
