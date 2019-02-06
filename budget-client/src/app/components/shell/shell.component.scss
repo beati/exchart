@@ -12,6 +12,12 @@ mat-sidenav {
     width: 82.5%;
 }
 
+@media screen and (min-width: 900px) {
+    mat-sidenav {
+        width: 280px;
+    }
+}
+
 .add-fab-position {
     position: fixed;
     bottom: calc(16px + 56px + 16px);
