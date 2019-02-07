@@ -7,6 +7,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { MatButtonModule } from '@angular/material/button'
 import { MatIconModule } from '@angular/material/icon'
 import { MatListModule } from '@angular/material/list'
+import { MatMenuModule } from '@angular/material/menu'
 import { MatSidenavModule } from '@angular/material/sidenav'
 import { MatTabsModule } from '@angular/material/tabs'
 import { MatToolbarModule } from '@angular/material/toolbar'
@@ -20,6 +21,7 @@ import { AppComponent } from './app.component'
 import { LandingPageComponent } from './components/landing-page/landing-page.component'
 import { LoginComponent } from './components/login/login.component'
 import { MainComponent } from './components/main/main.component'
+import { PeriodSelectorComponent } from './components/period-selector/period-selector.component'
 import { RegisterComponent } from './components/register/register.component'
 import { ShellComponent } from './components/shell/shell.component'
 
@@ -29,6 +31,7 @@ import { ShellComponent } from './components/shell/shell.component'
         LandingPageComponent,
         LoginComponent,
         MainComponent,
+        PeriodSelectorComponent,
         RegisterComponent,
         ShellComponent,
     ],
@@ -42,6 +45,7 @@ import { ShellComponent } from './components/shell/shell.component'
         MatButtonModule,
         MatIconModule,
         MatListModule,
+        MatMenuModule,
         MatSidenavModule,
         MatTabsModule,
         MatToolbarModule,

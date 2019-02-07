@@ -21,9 +21,13 @@
             <span>Budget</span>
         </mat-toolbar>
         <mat-tab-group mat-stretch-tabs>
-            <mat-tab label="{{ 'Tabs.Data' | translate }}">Content 1</mat-tab>
-            <mat-tab label="{{ 'Tabs.Movements' | translate }}">Content 2</mat-tab>
-            <mat-tab label="{{ 'Tabs.Categories' | translate }}">Content 3</mat-tab>
+            <mat-tab label="{{ 'Tabs.Data' | translate }}">
+                <app-period-selector></app-period-selector>
+            </mat-tab>
+            <mat-tab label="{{ 'Tabs.Movements' | translate }}">
+            </mat-tab>
+            <mat-tab label="{{ 'Tabs.Categories' | translate }}">
+            </mat-tab>
         </mat-tab-group>
 
         <ng-container *ngIf="Mobile">
