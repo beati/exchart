@@ -5,7 +5,7 @@ import { BehaviorSubject } from 'rxjs'
 import { DateTime } from 'luxon'
 
 export interface Period {
-    Mode: 'year' | 'month' | 'all'
+    Mode: string
     Year: number
     Month?: number
 }
@@ -19,7 +19,7 @@ export class PeriodService {
     constructor() {
         const now = DateTime.local()
         this.PeriodChange = new BehaviorSubject<Period>({
-            Mode: 'month',
+            Mode: 'Month',
             Year: now.year,
             Month: now.month,
         })

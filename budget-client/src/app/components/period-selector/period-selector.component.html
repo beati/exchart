@@ -1,18 +1,21 @@
+<button mat-stroked-button (click)="Today()">Today</button>
+<button mat-icon-button (click)="Previous()">
+    <mat-icon>keyboard_arrow_left</mat-icon>
+</button>
+<button mat-icon-button (click)="Next()">
+    <mat-icon>arrow_forward_ios</mat-icon>
+</button>
+<ng-container [ngSwitch]="Period.Mode">
+    <span *ngSwitchCase="'All'">{{ 'PeriodSelector.Mode.All' | translate }}</span>
+    <span *ngSwitchCase="'Month'">{{ Period.Month }} {{ Period.Year }}</span>
+    <span *ngSwitchCase="'Year'">{{ Period.Year }}</span>
+</ng-container>
 <button mat-stroked-button [matMenuTriggerFor]="menu">
-    <span>Month</span>
-    <mat-icon>arrow_drop_down</mat-icon>
+    <span>{{ 'PeriodSelector.Mode.' + Period.Mode | translate }}</span>
+    <mat-icon class="mode-button-icon">arrow_drop_down</mat-icon>
 </button>
 <mat-menu #menu="matMenu">
-    <button mat-menu-item>
-        <mat-icon>dialpad</mat-icon>
-        <span>Redial</span>
-    </button>
-    <button mat-menu-item disabled>
-        <mat-icon>voicemail</mat-icon>
-        <span>Check voicemail</span>
-    </button>
-    <button mat-menu-item>
-        <mat-icon>notifications_off</mat-icon>
-        <span>Disable alerts</span>
-    </button>
+    <button mat-menu-item (click)="SetMode('All')">{{ 'PeriodSelector.Mode.All' | translate }}</button>
+    <button mat-menu-item (click)="SetMode('Month')">{{ 'PeriodSelector.Mode.Month' | translate }}</button>
+    <button mat-menu-item (click)="SetMode('Year')">{{ 'PeriodSelector.Mode.Year' | translate }}</button>
 </mat-menu>
