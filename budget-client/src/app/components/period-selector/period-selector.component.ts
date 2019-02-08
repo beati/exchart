@@ -1,15 +1,17 @@
-import { Component, OnInit, OnDestroy } from '@angular/core'
+import { Component, OnDestroy, OnInit } from '@angular/core'
 
 import { Subscription } from 'rxjs'
 
-import { PeriodService, Period } from '../../services/period.service'
+import { Period, PeriodDuration, PeriodService } from '../../services/period.service'
 
 @Component({
     selector: 'app-period-selector',
     templateUrl: './period-selector.component.html',
-    styleUrls: ['./period-selector.component.scss']
+    styleUrls: ['./period-selector.component.scss'],
 })
 export class PeriodSelectorComponent implements OnInit, OnDestroy {
+    PeriodDuration = PeriodDuration
+
     Period: Period
 
     PeriodChangeSub: Subscription
@@ -18,7 +20,7 @@ export class PeriodSelectorComponent implements OnInit, OnDestroy {
         private readonly periodService: PeriodService,
     ) {}
 
-    ngOnInit() {
+    ngOnInit(): void {
         this.Period = this.periodService.PeriodChange.value
 
         this.PeriodChangeSub = this.periodService.PeriodChange.subscribe((period) => {
@@ -26,20 +28,38 @@ export class PeriodSelectorComponent implements OnInit, OnDestroy {
         })
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         this.PeriodChangeSub.unsubscribe()
     }
 
-    SetMode(mode: string): void {
-        this.Period.Mode = mode
+    Duration(): string {
+        switch (this.Period.Duration) {
+        case PeriodDuration.All:
+            return 'All'
+        case PeriodDuration.Year:
+            return 'Year'
+        case PeriodDuration.Month:
+            return 'Month'
+        }
+    }
+
+    SetDuration(duration: PeriodDuration): void {
+        this.Period.Duration = duration
+        this.periodService.PeriodChange.next(this.Period)
     }
 
     Today(): void {
+        this.Period.Today()
+        this.periodService.PeriodChange.next(this.Period)
     }
 
     Previous(): void {
+        this.Period.Previous()
+        this.periodService.PeriodChange.next(this.Period)
     }
 
     Next(): void {
+        this.Period.Next()
+        this.periodService.PeriodChange.next(this.Period)
     }
 }

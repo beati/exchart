@@ -2,19 +2,31 @@
     height: 100%;
 }
 
-@media screen and (min-width: 900px) {
-    .sidenav-container {
-        height: calc(100% - 64px);
-    }
-}
-
 mat-sidenav {
     width: 82.5%;
 }
 
+.shell-content {
+    height: calc(100% - 56px);
+}
+
+@media screen and (min-width: 600px) {
+    .shell-content {
+        height: calc(100% - 64px);
+    }
+}
+
 @media screen and (min-width: 900px) {
+    .sidenav-container {
+        height: calc(100% - 64px);
+    }
+
     mat-sidenav {
         width: 280px;
+    }
+
+    .shell-content {
+        height: 100%;
     }
 }
 

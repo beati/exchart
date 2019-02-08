@@ -20,25 +20,27 @@
             </button>
             <span>Budget</span>
         </mat-toolbar>
-        <mat-tab-group mat-stretch-tabs>
-            <mat-tab label="{{ 'Tabs.Data' | translate }}">
-                <app-period-selector></app-period-selector>
-            </mat-tab>
-            <mat-tab label="{{ 'Tabs.Movements' | translate }}">
-                <app-period-selector></app-period-selector>
-            </mat-tab>
-            <mat-tab label="{{ 'Tabs.Categories' | translate }}">
-                Test
-            </mat-tab>
-        </mat-tab-group>
+        <div class="shell-content">
+            <mat-tab-group mat-stretch-tabs>
+                <mat-tab label="{{ 'Tabs.Data' | translate }}">
+                    <app-period-selector></app-period-selector>
+                </mat-tab>
+                <mat-tab label="{{ 'Tabs.Movements' | translate }}">
+                    <app-period-selector></app-period-selector>
+                </mat-tab>
+                <mat-tab label="{{ 'Tabs.Categories' | translate }}">
+                    Test
+                </mat-tab>
+            </mat-tab-group>
 
-        <ng-container *ngIf="Mobile">
-            <button type="button" mat-fab color="accent" class="add-fab-position">
-                <mat-icon>add</mat-icon>
-            </button>
-            <button type="button" mat-fab color="warn" class="remove-fab-position">
-                <mat-icon>remove</mat-icon>
-            </button>
-        </ng-container>
+            <ng-container *ngIf="Mobile">
+                <button type="button" mat-fab color="accent" class="add-fab-position">
+                    <mat-icon>add</mat-icon>
+                </button>
+                <button type="button" mat-fab color="warn" class="remove-fab-position">
+                    <mat-icon>remove</mat-icon>
+                </button>
+            </ng-container>
+        </div>
     </mat-sidenav-content>
 </mat-sidenav-container>

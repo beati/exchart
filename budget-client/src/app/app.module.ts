@@ -11,6 +11,7 @@ import { MatMenuModule } from '@angular/material/menu'
 import { MatSidenavModule } from '@angular/material/sidenav'
 import { MatTabsModule } from '@angular/material/tabs'
 import { MatToolbarModule } from '@angular/material/toolbar'
+import { MatTreeModule } from '@angular/material/tree'
 
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core'
 import { TranslationLoader } from './translations/translation'
@@ -18,6 +19,7 @@ import { TranslationLoader } from './translations/translation'
 import { AppRoutingModule } from './app-routing.module'
 
 import { AppComponent } from './app.component'
+import { CategoryEditorComponent } from './components/category-editor/category-editor.component'
 import { LandingPageComponent } from './components/landing-page/landing-page.component'
 import { LoginComponent } from './components/login/login.component'
 import { MainComponent } from './components/main/main.component'
@@ -28,6 +30,7 @@ import { ShellComponent } from './components/shell/shell.component'
 @NgModule({
     declarations: [
         AppComponent,
+        CategoryEditorComponent,
         LandingPageComponent,
         LoginComponent,
         MainComponent,
@@ -49,6 +52,7 @@ import { ShellComponent } from './components/shell/shell.component'
         MatSidenavModule,
         MatTabsModule,
         MatToolbarModule,
+        MatTreeModule,
         // Translation
         TranslateModule.forRoot({
             loader: {

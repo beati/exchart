@@ -5,13 +5,19 @@ import { Observable, of } from 'rxjs'
 import { en } from './en'
 import { fr } from './fr'
 
-const translations: any = {
+const translations = {
     en: en,
     fr: fr,
 }
 
 export class TranslationLoader implements TranslateLoader {
     getTranslation(lang: string): Observable<any> {
-        return of(translations[lang])
+        switch (lang) {
+        case 'en':
+            return of(translations.en)
+        case 'fr':
+            return of(translations.fr)
+        }
+        return of(translations.en)
     }
 }
