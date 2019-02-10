@@ -11,6 +11,15 @@ type Budget struct {
 	Disabled   bool     `db:"disabled"`
 }
 
+// A BudgetData represents client available data of a budget.
+type BudgetData struct {
+	ID        EntityID
+	With      string
+	Main      bool
+	Accepted1 bool
+	Accepted2 bool
+}
+
 // An BudgetTx interface is used to interact with a persistence solution.
 type BudgetTx interface {
 	LockBudget(budgetID EntityID) (*Budget, error)
