@@ -76,6 +76,7 @@ func (bapi *budgetAPI) addCategory(w http.ResponseWriter, r *http.Request) (inte
 
 	params := struct {
 		BudgetID domain.EntityID
+		Type     domain.CategoryType
 		Name     string
 	}{}
 	err := json.NewDecoder(r.Body).Decode(&params)
@@ -83,7 +84,7 @@ func (bapi *budgetAPI) addCategory(w http.ResponseWriter, r *http.Request) (inte
 		return nil, domain.ErrBadParameters
 	}
 
-	return nil, bapi.budgetInteractor.AddCategory(r.Context(), session.AccountID, params.BudgetID, params.Name)
+	return nil, bapi.budgetInteractor.AddCategory(r.Context(), session.AccountID, params.BudgetID, params.Type, params.Name)
 }
 
 func (bapi *budgetAPI) updateCategory(w http.ResponseWriter, r *http.Request) (interface{}, error) {

@@ -38,7 +38,7 @@ func (interactor *BudgetInteractor) AddJointBudget(ctx context.Context, accountI
 
 	err = tx.AddBudget(budget)
 	if err != domain.ErrAlreadyExists {
-		return
+		return addDefaultCategories(tx, budget.ID)
 	}
 
 	budget, err = tx.LockBudgetByAccountID(accountID, requestedUser.AccountID)

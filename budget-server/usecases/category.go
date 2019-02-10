@@ -7,7 +7,7 @@ import (
 )
 
 // AddCategory adds a movement category to a budget.
-func (interactor *BudgetInteractor) AddCategory(ctx context.Context, accountID, budgetID domain.EntityID, name string) (err error) {
+func (interactor *BudgetInteractor) AddCategory(ctx context.Context, accountID, budgetID domain.EntityID, categoryType domain.CategoryType, name string) (err error) {
 	tx, err := interactor.repo.NewTx(ctx)
 	if err != nil {
 		return
@@ -24,7 +24,7 @@ func (interactor *BudgetInteractor) AddCategory(ctx context.Context, accountID, 
 		return
 	}
 
-	category, err := domain.NewCategory(budget.ID, name)
+	category, err := domain.NewCategory(budget.ID, categoryType, name)
 	if err != nil {
 		return
 	}
@@ -76,6 +76,11 @@ func (interactor *BudgetInteractor) DeleteCategory(ctx context.Context, accountI
 		return
 	}
 
+	err = category.IsDeletable()
+	if err != nil {
+		return err
+	}
+
 	budget, err := tx.LockBudget(category.BudgetID)
 	if err != nil {
 		return
@@ -87,4 +92,19 @@ func (interactor *BudgetInteractor) DeleteCategory(ctx context.Context, accountI
 	}
 
 	return tx.DeleteCategory(categoryID)
+}
+
+func addDefaultCategories(tx Tx, budgetID domain.EntityID) error {
+	for i := domain.CategoryType(0); i < domain.CategoryTypeCount; i++ {
+		category, err := domain.NewDefaultCategory(budgetID, i)
+		if err != nil {
+			return err
+		}
+
+		err = tx.AddCategory(category)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

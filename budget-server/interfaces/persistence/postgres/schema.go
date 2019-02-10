@@ -37,8 +37,9 @@ CREATE INDEX budgets_disabled ON budgets (disabled);
 CREATE TABLE categories (
 	category_id bigserial PRIMARY KEY,
 	budget_id   bigint NOT NULL REFERENCES budgets ON DELETE CASCADE,
+	type        integer NOT NULL,
 	name        text NOT NULL,
-	UNIQUE (budget_id, name)
+	UNIQUE (budget_id, type, name)
 );
 
 CREATE TABLE movements (
