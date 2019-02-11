@@ -21,6 +21,12 @@ func newBudgetAPI(budgetInteractor *usecases.BudgetInteractor) *budgetAPI {
 	}
 }
 
+func (bapi *budgetAPI) getAccount(w http.ResponseWriter, r *http.Request) (interface{}, error) {
+	session := getSessionData(r)
+
+	return bapi.budgetInteractor.GetAccount(r.Context(), session.AccountID)
+}
+
 func (bapi *budgetAPI) updateAccount(w http.ResponseWriter, r *http.Request) (interface{}, error) {
 	session := getSessionData(r)
 
@@ -220,6 +226,7 @@ func (bapi *budgetAPI) deleteRecurringMovement(w http.ResponseWriter, r *http.Re
 
 func (bapi *budgetAPI) routes(r chi.Router) {
 	account := chi.NewRouter()
+	account.Get("/", wrap(bapi.getAccount))
 	account.Post("/", wrap(bapi.updateAccount))
 	r.Mount("/account", account)
 

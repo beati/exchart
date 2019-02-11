@@ -4,6 +4,13 @@ import (
 	"bitbucket.org/beati/budget/budget-server/domain"
 )
 
+// GetAccount implements domain.AccountTx.
+func (tx Tx) GetAccount(accountID domain.EntityID) (*domain.Account, error) {
+	account := &domain.Account{}
+	err := tx.sqlTx.Collection("accounts").Find("account_id", accountID).One(account)
+	return account, err
+}
+
 // AddAccount implements domain.AccountTx.
 func (tx Tx) AddAccount(account *domain.Account) error {
 	accountID, err := tx.sqlTx.Collection("accounts").Insert(account)

@@ -10,6 +10,10 @@ export class BudgetService {
         private readonly http: HttpWrapperService,
     ) {}
 
+    async GetAcount(): Promise<void> {
+        await this.http.get<void>('/api/account')
+    }
+
     async UpdateAcount(name: string): Promise<void> {
         await this.http.post<void>('/api/account', {
             Name: name,

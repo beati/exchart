@@ -7,6 +7,13 @@ import (
 	"bitbucket.org/beati/budget/budget-server/domain"
 )
 
+// GetBudgets implements domain.BudgetTx.
+func (tx Tx) GetBudgets(accountID domain.EntityID) ([]domain.Budget, error) {
+	budgets := []domain.Budget{}
+	err := tx.sqlTx.SelectFrom("budgets").Where("account_id_1 = ? OR account_id_2 = ?", accountID, accountID).All(&budgets)
+	return budgets, err
+}
+
 // LockBudget implements domain.BudgetTx.
 func (tx Tx) LockBudget(budgetID domain.EntityID) (*domain.Budget, error) {
 	budget := &domain.Budget{}

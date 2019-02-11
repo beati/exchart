@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core'
 import { DisplayType, ResponsiveService } from '../../services/responsive.service'
 
+import { BudgetService } from '../../services/budget.service'
+
 @Component({
     selector: 'app-shell',
     templateUrl: './shell.component.html',
@@ -11,6 +13,7 @@ export class ShellComponent implements OnInit {
 
     constructor(
         private readonly responsive: ResponsiveService,
+        private readonly budgetService: BudgetService,
     ) {}
 
     async ngOnInit(): Promise<void> {
@@ -19,5 +22,11 @@ export class ShellComponent implements OnInit {
         this.responsive.DisplayChange.subscribe((display) => {
             this.Mobile = display === DisplayType.Mobile
         })
+
+        try {
+            await this.budgetService.GetAcount()
+        } catch (error) {
+            console.log(error)
+        }
     }
 }
