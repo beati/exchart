@@ -11,17 +11,27 @@ type Budget struct {
 	Disabled   bool     `db:"disabled"`
 }
 
+// A BudgetStatus represents the status of a budget.
+type BudgetStatus int
+
+// Possible values for a BudgetStatus.
+const (
+	Main BudgetStatus = iota
+	Open
+	ToAccept
+	NotAccepted
+)
+
 // A BudgetData represents client available data of a budget.
 type BudgetData struct {
-	ID        EntityID
-	With      string
-	Main      bool
-	Accepted1 bool
-	Accepted2 bool
+	ID     EntityID
+	Status BudgetStatus
+	With   string
 }
 
 // An BudgetTx interface is used to interact with a persistence solution.
 type BudgetTx interface {
+	GetBudgets(accountID EntityID) ([]Budget, error)
 	LockBudget(budgetID EntityID) (*Budget, error)
 	LockBudgetByAccountID(accountID1, accountID2 EntityID) (*Budget, error)
 	LockBudgetByCategoryID(categoryID EntityID) (*Budget, error)
@@ -58,6 +68,26 @@ func NewJointBudget(requestor, requested EntityID) (*Budget, error) {
 		AccountID2: accountID2,
 		Accepted2:  accepted2,
 	}, nil
+}
+
+// Data returns client available data of b.
+func (b *Budget) Data(accountID EntityID, with string) BudgetData {
+	var status BudgetStatus
+	if b.Main {
+		status = Main
+	} else if b.Accepted1 && b.Accepted2 {
+		status = Open
+	} else if (b.Accepted1 && accountID == b.AccountID1) || (b.Accepted2 && accountID == b.AccountID2) {
+		status = NotAccepted
+	} else {
+		status = ToAccept
+	}
+
+	return BudgetData{
+		ID:     b.ID,
+		With:   with,
+		Status: status,
+	}
 }
 
 // Enable set b as enabled.

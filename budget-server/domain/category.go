@@ -5,7 +5,7 @@ import "errors"
 // A CategoryType represents a type of category.
 type CategoryType int
 
-// Possible values for a CategoryType
+// Possible values for a CategoryType.
 const (
 	Transport CategoryType = iota
 	House

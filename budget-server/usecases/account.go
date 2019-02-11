@@ -6,14 +6,8 @@ import (
 	"bitbucket.org/beati/budget/budget-server/domain"
 )
 
-type AccountInfo struct {
-	Name    string
-	Budgets []struct {
-	}
-}
-
-func (interactor *BudgetInteractor) GetAccount() (err error) {
-	return nil
+func (interactor *BudgetInteractor) GetAccount(ctx context.Context, accountID domain.EntityID) (account domain.AccountData, err error) {
+	return nil, nil
 }
 
 // UpdateAccount updates an account.

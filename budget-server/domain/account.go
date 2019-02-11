@@ -6,8 +6,15 @@ type Account struct {
 	Name string   `db:"name"`
 }
 
+// An AccountData represents client available data of an account.
+type AccountData struct {
+	Name    string
+	Budgets []BudgetData
+}
+
 // An AccountTx interface is used to interact with a persistence solution.
 type AccountTx interface {
+	GetAccount(accountID EntityID) (*Account, error)
 	AddAccount(account *Account) error
 	SetAccountName(accountID EntityID, name string) error
 }

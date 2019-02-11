@@ -8,7 +8,7 @@ import (
 // A Period represents the period of a recurring movement.
 type Period int
 
-// Possible values for a Period
+// Possible values for a Period.
 const (
 	Monthly Period = iota
 	Yearly
