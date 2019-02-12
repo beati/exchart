@@ -64,6 +64,19 @@ func (id EntityID) Bytes() [size]byte {
 	return byteID
 }
 
+// Scan implements sql.Scanner.
+func (id *EntityID) Scan(src interface{}) error {
+	switch v := src.(type) {
+	case nil:
+		*id = 0
+	case int64:
+		*id = EntityID(v)
+	default:
+		return errors.New("invalid entity id type")
+	}
+	return nil
+}
+
 var obfuscationCipher cipher.Block
 
 // InitIDObfuscation set the obfuscation key for id obfuscation.

@@ -25,6 +25,6 @@ func Routes(
 	r.Use(contentTypeJSON)
 	authAPI.routes(r, auth)
 	userAPI.routes(r, auth)
-	budgetAPI.routes(r)
+	budgetAPI.routes(r.With(auth))
 	return r
 }
