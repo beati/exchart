@@ -8,6 +8,13 @@ import (
 	"bitbucket.org/beati/budget/budget-server/domain"
 )
 
+// GetCategories implements domain.CategoryTx.
+func (tx Tx) GetCategories(budgetID domain.EntityID) ([]domain.Category, error) {
+	categories := []domain.Category{}
+	err := tx.sqlTx.SelectFrom("categories").Where("budget_id = ?", budgetID).All(&categories)
+	return categories, err
+}
+
 // GetCategory implements domain.CategoryTx.
 func (tx Tx) GetCategory(categoryID domain.EntityID) (*domain.Category, error) {
 	category := &domain.Category{}

@@ -44,7 +44,18 @@ func (interactor *BudgetInteractor) GetAccount(ctx context.Context, accountID do
 
 			with = withAccount.Name
 		}
-		accountData.Budgets = append(accountData.Budgets, budget.Data(accountID, with))
+
+		budgetData := budget.Data(accountID, with)
+
+		var categories []domain.Category
+		categories, err = tx.GetCategories(budget.ID)
+		if err != nil {
+			return
+		}
+
+		budgetData.Categories = categories
+
+		accountData.Budgets = append(accountData.Budgets, budgetData)
 	}
 
 	return

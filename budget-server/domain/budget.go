@@ -24,9 +24,10 @@ const (
 
 // A BudgetData represents client available data of a budget.
 type BudgetData struct {
-	ID     EntityID
-	Status BudgetStatus
-	With   string
+	ID         EntityID
+	Status     BudgetStatus
+	With       string
+	Categories []Category
 }
 
 // An BudgetTx interface is used to interact with a persistence solution.

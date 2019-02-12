@@ -15,13 +15,14 @@ const (
 // A Category represents a movement category.
 type Category struct {
 	ID       EntityID     `db:"category_id,omitempty"`
-	BudgetID EntityID     `db:"budget_id"`
+	BudgetID EntityID     `db:"budget_id" json:"-"`
 	Type     CategoryType `db:"type"`
 	Name     string       `db:"name"`
 }
 
 // An CategoryTx interface is used to interact with a persistence solution.
 type CategoryTx interface {
+	GetCategories(budgetID EntityID) ([]Category, error)
 	GetCategory(categoryID EntityID) (*Category, error)
 	AddCategory(category *Category) error
 	UpdateCategory(category *Category) error
