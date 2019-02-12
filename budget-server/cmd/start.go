@@ -83,7 +83,7 @@ var startCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		sessionKeyStore, err := session.NewBadgerKeyStore(sessionConfig.KeyStoreDir)
+		sessionKeyStore, err := session.NewBadgerKeyStore(sessionConfig.KeyStoreDir, logger)
 		if err != nil {
 			return err
 		}

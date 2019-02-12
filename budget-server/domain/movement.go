@@ -13,6 +13,9 @@ type Movement struct {
 
 // An MovementTx interface is used to interact with a persistence solution.
 type MovementTx interface {
+	GetMovements(budgetID EntityID) ([]Movement, error)
+	GetMovementsByYear(budgetID EntityID, year int) ([]Movement, error)
+	GetMovementsByMonth(budgetID EntityID, year int, month time.Month) ([]Movement, error)
 	GetMovement(movementID EntityID) (*Movement, error)
 	AddMovement(movement *Movement) error
 	UpdateMovement(movement *Movement) error

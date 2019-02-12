@@ -28,6 +28,9 @@ type RecurringMovement struct {
 
 // An RecurringMovementTx interface is used to interact with a persistence solution.
 type RecurringMovementTx interface {
+	GetRecurringMovements(budgetID EntityID) ([]RecurringMovement, error)
+	GetRecurringMovementsByYear(budgetID EntityID, year int) ([]RecurringMovement, error)
+	GetRecurringMovementsByMonth(budgetID EntityID, year int, month time.Month) ([]RecurringMovement, error)
 	GetRecurringMovement(movementID EntityID) (*RecurringMovement, error)
 	AddRecurringMovement(movement *RecurringMovement) error
 	UpdateRecurringMovement(movement *RecurringMovement) error

@@ -9,7 +9,7 @@ import (
 )
 
 var schema = `
-DROP TABLE IF EXISTS schema_version, users, budgets, categories, movements, recurring_movements, accounts CASCADE;
+DROP TABLE IF EXISTS schema_version, users, accounts, budgets, categories, movements, recurring_movements CASCADE;
 
 CREATE TABLE schema_version (
 	version        integer NOT NULL,

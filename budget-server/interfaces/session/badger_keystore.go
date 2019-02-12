@@ -14,10 +14,14 @@ type BadgerKeyStore struct {
 }
 
 // NewBadgerKeyStore returns a BadgerKeystore. The database will be stored in the directory path.
-func NewBadgerKeyStore(path string) (BadgerKeyStore, error) {
+func NewBadgerKeyStore(path string, logger badger.Logger) (BadgerKeyStore, error) {
+	badger.SetLogger(logger)
+
 	options := badger.DefaultOptions
 	options.Dir = path
 	options.ValueDir = path
+	options.Truncate = true
+	options.Logger = logger
 
 	db, err := badger.Open(options)
 	if err != nil {

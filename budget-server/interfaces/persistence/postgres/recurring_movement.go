@@ -1,6 +1,46 @@
 package postgres
 
-import "bitbucket.org/beati/budget/budget-server/domain"
+import (
+	"time"
+
+	"bitbucket.org/beati/budget/budget-server/domain"
+)
+
+// GetRecurringMovements implements domain.CategoryTx.
+func (tx Tx) GetRecurringMovements(budgetID domain.EntityID) ([]domain.RecurringMovement, error) {
+	movements := []domain.RecurringMovement{}
+	err := tx.sqlTx.Select("recurring_movements.*").
+		From("recurring_movements").
+		Join("categories").On("recurring_movements.category_id = categories.category_id").
+		Join("budget").On("categories.budget_id = budgets.budget_id").
+		Where("budget_id = ?", budgetID).
+		All(&movements)
+	return movements, err
+}
+
+// GetRecurringMovementsByYear implements domain.CategoryTx.
+func (tx Tx) GetRecurringMovementsByYear(budgetID domain.EntityID, year int) ([]domain.RecurringMovement, error) {
+	movements := []domain.RecurringMovement{}
+	err := tx.sqlTx.Select("recurring_movements.*").
+		From("recurring_movements").
+		Join("categories").On("recurring_movements.category_id = categories.category_id").
+		Join("budget").On("categories.budget_id = budgets.budget_id").
+		Where("budget_id = ? AND first_year <= year AND year <= last_year", budgetID).
+		All(&movements)
+	return movements, err
+}
+
+// GetRecurringMovementsByMonth implements domain.CategoryTx.
+func (tx Tx) GetRecurringMovementsByMonth(budgetID domain.EntityID, year int, month time.Month) ([]domain.RecurringMovement, error) {
+	movements := []domain.RecurringMovement{}
+	err := tx.sqlTx.Select("recurring_movements.*").
+		From("recurring_movements").
+		Join("categories").On("recurring_movements.category_id = categories.category_id").
+		Join("budget").On("categories.budget_id = budgets.budget_id").
+		Where("budget_id = ? AND (last_year < ? OR last_year = ? AND last_month <= ?) AND (last_year < ? OR last_year = ? AND last_month <= ?)", budgetID, year, year, month, year, year, month).
+		All(&movements)
+	return movements, err
+}
 
 // GetRecurringMovement implements domain.CategoryTx.
 func (tx Tx) GetRecurringMovement(movementID domain.EntityID) (*domain.RecurringMovement, error) {
