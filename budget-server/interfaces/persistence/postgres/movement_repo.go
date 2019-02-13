@@ -12,8 +12,8 @@ func (tx Tx) GetMovements(budgetID domain.EntityID) ([]domain.Movement, error) {
 	err := tx.sqlTx.Select("movements.*").
 		From("movements").
 		Join("categories").On("movements.category_id = categories.category_id").
-		Join("budget").On("categories.budget_id = budgets.budget_id").
-		Where("budget_id = ?", budgetID).
+		Join("budgets").On("categories.budget_id = budgets.budget_id").
+		Where("budgets.budget_id = ?", budgetID).
 		All(&movements)
 	return movements, err
 }
@@ -24,8 +24,8 @@ func (tx Tx) GetMovementsByYear(budgetID domain.EntityID, year int) ([]domain.Mo
 	err := tx.sqlTx.Select("movements.*").
 		From("movements").
 		Join("categories").On("movements.category_id = categories.category_id").
-		Join("budget").On("categories.budget_id = budgets.budget_id").
-		Where("budget_id = ? AND year = ?", budgetID, year).
+		Join("budgets").On("categories.budget_id = budgets.budget_id").
+		Where("budgets.budget_id = ? AND year = ?", budgetID, year).
 		All(&movements)
 	return movements, err
 }
@@ -36,8 +36,8 @@ func (tx Tx) GetMovementsByMonth(budgetID domain.EntityID, year int, month time.
 	err := tx.sqlTx.Select("movements.*").
 		From("movements").
 		Join("categories").On("movements.category_id = categories.category_id").
-		Join("budget").On("categories.budget_id = budgets.budget_id").
-		Where("budget_id = ? AND year = ? AND (month = ? OR month = 0)", budgetID, year, month).
+		Join("budgets").On("categories.budget_id = budgets.budget_id").
+		Where("budgets.budget_id = ? AND year = ? AND (month = ? OR month = 0)", budgetID, year, month).
 		All(&movements)
 	return movements, err
 }

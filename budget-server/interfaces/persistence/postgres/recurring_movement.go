@@ -12,8 +12,8 @@ func (tx Tx) GetRecurringMovements(budgetID domain.EntityID) ([]domain.Recurring
 	err := tx.sqlTx.Select("recurring_movements.*").
 		From("recurring_movements").
 		Join("categories").On("recurring_movements.category_id = categories.category_id").
-		Join("budget").On("categories.budget_id = budgets.budget_id").
-		Where("budget_id = ?", budgetID).
+		Join("budgets").On("categories.budget_id = budgets.budget_id").
+		Where("budgets.budget_id = ?", budgetID).
 		All(&movements)
 	return movements, err
 }
@@ -24,8 +24,8 @@ func (tx Tx) GetRecurringMovementsByYear(budgetID domain.EntityID, year int) ([]
 	err := tx.sqlTx.Select("recurring_movements.*").
 		From("recurring_movements").
 		Join("categories").On("recurring_movements.category_id = categories.category_id").
-		Join("budget").On("categories.budget_id = budgets.budget_id").
-		Where("budget_id = ? AND first_year <= year AND year <= last_year", budgetID).
+		Join("budgets").On("categories.budget_id = budgets.budget_id").
+		Where("budgets.budget_id = ? AND first_year <= year AND year <= last_year", budgetID).
 		All(&movements)
 	return movements, err
 }
@@ -36,8 +36,8 @@ func (tx Tx) GetRecurringMovementsByMonth(budgetID domain.EntityID, year int, mo
 	err := tx.sqlTx.Select("recurring_movements.*").
 		From("recurring_movements").
 		Join("categories").On("recurring_movements.category_id = categories.category_id").
-		Join("budget").On("categories.budget_id = budgets.budget_id").
-		Where("budget_id = ? AND (last_year < ? OR last_year = ? AND last_month <= ?) AND (last_year < ? OR last_year = ? AND last_month <= ?)", budgetID, year, year, month, year, year, month).
+		Join("budgets").On("categories.budget_id = budgets.budget_id").
+		Where("budgets.budget_id = ? AND (last_year < ? OR last_year = ? AND last_month <= ?) AND (last_year < ? OR last_year = ? AND last_month <= ?)", budgetID, year, year, month, year, year, month).
 		All(&movements)
 	return movements, err
 }

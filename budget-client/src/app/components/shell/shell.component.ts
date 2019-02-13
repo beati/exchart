@@ -24,7 +24,8 @@ export class ShellComponent implements OnInit {
         })
 
         try {
-            await this.budgetService.GetAcount()
+            const account = await this.budgetService.GetAcount()
+            await this.budgetService.GetMovements(account.Budgets[0].ID)
         } catch (error) {
             console.log(error)
         }

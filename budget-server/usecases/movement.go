@@ -7,6 +7,66 @@ import (
 	"bitbucket.org/beati/budget/budget-server/domain"
 )
 
+// GetMovements returns all movements of a budget.
+func (interactor *BudgetInteractor) GetMovements(ctx context.Context, accountID, budgetID domain.EntityID) (movements []domain.Movement, err error) {
+	tx, err := interactor.repo.NewTx(ctx)
+	if err != nil {
+		return
+	}
+	defer tx.Close(&err)
+
+	budget, err := tx.LockBudget(budgetID)
+	if err != nil {
+		return
+	}
+
+	if budget.AccountID1 != accountID && budget.AccountID2 != accountID {
+		return nil, domain.ErrNotAllowed
+	}
+
+	return tx.GetMovements(budgetID)
+}
+
+// GetMovementsByYear returns all movements of a budget for a year.
+func (interactor *BudgetInteractor) GetMovementsByYear(ctx context.Context, accountID, budgetID domain.EntityID, year int) (movements []domain.Movement, err error) {
+	tx, err := interactor.repo.NewTx(ctx)
+	if err != nil {
+		return
+	}
+	defer tx.Close(&err)
+
+	budget, err := tx.LockBudget(budgetID)
+	if err != nil {
+		return
+	}
+
+	if budget.AccountID1 != accountID && budget.AccountID2 != accountID {
+		return nil, domain.ErrNotAllowed
+	}
+
+	return tx.GetMovementsByYear(budgetID, year)
+}
+
+// GetMovementsByMonth returns all movements of a budget for a year.
+func (interactor *BudgetInteractor) GetMovementsByMonth(ctx context.Context, accountID, budgetID domain.EntityID, year int, month time.Month) (movements []domain.Movement, err error) {
+	tx, err := interactor.repo.NewTx(ctx)
+	if err != nil {
+		return
+	}
+	defer tx.Close(&err)
+
+	budget, err := tx.LockBudget(budgetID)
+	if err != nil {
+		return
+	}
+
+	if budget.AccountID1 != accountID && budget.AccountID2 != accountID {
+		return nil, domain.ErrNotAllowed
+	}
+
+	return tx.GetMovementsByMonth(budgetID, year, month)
+}
+
 // AddMovement adds a movement to a budget.
 func (interactor *BudgetInteractor) AddMovement(ctx context.Context, accountID, categoryID domain.EntityID, amount int64, year int, month time.Month) (err error) {
 	tx, err := interactor.repo.NewTx(ctx)

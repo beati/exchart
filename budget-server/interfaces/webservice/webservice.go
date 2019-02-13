@@ -3,6 +3,7 @@ package webservice
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/go-chi/chi"
@@ -123,6 +124,36 @@ func (bapi *budgetAPI) deleteCategory(w http.ResponseWriter, r *http.Request) (i
 	return nil, bapi.budgetInteractor.DeleteCategory(r.Context(), session.AccountID, categoryID)
 }
 
+func (bapi *budgetAPI) getMovements(w http.ResponseWriter, r *http.Request) (interface{}, error) {
+	session := getSessionData(r)
+
+	budgetID, err := domain.ParseEntityID(chi.URLParam(r, "budgetID"))
+	if err != nil {
+		return nil, domain.ErrBadParameters
+	}
+
+	yearString := r.URL.Query().Get("year")
+	monthString := r.URL.Query().Get("month")
+
+	if yearString != "" {
+		year, err := strconv.Atoi(yearString)
+		if err != nil {
+			return nil, domain.ErrBadParameters
+		}
+		if monthString != "" {
+			month, err := strconv.Atoi(monthString)
+			if err != nil {
+				return nil, domain.ErrBadParameters
+			}
+			return bapi.budgetInteractor.GetMovementsByMonth(r.Context(), session.AccountID, budgetID, year, time.Month(month))
+		}
+
+		return bapi.budgetInteractor.GetMovementsByYear(r.Context(), session.AccountID, budgetID, year)
+	}
+
+	return bapi.budgetInteractor.GetMovements(r.Context(), session.AccountID, budgetID)
+}
+
 func (bapi *budgetAPI) addMovement(w http.ResponseWriter, r *http.Request) (interface{}, error) {
 	session := getSessionData(r)
 
@@ -170,6 +201,36 @@ func (bapi *budgetAPI) deleteMovement(w http.ResponseWriter, r *http.Request) (i
 	}
 
 	return nil, bapi.budgetInteractor.DeleteMovement(r.Context(), session.AccountID, movementID)
+}
+
+func (bapi *budgetAPI) getRecurringMovements(w http.ResponseWriter, r *http.Request) (interface{}, error) {
+	session := getSessionData(r)
+
+	budgetID, err := domain.ParseEntityID(chi.URLParam(r, "budgetID"))
+	if err != nil {
+		return nil, domain.ErrBadParameters
+	}
+
+	yearString := r.URL.Query().Get("year")
+	monthString := r.URL.Query().Get("month")
+
+	if yearString != "" {
+		year, err := strconv.Atoi(yearString)
+		if err != nil {
+			return nil, domain.ErrBadParameters
+		}
+		if monthString != "" {
+			month, err := strconv.Atoi(monthString)
+			if err != nil {
+				return nil, domain.ErrBadParameters
+			}
+			return bapi.budgetInteractor.GetRecurringMovementsByMonth(r.Context(), session.AccountID, budgetID, year, time.Month(month))
+		}
+
+		return bapi.budgetInteractor.GetRecurringMovementsByYear(r.Context(), session.AccountID, budgetID, year)
+	}
+
+	return bapi.budgetInteractor.GetRecurringMovements(r.Context(), session.AccountID, budgetID)
 }
 
 func (bapi *budgetAPI) addRecurringMovement(w http.ResponseWriter, r *http.Request) (interface{}, error) {
@@ -243,14 +304,16 @@ func (bapi *budgetAPI) routes(r chi.Router) {
 	r.Mount("/category", category)
 
 	movement := chi.NewRouter()
+	movement.Get("/{budgetID}", wrap(bapi.getMovements))
 	movement.Post("/", wrap(bapi.addMovement))
 	movement.Post("/{movementID}", wrap(bapi.updateMovement))
 	movement.Delete("/{movementID}", wrap(bapi.deleteMovement))
 	r.Mount("/movement", movement)
 
 	recurringMovement := chi.NewRouter()
-	movement.Post("/", wrap(bapi.addRecurringMovement))
-	movement.Post("/{movementID}", wrap(bapi.updateRecurringMovement))
-	movement.Delete("/{movementID}", wrap(bapi.deleteRecurringMovement))
+	recurringMovement.Get("/{budgetID}", wrap(bapi.getRecurringMovements))
+	recurringMovement.Post("/", wrap(bapi.addRecurringMovement))
+	recurringMovement.Post("/{movementID}", wrap(bapi.updateRecurringMovement))
+	recurringMovement.Delete("/{movementID}", wrap(bapi.deleteRecurringMovement))
 	r.Mount("/recurring_movement", recurringMovement)
 }
