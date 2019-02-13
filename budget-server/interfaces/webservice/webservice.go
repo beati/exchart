@@ -135,23 +135,31 @@ func (bapi *budgetAPI) getMovements(w http.ResponseWriter, r *http.Request) (int
 	yearString := r.URL.Query().Get("year")
 	monthString := r.URL.Query().Get("month")
 
+	var movements []domain.Movement
+
 	if yearString != "" {
-		year, err := strconv.Atoi(yearString)
+		var year int
+		year, err = strconv.Atoi(yearString)
 		if err != nil {
 			return nil, domain.ErrBadParameters
 		}
 		if monthString != "" {
-			month, err := strconv.Atoi(monthString)
+			var month int
+			month, err = strconv.Atoi(monthString)
 			if err != nil {
 				return nil, domain.ErrBadParameters
 			}
-			return bapi.budgetInteractor.GetMovementsByMonth(r.Context(), session.AccountID, budgetID, year, time.Month(month))
+			movements, err = bapi.budgetInteractor.GetMovementsByMonth(r.Context(), session.AccountID, budgetID, year, time.Month(month))
+		} else {
+			movements, err = bapi.budgetInteractor.GetMovementsByYear(r.Context(), session.AccountID, budgetID, year)
 		}
-
-		return bapi.budgetInteractor.GetMovementsByYear(r.Context(), session.AccountID, budgetID, year)
+	} else {
+		movements, err = bapi.budgetInteractor.GetMovements(r.Context(), session.AccountID, budgetID)
 	}
 
-	return bapi.budgetInteractor.GetMovements(r.Context(), session.AccountID, budgetID)
+	return struct {
+		Movements []domain.Movement
+	}{movements}, err
 }
 
 func (bapi *budgetAPI) addMovement(w http.ResponseWriter, r *http.Request) (interface{}, error) {
@@ -214,23 +222,31 @@ func (bapi *budgetAPI) getRecurringMovements(w http.ResponseWriter, r *http.Requ
 	yearString := r.URL.Query().Get("year")
 	monthString := r.URL.Query().Get("month")
 
+	var movements []domain.RecurringMovement
+
 	if yearString != "" {
-		year, err := strconv.Atoi(yearString)
+		var year int
+		year, err = strconv.Atoi(yearString)
 		if err != nil {
 			return nil, domain.ErrBadParameters
 		}
 		if monthString != "" {
-			month, err := strconv.Atoi(monthString)
+			var month int
+			month, err = strconv.Atoi(monthString)
 			if err != nil {
 				return nil, domain.ErrBadParameters
 			}
-			return bapi.budgetInteractor.GetRecurringMovementsByMonth(r.Context(), session.AccountID, budgetID, year, time.Month(month))
+			movements, err = bapi.budgetInteractor.GetRecurringMovementsByMonth(r.Context(), session.AccountID, budgetID, year, time.Month(month))
+		} else {
+			movements, err = bapi.budgetInteractor.GetRecurringMovementsByYear(r.Context(), session.AccountID, budgetID, year)
 		}
-
-		return bapi.budgetInteractor.GetRecurringMovementsByYear(r.Context(), session.AccountID, budgetID, year)
+	} else {
+		movements, err = bapi.budgetInteractor.GetRecurringMovements(r.Context(), session.AccountID, budgetID)
 	}
 
-	return bapi.budgetInteractor.GetRecurringMovements(r.Context(), session.AccountID, budgetID)
+	return struct {
+		Movements []domain.RecurringMovement
+	}{movements}, err
 }
 
 func (bapi *budgetAPI) addRecurringMovement(w http.ResponseWriter, r *http.Request) (interface{}, error) {

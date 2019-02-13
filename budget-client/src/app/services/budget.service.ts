@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core'
 
 import { HttpWrapperService } from './http-wrapper.service'
 
-import { Account, Movement, Month } from '../domain/domain'
+import { Account, Month, Movement } from '../domain/domain'
 
 @Injectable({
     providedIn: 'root',
@@ -61,7 +61,8 @@ export class BudgetService {
         if (month != undefined) {
             queryParams += `&month=${month}`
         }
-        return this.http.get<Movement[]>(`/api/movement/${budgetID}${queryParams}`)
+        const response = await this.http.get<{ Movements: Movement[] }>(`/api/movement/${budgetID}${queryParams}`)
+        return response.Movements
     }
 
     async AddMovement(categoryID: string, amount: number, year: number, month: number): Promise<void> {

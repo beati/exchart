@@ -23,22 +23,22 @@ export interface Category {
 export enum Month { All, January }
 
 export interface Movement {
-	ID: string
-	CategoryID: string
-	Amount: number
-	Year: number
-	Month: Month
+    ID: string
+    CategoryID: string
+    Amount: number
+    Year: number
+    Month: Month
 }
 
 export enum Period { Monthly, Yearly }
 
 export interface RecurringMovement {
-	ID: string
-	CategoryID: string
-	Amount: number
-	Period: Period
-	FirstYear: number
-	LastYear: number
-	FirstMonth: Month
-	LastMonth: Month
+    ID: string
+    CategoryID: string
+    Amount: number
+    Period: Period
+    FirstYear: number
+    LastYear: number
+    FirstMonth: Month
+    LastMonth: Month
 }
