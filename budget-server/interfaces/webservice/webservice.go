@@ -53,7 +53,7 @@ func (bapi *budgetAPI) addJointBudget(w http.ResponseWriter, r *http.Request) (i
 		return nil, domain.ErrBadParameters
 	}
 
-	return nil, bapi.budgetInteractor.AddJointBudget(r.Context(), session.AccountID, params.Email)
+	return bapi.budgetInteractor.AddJointBudget(r.Context(), session.AccountID, params.Email)
 }
 
 func (bapi *budgetAPI) acceptJointBudget(w http.ResponseWriter, r *http.Request) (interface{}, error) {
@@ -91,7 +91,7 @@ func (bapi *budgetAPI) addCategory(w http.ResponseWriter, r *http.Request) (inte
 		return nil, domain.ErrBadParameters
 	}
 
-	return nil, bapi.budgetInteractor.AddCategory(r.Context(), session.AccountID, params.BudgetID, params.Type, params.Name)
+	return bapi.budgetInteractor.AddCategory(r.Context(), session.AccountID, params.BudgetID, params.Type, params.Name)
 }
 
 func (bapi *budgetAPI) updateCategory(w http.ResponseWriter, r *http.Request) (interface{}, error) {
@@ -176,7 +176,7 @@ func (bapi *budgetAPI) addMovement(w http.ResponseWriter, r *http.Request) (inte
 		return nil, domain.ErrBadParameters
 	}
 
-	return nil, bapi.budgetInteractor.AddMovement(r.Context(), session.AccountID, params.CategoryID, params.Amount, params.Year, params.Month)
+	return bapi.budgetInteractor.AddMovement(r.Context(), session.AccountID, params.CategoryID, params.Amount, params.Year, params.Month)
 }
 
 func (bapi *budgetAPI) updateMovement(w http.ResponseWriter, r *http.Request) (interface{}, error) {
@@ -264,7 +264,7 @@ func (bapi *budgetAPI) addRecurringMovement(w http.ResponseWriter, r *http.Reque
 		return nil, domain.ErrBadParameters
 	}
 
-	return nil, bapi.budgetInteractor.AddRecurringMovement(r.Context(), session.AccountID, params.CategoryID, params.Amount, params.Period, params.FirstYear, params.FirstMonth)
+	return bapi.budgetInteractor.AddRecurringMovement(r.Context(), session.AccountID, params.CategoryID, params.Amount, params.Period, params.FirstYear, params.FirstMonth)
 }
 
 func (bapi *budgetAPI) updateRecurringMovement(w http.ResponseWriter, r *http.Request) (interface{}, error) {

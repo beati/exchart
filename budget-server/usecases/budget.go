@@ -19,7 +19,7 @@ func NewBudgetInteractor(repo Repository) *BudgetInteractor {
 }
 
 // AddJointBudget adds a joint budget to an account.
-func (interactor *BudgetInteractor) AddJointBudget(ctx context.Context, accountID domain.EntityID, email string) (err error) {
+func (interactor *BudgetInteractor) AddJointBudget(ctx context.Context, accountID domain.EntityID, email string) (budgetData domain.BudgetData, err error) {
 	tx, err := interactor.repo.NewTx(ctx)
 	if err != nil {
 		return
@@ -37,8 +37,25 @@ func (interactor *BudgetInteractor) AddJointBudget(ctx context.Context, accountI
 	}
 
 	err = tx.AddBudget(budget)
-	if err != domain.ErrAlreadyExists {
-		return addDefaultCategories(tx, budget.ID)
+	if err != nil && err != domain.ErrAlreadyExists {
+		return
+	}
+
+	requestedAccount, err := tx.GetAccount(requestedUser.AccountID)
+	if err != nil {
+		return
+	}
+
+	if err == nil {
+		var categories []domain.Category
+		categories, err = addDefaultCategories(tx, budget.ID)
+		if err != nil {
+			return
+		}
+
+		budgetData = budget.Data(accountID, requestedAccount.Name)
+		budgetData.Categories = categories
+		return
 	}
 
 	budget, err = tx.LockBudgetByAccountID(accountID, requestedUser.AccountID)
@@ -51,7 +68,19 @@ func (interactor *BudgetInteractor) AddJointBudget(ctx context.Context, accountI
 		return
 	}
 
-	return tx.UpdateBudget(budget)
+	err = tx.UpdateBudget(budget)
+	if err != nil {
+		return
+	}
+
+	categories, err := tx.GetCategories(budget.ID)
+	if err != nil {
+		return
+	}
+
+	budgetData = budget.Data(accountID, requestedAccount.Name)
+	budgetData.Categories = categories
+	return budgetData, nil
 }
 
 // AcceptJointBudget set a joint budget as accepted by the account associated with accountID.

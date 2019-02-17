@@ -68,7 +68,7 @@ func (interactor *BudgetInteractor) GetMovementsByMonth(ctx context.Context, acc
 }
 
 // AddMovement adds a movement to a budget.
-func (interactor *BudgetInteractor) AddMovement(ctx context.Context, accountID, categoryID domain.EntityID, amount int64, year int, month time.Month) (err error) {
+func (interactor *BudgetInteractor) AddMovement(ctx context.Context, accountID, categoryID domain.EntityID, amount int64, year int, month time.Month) (movement *domain.Movement, err error) {
 	tx, err := interactor.repo.NewTx(ctx)
 	if err != nil {
 		return
@@ -85,12 +85,13 @@ func (interactor *BudgetInteractor) AddMovement(ctx context.Context, accountID, 
 		return
 	}
 
-	movement, err := domain.NewMovement(categoryID, amount, year, month)
+	movement, err = domain.NewMovement(categoryID, amount, year, month)
 	if err != nil {
 		return
 	}
 
-	return tx.AddMovement(movement)
+	err = tx.AddMovement(movement)
+	return
 }
 
 // UpdateMovement updates a movement.

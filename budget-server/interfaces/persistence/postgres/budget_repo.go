@@ -10,7 +10,7 @@ import (
 // GetBudgets implements domain.BudgetTx.
 func (tx Tx) GetBudgets(accountID domain.EntityID) ([]domain.Budget, error) {
 	budgets := []domain.Budget{}
-	err := tx.sqlTx.SelectFrom("budgets").Where("account_id_1 = ? OR account_id_2 = ?", accountID, accountID).All(&budgets)
+	err := tx.sqlTx.SelectFrom("budgets").Where("(account_id_1 = ? OR account_id_2 = ?) AND disabled = false", accountID, accountID).All(&budgets)
 	return budgets, err
 }
 

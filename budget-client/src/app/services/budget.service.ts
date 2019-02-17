@@ -1,13 +1,19 @@
 import { Injectable } from '@angular/core'
 
+import { Subject } from 'rxjs'
+
 import { HttpWrapperService } from './http-wrapper.service'
 
-import { Account, Month, Movement } from '../domain/domain'
+import { Account, Budget, Category, Month, Movement, RecurringMovement } from '../domain/domain'
 
 @Injectable({
     providedIn: 'root',
 })
 export class BudgetService {
+    BudgetAdded = new Subject<Budget>()
+    MovementAdded = new Subject<Movement>()
+    RecurringMovementAdded = new Subject<RecurringMovement>()
+
     constructor(
         private readonly http: HttpWrapperService,
     ) {}
@@ -22,8 +28,8 @@ export class BudgetService {
         })
     }
 
-    async AddJointBudget(email: string): Promise<void> {
-        return this.http.post<void>('/api/budget', {
+    async AddJointBudget(email: string): Promise<Budget> {
+        return this.http.post<Budget>('/api/budget', {
             Email: email,
         })
     }
@@ -36,8 +42,8 @@ export class BudgetService {
         return this.http.delete<void>(`/api/budget/${budgetID}`)
     }
 
-    async AddCategory(budgetID: string, name: string): Promise<void> {
-        return this.http.post<void>('/api/category', {
+    async AddCategory(budgetID: string, name: string): Promise<Category> {
+        return this.http.post<Category>('/api/category', {
             BudgetID: budgetID,
             Name: name,
         })
@@ -65,8 +71,8 @@ export class BudgetService {
         return response.Movements
     }
 
-    async AddMovement(categoryID: string, amount: number, year: number, month: number): Promise<void> {
-        return this.http.post<void>('/api/movement', {
+    async AddMovement(categoryID: string, amount: number, year: number, month: number): Promise<Movement> {
+        return this.http.post<Movement>('/api/movement', {
             Category: categoryID,
             Amount: amount,
             Year: year,
@@ -86,11 +92,20 @@ export class BudgetService {
         return this.http.delete<void>(`/api/movement/${movementID}`)
     }
 
-    async GetRecurringMovements(year?: number, month?: Month): Promise<void> {
+    async GetRecurringMovements(budgetID: string, year?: number, month?: Month): Promise<RecurringMovement[]> {
+        let queryParams = ''
+        if (year != undefined) {
+            queryParams += `?year=${year}`
+        }
+        if (month != undefined) {
+            queryParams += `&month=${month}`
+        }
+        const response = await this.http.get<{ Movements: RecurringMovement[] }>(`/api/recurring_movement/${budgetID}${queryParams}`)
+        return response.Movements
     }
 
-    async AddRecurringMovement(categoryID: string, amount: number, period: number, firstYear: number, firstMonth: number): Promise<void> {
-        return this.http.post<void>('/api/recurring_movement', {
+    async AddRecurringMovement(categoryID: string, amount: number, period: number, firstYear: number, firstMonth: number): Promise<RecurringMovement> {
+        return this.http.post<RecurringMovement>('/api/recurring_movement', {
             Category: categoryID,
             Amount: amount,
             Period: period,

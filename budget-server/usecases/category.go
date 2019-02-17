@@ -7,7 +7,7 @@ import (
 )
 
 // AddCategory adds a movement category to a budget.
-func (interactor *BudgetInteractor) AddCategory(ctx context.Context, accountID, budgetID domain.EntityID, categoryType domain.CategoryType, name string) (err error) {
+func (interactor *BudgetInteractor) AddCategory(ctx context.Context, accountID, budgetID domain.EntityID, categoryType domain.CategoryType, name string) (category *domain.Category, err error) {
 	tx, err := interactor.repo.NewTx(ctx)
 	if err != nil {
 		return
@@ -24,12 +24,13 @@ func (interactor *BudgetInteractor) AddCategory(ctx context.Context, accountID, 
 		return
 	}
 
-	category, err := domain.NewCategory(budget.ID, categoryType, name)
+	category, err = domain.NewCategory(budget.ID, categoryType, name)
 	if err != nil {
 		return
 	}
 
-	return tx.AddCategory(category)
+	err = tx.AddCategory(category)
+	return
 }
 
 // UpdateCategory updates a category.
@@ -94,17 +95,20 @@ func (interactor *BudgetInteractor) DeleteCategory(ctx context.Context, accountI
 	return tx.DeleteCategory(categoryID)
 }
 
-func addDefaultCategories(tx Tx, budgetID domain.EntityID) error {
+func addDefaultCategories(tx Tx, budgetID domain.EntityID) ([]domain.Category, error) {
+	categories := make([]domain.Category, 0, domain.CategoryTypeCount)
 	for i := domain.CategoryType(0); i < domain.CategoryTypeCount; i++ {
 		category, err := domain.NewDefaultCategory(budgetID, i)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		err = tx.AddCategory(category)
 		if err != nil {
-			return err
+			return nil, err
 		}
+
+		categories = append(categories, *category)
 	}
-	return nil
+	return categories, nil
 }

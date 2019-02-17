@@ -223,7 +223,7 @@ func (interactor *UserInteractor) AddUser(ctx context.Context, email, password, 
 		return
 	}
 
-	err = addDefaultCategories(tx, budget.ID)
+	_, err = addDefaultCategories(tx, budget.ID)
 	if err != nil {
 		return
 	}

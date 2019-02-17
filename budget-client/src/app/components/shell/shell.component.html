@@ -1,46 +1,56 @@
 <mat-toolbar *ngIf="!Mobile" color="primary">
-    <button type="button" mat-icon-button (click)="drawer.toggle()">
+    <button type="button" (click)="sidenav.toggle()" mat-icon-button class="toolbar-main-button">
         <mat-icon>menu</mat-icon>
     </button>
     <span>Budget</span>
+    <span class="toolbar-spacer"></span>
+    <button type="button" (click)="OpenMovementAdderDialog()" mat-icon-button>
+        <mat-icon>add</mat-icon>
+    </button>
+    <button type="button" (click)="Logout()" mat-icon-button>
+        <mat-icon>exit_to_app</mat-icon>
+    </button>
 </mat-toolbar>
 <mat-sidenav-container class="sidenav-container">
-    <mat-sidenav #drawer [mode]="Mobile ? 'over' : 'side'" [opened]="!Mobile">
-        <mat-nav-list>
-            <mat-list-item>
+    <mat-sidenav #sidenav [mode]="Mobile ? 'over' : 'side'" [opened]="!Mobile">
+        <mat-nav-list *ngIf="Account != undefined">
+            <a (click)="SetState('All')" mat-list-item>
                 <mat-icon>arrow_right_alt</mat-icon>
-                Test
-            </mat-list-item>
+                <span>All</span>
+            </a>
+            <a *ngFor="let budget of Account.Budgets" (click)="SetState(budget.ID)" mat-list-item>
+                <mat-icon>arrow_right_alt</mat-icon>
+                <span>Main</span>
+            </a>
+            <a (click)="AddBudget()" mat-list-item>
+                <mat-icon>arrow_right_alt</mat-icon>
+                <span>Add</span>
+            </a>
+            <mat-divider></mat-divider>
+            <a (click)="SetState('Settings')" mat-list-item>
+                <mat-icon>arrow_right_alt</mat-icon>
+                <span>Settings</span>
+            </a>
         </mat-nav-list>
     </mat-sidenav>
     <mat-sidenav-content>
         <mat-toolbar *ngIf="Mobile" color="primary">
-            <button type="button" mat-icon-button (click)="drawer.toggle()">
+            <button type="button" mat-icon-button (click)="sidenav.toggle()" class="toolbar-main-button">
                 <mat-icon>menu</mat-icon>
             </button>
             <span>Budget</span>
         </mat-toolbar>
-        <div class="shell-content">
-            <mat-tab-group mat-stretch-tabs>
-                <mat-tab label="{{ 'Tabs.Data' | translate }}">
-                    <app-period-selector></app-period-selector>
-                </mat-tab>
-                <mat-tab label="{{ 'Tabs.Movements' | translate }}">
-                    <app-period-selector></app-period-selector>
-                </mat-tab>
-                <mat-tab label="{{ 'Tabs.Categories' | translate }}">
-                    Test
-                </mat-tab>
-            </mat-tab-group>
-
-            <ng-container *ngIf="Mobile">
-                <button type="button" mat-fab color="accent" class="add-fab-position">
-                    <mat-icon>add</mat-icon>
-                </button>
-                <button type="button" mat-fab color="warn" class="remove-fab-position">
-                    <mat-icon>remove</mat-icon>
-                </button>
-            </ng-container>
+        <div [ngSwitch]="State" class="shell-content">
+            <app-overall-analytics *ngSwitchCase="'All'"></app-overall-analytics>
+            <app-budget-adder *ngSwitchCase="'BudgetAdder'"></app-budget-adder>
+            <app-movement-adder *ngSwitchCase="'MovementAdder'"></app-movement-adder>
+            <app-settings *ngSwitchCase="'Settings'"></app-settings>
+            <app-budget-tabs *ngSwitchDefault></app-budget-tabs>
         </div>
+        <ng-container *ngIf="Mobile">
+            <button type="button" (click)="SetState('MovementAdder')" mat-fab color="accent" class="add-fab">
+                <mat-icon>add</mat-icon>
+            </button>
+        </ng-container>
     </mat-sidenav-content>
 </mat-sidenav-container>

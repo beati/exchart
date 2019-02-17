@@ -68,7 +68,7 @@ func (interactor *BudgetInteractor) GetRecurringMovementsByMonth(ctx context.Con
 }
 
 // AddRecurringMovement adds a recurring movement to a budget.
-func (interactor *BudgetInteractor) AddRecurringMovement(ctx context.Context, accountID, categoryID domain.EntityID, amount int64, period domain.Period, firstYear int, firstMonth time.Month) (err error) {
+func (interactor *BudgetInteractor) AddRecurringMovement(ctx context.Context, accountID, categoryID domain.EntityID, amount int64, period domain.Period, firstYear int, firstMonth time.Month) (movement *domain.RecurringMovement, err error) {
 	tx, err := interactor.repo.NewTx(ctx)
 	if err != nil {
 		return
@@ -85,12 +85,13 @@ func (interactor *BudgetInteractor) AddRecurringMovement(ctx context.Context, ac
 		return
 	}
 
-	movement, err := domain.NewRecurringMovement(categoryID, amount, period, firstYear, firstMonth)
+	movement, err = domain.NewRecurringMovement(categoryID, amount, period, firstYear, firstMonth)
 	if err != nil {
 		return
 	}
 
-	return tx.AddRecurringMovement(movement)
+	err = tx.AddRecurringMovement(movement)
+	return
 }
 
 // UpdateRecurringMovement updates a recurring movement.
