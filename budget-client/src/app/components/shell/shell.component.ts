@@ -41,6 +41,11 @@ export class ShellComponent implements OnInit {
             this.Mobile = display === DisplayType.Mobile
         })
 
+        this.budgetService.BudgetAdded.subscribe((budget) => {
+            this.Account.Budgets.push(budget)
+            this.SetState(budget.ID)
+        })
+
         try {
             this.Account = await this.budgetService.GetAcount()
         } catch (error) {

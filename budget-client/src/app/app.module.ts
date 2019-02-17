@@ -9,8 +9,10 @@ import {
     MatDialogModule,
     MatDividerModule,
     MatIconModule,
+    MatInputModule,
     MatListModule,
     MatMenuModule,
+    MatRadioModule,
     MatSidenavModule,
     MatTabsModule,
     MatToolbarModule,
@@ -40,6 +42,7 @@ import { PeriodSelectorComponent } from './components/period-selector/period-sel
 import { RegisterComponent } from './components/register/register.component'
 import { SettingsComponent } from './components/settings/settings.component'
 import { ShellComponent } from './components/shell/shell.component'
+import { YearSelectorComponent } from './components/year-selector/year-selector.component'
 
 @NgModule({
     declarations: [
@@ -61,6 +64,7 @@ import { ShellComponent } from './components/shell/shell.component'
         RegisterComponent,
         SettingsComponent,
         ShellComponent,
+        YearSelectorComponent,
     ],
     entryComponents: [
         BudgetAdderDialogComponent,
@@ -77,8 +81,10 @@ import { ShellComponent } from './components/shell/shell.component'
         MatDialogModule,
         MatDividerModule,
         MatIconModule,
+        MatInputModule,
         MatListModule,
         MatMenuModule,
+        MatRadioModule,
         MatSidenavModule,
         MatTabsModule,
         MatToolbarModule,

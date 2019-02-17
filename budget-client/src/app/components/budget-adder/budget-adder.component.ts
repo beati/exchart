@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core'
+import { Component } from '@angular/core'
 
 import { BudgetService } from '../../services/budget.service'
 
@@ -7,11 +7,25 @@ import { BudgetService } from '../../services/budget.service'
     templateUrl: './budget-adder.component.html',
     styleUrls: ['./budget-adder.component.scss'],
 })
-export class BudgetAdderComponent implements OnInit {
+export class BudgetAdderComponent {
+    BudgetFormData = {
+        Submitting: false,
+        Error: false,
+        Email: '',
+    }
+
     constructor(
         private readonly budgetService: BudgetService,
-    ) { }
+    ) {}
 
-    ngOnInit(): void {
+    async AddBudget(): Promise<void> {
+        try {
+            this.BudgetFormData.Submitting = true
+            await this.budgetService.AddJointBudget(this.BudgetFormData.Email)
+            this.BudgetFormData.Submitting = false
+        } catch (error) {
+            this.BudgetFormData.Submitting = false
+            this.BudgetFormData.Error = true
+        }
     }
 }

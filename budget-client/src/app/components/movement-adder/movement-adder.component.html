@@ -1,3 +1,11 @@
-<div>
-    movement-adder works!
-</div>
+<form (ngSubmit)="AddMovement()">
+    <mat-radio-group name="Sign" [(ngModel)]="MovementFormData.Sign">
+        <mat-radio-button value="-1">Depense</mat-radio-button>
+        <mat-radio-button value="1">Recette</mat-radio-button>
+    </mat-radio-group>
+    <mat-form-field class="example-full-width">
+        <input type="number" name="Amount" [(ngModel)]="MovementFormData.Amount" placeholder="Amount" matInput>
+    </mat-form-field>
+    <app-year-selector name="Year" [(ngModel)]="MovementFormData.Year"></app-year-selector>
+    <button type="submit">Add</button>
+</form>

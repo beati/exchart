@@ -1,3 +1,10 @@
-<div>
-    budget-adder-dialog works!
+<h2 mat-dialog-title>Add budget</h2>
+<div mat-dialog-content>
+    <form (ngSubmit)="AddBudget()">
+        <input type="email" name="Email" [(ngModel)]="BudgetFormData.Email">
+    </form>
+</div>
+<div mat-dialog-actions>
+    <button mat-button (click)="DialogRef.close()">Cancel</button>
+    <button (click)="AddBudget()" mat-button>Ok</button>
 </div>

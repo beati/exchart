@@ -1,3 +1,4 @@
-<div>
-    budget-adder works!
-</div>
+<form (ngSubmit)="AddBudget()">
+    <input type="email" name="Email" [(ngModel)]="BudgetFormData.Email">
+    <button type="submit">Add</button>
+</form>

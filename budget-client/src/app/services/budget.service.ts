@@ -29,9 +29,11 @@ export class BudgetService {
     }
 
     async AddJointBudget(email: string): Promise<Budget> {
-        return this.http.post<Budget>('/api/budget', {
+        const budget = await this.http.post<Budget>('/api/budget', {
             Email: email,
         })
+        this.BudgetAdded.next(budget)
+        return budget
     }
 
     async AcceptJointBudget(budgetID: string): Promise<void> {
@@ -72,12 +74,14 @@ export class BudgetService {
     }
 
     async AddMovement(categoryID: string, amount: number, year: number, month: number): Promise<Movement> {
-        return this.http.post<Movement>('/api/movement', {
+        const movement = await this.http.post<Movement>('/api/movement', {
             Category: categoryID,
             Amount: amount,
             Year: year,
             Month: month,
         })
+        this.MovementAdded.next(movement)
+        return movement
     }
 
     async UpdateMovement(movementID: string, categoryID: string, year: number, month: number): Promise<void> {
@@ -105,13 +109,15 @@ export class BudgetService {
     }
 
     async AddRecurringMovement(categoryID: string, amount: number, period: number, firstYear: number, firstMonth: number): Promise<RecurringMovement> {
-        return this.http.post<RecurringMovement>('/api/recurring_movement', {
+        const movement = await this.http.post<RecurringMovement>('/api/recurring_movement', {
             Category: categoryID,
             Amount: amount,
             Period: period,
             FirstYear: firstYear,
             FirstMonth: firstMonth,
         })
+        this.RecurringMovementAdded.next(movement)
+        return movement
     }
 
     async UpdateRecurringMovement(movementID: string, categoryID: string, firstYear: number, firstMonth: number, lastYear: number, lastMonth: number): Promise<void> {
