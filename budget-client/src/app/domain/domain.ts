@@ -20,7 +20,7 @@ export interface Category {
     Name: string
 }
 
-export enum Month { All, January }
+export enum Month { All, January, February, March, April, May, June, July, August, September, October, November, December }
 
 export interface Movement {
     ID: string
@@ -42,3 +42,18 @@ export interface RecurringMovement {
     FirstMonth: Month
     LastMonth: Month
 }
+
+export const Months = [
+    { Code: Month.January, String: 'Januray' },
+    { Code: Month.February, String: 'February' },
+    { Code: Month.March, String: 'March' },
+    { Code: Month.April, String: 'April' },
+    { Code: Month.May, String: 'May' },
+    { Code: Month.June, String: 'June' },
+    { Code: Month.July, String: 'July' },
+    { Code: Month.August, String: 'August' },
+    { Code: Month.September, String: 'September' },
+    { Code: Month.October, String: 'October' },
+    { Code: Month.November, String: 'November' },
+    { Code: Month.December, String: 'December' },
+]

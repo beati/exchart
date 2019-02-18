@@ -1,6 +1,8 @@
-import { Component, Input } from '@angular/core'
+import { Component, Input, OnInit } from '@angular/core'
 
-import { Account } from '../../domain/domain'
+import { DateTime } from 'luxon'
+
+import { Account, BudgetStatus, Category, Months, Period } from '../../domain/domain'
 
 import { BudgetService } from '../../services/budget.service'
 
@@ -9,20 +11,40 @@ import { BudgetService } from '../../services/budget.service'
     templateUrl: './movement-adder.component.html',
     styleUrls: ['./movement-adder.component.scss'],
 })
-export class MovementAdderComponent {
+export class MovementAdderComponent implements OnInit {
     @Input() Account: Account
+    Months = Months
+    Categories: Category[]
 
     MovementFormData = {
         Submitting: false,
         Error: false,
         Sign: '-1',
-        Amount: undefined,
-        Year: 2019,
+        Amount: 0,
+        BudgetID: '',
+        CategoryID: '',
+        Period: 0,
+        Year: 0,
+        Month: 0,
     }
 
     constructor(
         private readonly budgetService: BudgetService,
     ) {}
+
+    ngOnInit(): void {
+        const now = DateTime.local()
+        this.MovementFormData.Year = now.year
+        this.MovementFormData.Month = now.month
+
+        for (let i = 0; i < this.Account.Budgets.length; i++) {
+            const budget = this.Account.Budgets[i]
+            if (budget.Status === BudgetStatus.Main) {
+                this.MovementFormData.BudgetID = budget.ID
+                this.Categories = budget.Categories
+            }
+        }
+    }
 
     async AddMovement(): Promise<void> {
         try {

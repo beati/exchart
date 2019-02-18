@@ -6,6 +6,29 @@
     <mat-form-field class="example-full-width">
         <input type="number" name="Amount" [(ngModel)]="MovementFormData.Amount" placeholder="Amount" matInput>
     </mat-form-field>
+    <mat-form-field>
+        <mat-select placeholder="Budget">
+            <mat-option *ngFor="let budget of Account.Budgets" [value]="budget.ID">
+                {{ budget.With }}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+        <mat-select placeholder="Category">
+            <mat-option *ngFor="let category of Categories" [value]="category.ID">
+                {{ category.Name }}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+        <mat-select placeholder="Month">
+            <mat-option *ngFor="let month of Months" [value]="month.Code">
+                {{ month.String }}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
     <app-year-selector name="Year" [(ngModel)]="MovementFormData.Year"></app-year-selector>
-    <button type="submit">Add</button>
+    <button type="submit" mat-raised-button>
+        <mat-spinner diameter="24" strokeWidth="3"></mat-spinner>
+    </button>
 </form>
