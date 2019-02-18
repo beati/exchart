@@ -7,8 +7,8 @@ type CategoryType int
 
 // Possible values for a CategoryType.
 const (
-	Transport CategoryType = iota
-	House
+	Housing CategoryType = iota
+	Transport
 	CategoryTypeCount
 )
 

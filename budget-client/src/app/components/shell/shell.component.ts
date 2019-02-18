@@ -3,7 +3,7 @@ import { DisplayType, ResponsiveService } from '../../services/responsive.servic
 
 import { MatDialog, MatSidenav } from '@angular/material'
 
-import { Account, BudgetStatus, Month, Movement, RecurringMovement } from '../../domain/domain'
+import { Account, Budget, BudgetStatus, Month, Movement, RecurringMovement } from '../../domain/domain'
 
 import { AuthService } from '../../services/auth.service'
 import { BudgetService } from '../../services/budget.service'
@@ -24,6 +24,7 @@ export class ShellComponent implements OnInit {
     Mobile: boolean
 
     Account: Account
+    OpenBudgets: Budget[]
 
     State = 'All'
 
@@ -48,6 +49,37 @@ export class ShellComponent implements OnInit {
 
         try {
             this.Account = await this.budgetService.GetAcount()
+
+            this.Account.Budgets.sort((a: Budget, b: Budget): number => {
+                if (a.Status === BudgetStatus.Main) {
+                    return -1
+                } else if (b.Status == BudgetStatus.Main) {
+                    return 1
+                }
+
+                if (a.Status === BudgetStatus.Open) {
+                    return -1
+                } else if (b.Status == BudgetStatus.Open) {
+                    return 1
+                }
+
+                if (a.Status === BudgetStatus.NotAccepted) {
+                    return -1
+                } else if (b.Status == BudgetStatus.NotAccepted) {
+                    return 1
+                }
+
+                return 0
+            })
+
+            const budgets: Budget[] = []
+            for (let i = 0; i < this.Account.Budgets.length; i++) {
+                const budget = this.Account.Budgets[i]
+                if (budget.Status === BudgetStatus.Main || budget.Status === BudgetStatus.Open) {
+                    budgets.push(budget)
+                }
+            }
+            this.OpenBudgets = budgets
         } catch (error) {
         }
     }

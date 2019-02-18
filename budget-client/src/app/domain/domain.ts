@@ -12,7 +12,7 @@ export interface Budget {
     Categories: Category[]
 }
 
-export enum CategoryType { Transport, House, CategoryTypeCount }
+export enum CategoryType { Housing, Transport, CategoryTypeCount }
 
 export interface Category {
     ID: string

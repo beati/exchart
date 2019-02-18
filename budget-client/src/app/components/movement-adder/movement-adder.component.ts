@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core'
 
 import { DateTime } from 'luxon'
 
-import { Account, BudgetStatus, Category, Months, Period } from '../../domain/domain'
+import { Budget, BudgetStatus, Category, CategoryType, Months, Period } from '../../domain/domain'
 
 import { BudgetService } from '../../services/budget.service'
 
@@ -12,9 +12,12 @@ import { BudgetService } from '../../services/budget.service'
     styleUrls: ['./movement-adder.component.scss'],
 })
 export class MovementAdderComponent implements OnInit {
-    @Input() Account: Account
+    BudgetStatus = BudgetStatus
+    CategoryType = CategoryType
+
+    @Input() Budgets: Budget[]
     Months = Months
-    Categories: Category[]
+    Categories: Category[][] = new Array<Category[]>(CategoryType.CategoryTypeCount)
 
     MovementFormData = {
         Submitting: false,
@@ -30,18 +33,27 @@ export class MovementAdderComponent implements OnInit {
 
     constructor(
         private readonly budgetService: BudgetService,
-    ) {}
+    ) {
+        for (let i = 0; i < this.Categories.length; i++) {
+            this.Categories[i] = []
+        }
+    }
 
     ngOnInit(): void {
+        console.log(this.Categories)
+
         const now = DateTime.local()
         this.MovementFormData.Year = now.year
         this.MovementFormData.Month = now.month
 
-        for (let i = 0; i < this.Account.Budgets.length; i++) {
-            const budget = this.Account.Budgets[i]
+        for (let i = 0; i < this.Budgets.length; i++) {
+            const budget = this.Budgets[i]
             if (budget.Status === BudgetStatus.Main) {
                 this.MovementFormData.BudgetID = budget.ID
-                this.Categories = budget.Categories
+                for (let j = 0; j < budget.Categories.length; j++) {
+                    const category = budget.Categories[j]
+                    this.Categories[category.Type].push(category)
+                }
             }
         }
     }

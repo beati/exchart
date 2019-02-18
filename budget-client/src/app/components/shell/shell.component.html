@@ -43,7 +43,7 @@
         <div [ngSwitch]="State" class="shell-content">
             <app-overall-analytics *ngSwitchCase="'All'"></app-overall-analytics>
             <app-budget-adder *ngSwitchCase="'BudgetAdder'"></app-budget-adder>
-            <app-movement-adder *ngSwitchCase="'MovementAdder'" [Account]="Account"></app-movement-adder>
+            <app-movement-adder *ngSwitchCase="'MovementAdder'" [Budgets]="OpenBudgets"></app-movement-adder>
             <app-settings *ngSwitchCase="'Settings'"></app-settings>
             <app-budget-tabs *ngSwitchDefault></app-budget-tabs>
         </div>

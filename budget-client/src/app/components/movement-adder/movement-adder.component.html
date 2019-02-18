@@ -7,21 +7,31 @@
         <input type="number" name="Amount" [(ngModel)]="MovementFormData.Amount" placeholder="Amount" matInput>
     </mat-form-field>
     <mat-form-field>
-        <mat-select placeholder="Budget">
-            <mat-option *ngFor="let budget of Account.Budgets" [value]="budget.ID">
-                {{ budget.With }}
+        <mat-select name="BudgetID" [(ngModel)]="MovementFormData.BudgetID">
+            <mat-option *ngFor="let budget of Budgets" [value]="budget.ID">
+                <ng-container [ngSwitch]="budget.Status">
+                    <ng-container *ngSwitchCase="BudgetStatus.Main">
+                        Pour moi
+                    </ng-container>
+                    <ng-container *ngSwitchCase="BudgetStatus.Open">
+                        Avec {{ budget.With }}
+                    </ng-container>
+                </ng-container>
             </mat-option>
         </mat-select>
     </mat-form-field>
+
+    <button mat-stroked-button [matMenuTriggerFor]="categoryTypes">Category</button>
+    <mat-menu #categoryTypes="matMenu">
+        <button [matMenuTriggerFor]="" mat-menu-item>fu</button>
+    </mat-menu>
+
+    <mat-menu #housing="matMenu">
+        <button mat-menu-item></button>
+    </mat-menu>
+
     <mat-form-field>
-        <mat-select placeholder="Category">
-            <mat-option *ngFor="let category of Categories" [value]="category.ID">
-                {{ category.Name }}
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
-    <mat-form-field>
-        <mat-select placeholder="Month">
+        <mat-select name="Month" [(ngModel)]="MovementFormData.Month" placeholder="Month">
             <mat-option *ngFor="let month of Months" [value]="month.Code">
                 {{ month.String }}
             </mat-option>
