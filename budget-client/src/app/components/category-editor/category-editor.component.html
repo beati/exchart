@@ -14,13 +14,12 @@
         </button>
     </mat-tree-node>
     <mat-tree-node *matTreeNodeDef="let node: when: IsEmpty" matTreeNodePadding>
-        <span>{{ node.category.Name }}</span>
         <form (ngSubmit)="AddCategory(node.category.Type, categoryName.value)">
             <mat-form-field>
                 <input #categoryName matInput placeholder="New category">
             </mat-form-field>
-            <button *ngIf="node.category.ID === ''" type="submit" mat-button class="add-button">Add</button>
-            <mat-spinner *ngIf="node.category.ID === 'submitting'"></mat-spinner>
+            <button *ngIf="!node.submitting" type="submit" mat-button class="add-button">Add</button>
+            <mat-spinner *ngIf="node.submitting"></mat-spinner>
         </form>
     </mat-tree-node>
 </mat-tree>
