@@ -1,8 +1,26 @@
-<mat-tree>
-    <mat-tree-node>
-        Housing
+<mat-tree [dataSource]="categoriesDataSource" [treeControl]="TreeControl">
+    <mat-tree-node *matTreeNodeDef="let node; when: IsTopLevel" matTreeNodePadding>
+        <button mat-icon-button matTreeNodeToggle>
+            <mat-icon>
+                {{ TreeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
+            </mat-icon>
+        </button>
+        <span class="top-level-name">{{ node.category.Name }}</span>
     </mat-tree-node>
-    <mat-tree-node>
-        Transport
+    <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
+        <span>{{ node.category.Name }}</span>
+        <button mat-icon-button>
+            <mat-icon>clear</mat-icon>
+        </button>
+    </mat-tree-node>
+    <mat-tree-node *matTreeNodeDef="let node: when: IsEmpty" matTreeNodePadding>
+        <span>{{ node.category.Name }}</span>
+        <form (ngSubmit)="AddCategory(node.category.Type, categoryName.value)">
+            <mat-form-field>
+                <input #categoryName matInput placeholder="New category">
+            </mat-form-field>
+            <button *ngIf="node.category.ID === ''" type="submit" mat-button class="add-button">Add</button>
+            <mat-spinner *ngIf="node.category.ID === 'submitting'"></mat-spinner>
+        </form>
     </mat-tree-node>
 </mat-tree>

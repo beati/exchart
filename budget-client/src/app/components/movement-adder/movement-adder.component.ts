@@ -40,8 +40,6 @@ export class MovementAdderComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        console.log(this.Categories)
-
         const now = DateTime.local()
         this.MovementFormData.Year = now.year
         this.MovementFormData.Month = now.month
@@ -56,6 +54,10 @@ export class MovementAdderComponent implements OnInit {
                 }
             }
         }
+    }
+
+    SetCategory(categoryID: string): void {
+        this.MovementFormData.CategoryID = categoryID
     }
 
     async AddMovement(): Promise<void> {

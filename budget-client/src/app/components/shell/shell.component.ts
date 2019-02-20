@@ -27,6 +27,7 @@ export class ShellComponent implements OnInit {
     OpenBudgets: Budget[]
 
     State = 'All'
+    SelectedBudget: Budget
 
     constructor(
         private readonly dialog: MatDialog,
@@ -44,7 +45,7 @@ export class ShellComponent implements OnInit {
 
         this.budgetService.BudgetAdded.subscribe((budget) => {
             this.Account.Budgets.push(budget)
-            this.SetState(budget.ID)
+            this.SetState(true, budget.ID)
         })
 
         try {
@@ -91,8 +92,19 @@ export class ShellComponent implements OnInit {
         }
     }
 
-    async SetState(state: string): Promise<void> {
+    async SetState(budgetSelected: boolean, state: string): Promise<void> {
         this.State = state
+
+        if (budgetSelected) {
+            for (let i = 0; i < this.Account.Budgets.length; i++) {
+                const budget = this.Account.Budgets[i]
+                if (state === budget.ID) {
+                    this.SelectedBudget = budget
+                    break
+                }
+            }
+        }
+
         if (this.Mobile) {
             await this.sidenav.close()
         }
@@ -100,7 +112,7 @@ export class ShellComponent implements OnInit {
 
     async AddBudget(): Promise<void> {
         if (this.Mobile) {
-            await this.SetState('BudgetAdder')
+            await this.SetState(false, 'BudgetAdder')
         } else {
             this.dialog.open(BudgetAdderDialogComponent)
         }

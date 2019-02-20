@@ -14,11 +14,11 @@
 <mat-sidenav-container class="sidenav-container">
     <mat-sidenav #sidenav [mode]="Mobile ? 'over' : 'side'" [opened]="!Mobile">
         <mat-nav-list *ngIf="Account != undefined">
-            <a (click)="SetState('All')" mat-list-item>
+            <a (click)="SetState(false, 'All')" mat-list-item>
                 <mat-icon>arrow_right_alt</mat-icon>
                 <span>All</span>
             </a>
-            <a *ngFor="let budget of Account.Budgets" (click)="SetState(budget.ID)" mat-list-item>
+            <a *ngFor="let budget of Account.Budgets" (click)="SetState(true, budget.ID)" mat-list-item>
                 <mat-icon>arrow_right_alt</mat-icon>
                 <span>Main</span>
             </a>
@@ -27,7 +27,7 @@
                 <span>Add</span>
             </a>
             <mat-divider></mat-divider>
-            <a (click)="SetState('Settings')" mat-list-item>
+            <a (click)="SetState(false, 'Settings')" mat-list-item>
                 <mat-icon>arrow_right_alt</mat-icon>
                 <span>Settings</span>
             </a>
@@ -45,10 +45,10 @@
             <app-budget-adder *ngSwitchCase="'BudgetAdder'"></app-budget-adder>
             <app-movement-adder *ngSwitchCase="'MovementAdder'" [Budgets]="OpenBudgets"></app-movement-adder>
             <app-settings *ngSwitchCase="'Settings'"></app-settings>
-            <app-budget-tabs *ngSwitchDefault></app-budget-tabs>
+            <app-budget-tabs *ngSwitchDefault [Budget]="SelectedBudget"></app-budget-tabs>
         </div>
         <ng-container *ngIf="Mobile">
-            <button type="button" (click)="SetState('MovementAdder')" mat-fab color="accent" class="add-fab">
+            <button type="button" (click)="SetState(false, 'MovementAdder')" mat-fab color="accent" class="add-fab">
                 <mat-icon>add</mat-icon>
             </button>
         </ng-container>

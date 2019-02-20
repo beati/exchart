@@ -4,7 +4,7 @@ import { Subject } from 'rxjs'
 
 import { HttpWrapperService } from './http-wrapper.service'
 
-import { Account, Budget, Category, Month, Movement, RecurringMovement } from '../domain/domain'
+import { Account, Budget, Category, CategoryType, Month, Movement, RecurringMovement } from '../domain/domain'
 
 @Injectable({
     providedIn: 'root',
@@ -44,9 +44,10 @@ export class BudgetService {
         return this.http.delete<void>(`/api/budget/${budgetID}`)
     }
 
-    async AddCategory(budgetID: string, name: string): Promise<Category> {
+    async AddCategory(budgetID: string, type: CategoryType, name: string): Promise<Category> {
         return this.http.post<Category>('/api/category', {
             BudgetID: budgetID,
+            Type: type,
             Name: name,
         })
     }

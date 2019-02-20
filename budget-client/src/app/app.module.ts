@@ -31,7 +31,6 @@ import { BudgetAdderDialogComponent } from './components/budget-adder-dialog/bud
 import { BudgetAdderComponent } from './components/budget-adder/budget-adder.component'
 import { BudgetAnalyticsComponent } from './components/budget-analytics/budget-analytics.component'
 import { BudgetTabsComponent } from './components/budget-tabs/budget-tabs.component'
-import { CategoriesComponent } from './components/categories/categories.component'
 import { CategoryEditorComponent } from './components/category-editor/category-editor.component'
 import { LandingPageComponent } from './components/landing-page/landing-page.component'
 import { LoginComponent } from './components/login/login.component'
@@ -53,7 +52,6 @@ import { YearSelectorComponent } from './components/year-selector/year-selector.
         BudgetAdderComponent,
         BudgetAnalyticsComponent,
         BudgetTabsComponent,
-        CategoriesComponent,
         CategoryEditorComponent,
         LandingPageComponent,
         LoginComponent,

@@ -14,6 +14,11 @@ export interface Budget {
 
 export enum CategoryType { Housing, Transport, CategoryTypeCount }
 
+export const CategoryTypes = [
+    'Housing',
+    'Transport',
+]
+
 export interface Category {
     ID: string
     Type: CategoryType

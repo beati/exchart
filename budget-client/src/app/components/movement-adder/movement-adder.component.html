@@ -21,14 +21,34 @@
         </mat-select>
     </mat-form-field>
 
-    <button mat-stroked-button [matMenuTriggerFor]="categoryTypes">Category</button>
+    <button type="button" [matMenuTriggerFor]="categoryTypes" mat-stroked-button>Category</button>
     <mat-menu #categoryTypes="matMenu">
-        <button [matMenuTriggerFor]="" mat-menu-item>fu</button>
+        <button [matMenuTriggerFor]="housing" mat-menu-item>Housing</button>
+        <button [matMenuTriggerFor]="transport" mat-menu-item>Transport</button>
+    </mat-menu>
+    <mat-menu #housing="matMenu">
+        <button *ngFor="let category of Categories[CategoryType.Housing]" (click)="SetCategory(category.ID)" mat-menu-item>{{ category.Name }}</button>
+    </mat-menu>
+    <mat-menu #transport="matMenu">
+        <button *ngFor="let category of Categories[CategoryType.Transport]" (click)="SetCategory(category.ID)" mat-menu-item>{{ category.Name }}</button>
     </mat-menu>
 
-    <mat-menu #housing="matMenu">
-        <button mat-menu-item></button>
-    </mat-menu>
+    <mat-form-field>
+        <mat-select name="Period" [(ngModel)]="MovementFormData.Period" placeholder="Period">
+            <mat-option [value]="0">
+                One time
+            </mat-option>
+            <mat-option [value]="1">
+                On the year
+            </mat-option>
+            <mat-option [value]="2">
+                Monthly
+            </mat-option>
+            <mat-option [value]="3">
+                Yearly
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
 
     <mat-form-field>
         <mat-select name="Month" [(ngModel)]="MovementFormData.Month" placeholder="Month">
