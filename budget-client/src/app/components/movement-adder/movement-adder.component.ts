@@ -33,23 +33,21 @@ export class MovementAdderComponent implements OnInit {
 
     constructor(
         private readonly budgetService: BudgetService,
-    ) {
-        for (let i = 0; i < this.Categories.length; i++) {
-            this.Categories[i] = []
-        }
-    }
+    ) {}
 
     ngOnInit(): void {
         const now = DateTime.local()
         this.MovementFormData.Year = now.year
         this.MovementFormData.Month = now.month
 
-        for (let i = 0; i < this.Budgets.length; i++) {
-            const budget = this.Budgets[i]
+        for (let i = 0; i < this.Categories.length; i += 1) {
+            this.Categories[i] = []
+        }
+
+        for (const budget of this.Budgets) {
             if (budget.Status === BudgetStatus.Main) {
                 this.MovementFormData.BudgetID = budget.ID
-                for (let j = 0; j < budget.Categories.length; j++) {
-                    const category = budget.Categories[j]
+                for (const category of budget.Categories) {
                     this.Categories[category.Type].push(category)
                 }
             }

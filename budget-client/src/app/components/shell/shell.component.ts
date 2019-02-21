@@ -43,9 +43,9 @@ export class ShellComponent implements OnInit {
             this.Mobile = display === DisplayType.Mobile
         })
 
-        this.budgetService.BudgetAdded.subscribe((budget) => {
+        this.budgetService.BudgetAdded.subscribe(async (budget) => {
             this.Account.Budgets.push(budget)
-            this.SetState(true, budget.ID)
+            await this.SetState(true, budget.ID)
         })
 
         try {
@@ -54,19 +54,19 @@ export class ShellComponent implements OnInit {
             this.Account.Budgets.sort((a: Budget, b: Budget): number => {
                 if (a.Status === BudgetStatus.Main) {
                     return -1
-                } else if (b.Status == BudgetStatus.Main) {
+                } else if (b.Status === BudgetStatus.Main) {
                     return 1
                 }
 
                 if (a.Status === BudgetStatus.Open) {
                     return -1
-                } else if (b.Status == BudgetStatus.Open) {
+                } else if (b.Status === BudgetStatus.Open) {
                     return 1
                 }
 
                 if (a.Status === BudgetStatus.NotAccepted) {
                     return -1
-                } else if (b.Status == BudgetStatus.NotAccepted) {
+                } else if (b.Status === BudgetStatus.NotAccepted) {
                     return 1
                 }
 
@@ -74,8 +74,7 @@ export class ShellComponent implements OnInit {
             })
 
             const budgets: Budget[] = []
-            for (let i = 0; i < this.Account.Budgets.length; i++) {
-                const budget = this.Account.Budgets[i]
+            for (const budget of this.Account.Budgets) {
                 if (budget.Status === BudgetStatus.Main || budget.Status === BudgetStatus.Open) {
                     budgets.push(budget)
                 }
@@ -96,8 +95,7 @@ export class ShellComponent implements OnInit {
         this.State = state
 
         if (budgetSelected) {
-            for (let i = 0; i < this.Account.Budgets.length; i++) {
-                const budget = this.Account.Budgets[i]
+            for (const budget of this.Account.Budgets) {
                 if (state === budget.ID) {
                     this.SelectedBudget = budget
                     break

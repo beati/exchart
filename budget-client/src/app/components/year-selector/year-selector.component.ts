@@ -20,22 +20,18 @@ export class YearSelectorComponent implements ControlValueAccessor {
     Increment(): void {
         if (!this.isDisabled) {
             this.Year += 1
-            if (this.onChange != undefined) {
-                this.onChange(this.Year)
-            }
+            this.onChange(this.Year)
         }
     }
 
     Decrement(): void {
         if (!this.isDisabled) {
             this.Year -= 1
-            if (this.onChange != undefined) {
-                this.onChange(this.Year)
-            }
+            this.onChange(this.Year)
         }
     }
 
-    writeValue(year: number): void {
+    writeValue(year: number | undefined): void {
         if (year == undefined) {
             return
         }

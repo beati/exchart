@@ -48,23 +48,23 @@ export class CategoryEditorComponent implements OnInit {
         )
 
         this.treeFlattener = new MatTreeFlattener(
-            this.nestedToFlat, 
+            this.nestedToFlat,
             (node: categoryFlatNode): number => {
                 return node.level
             },
             (node: categoryFlatNode): boolean => {
                 return node.expandable
             },
-            (node: categoryNode) => {
+            (node: categoryNode): categoryNode[] | undefined => {
                 return node.children
-            }
+            },
         )
 
         this.categoriesDataSource = new MatTreeFlatDataSource(this.TreeControl, this.treeFlattener)
     }
 
     ngOnInit(): void {
-        for (let i = 0; i < CategoryTypes.length; i++) {
+        for (let i = 0; i < CategoryTypes.length; i += 1) {
             this.categoryTree.push({
                 category: {
                     ID: CategoryTypes[i],
@@ -76,9 +76,8 @@ export class CategoryEditorComponent implements OnInit {
             })
         }
 
-        for (let i = 0; i < this.Budget.Categories.length; i++) {
-            const category = this.Budget.Categories[i]
-            if (category.Name != 'default') {
+        for (const category of this.Budget.Categories) {
+            if (category.Name !== 'default') {
                 const children = this.categoryTree[category.Type].children
                 if (children != undefined) {
                     children.push({
@@ -89,8 +88,8 @@ export class CategoryEditorComponent implements OnInit {
             }
         }
 
-        for (let i = 0; i < this.categoryTree.length; i++) {
-            let topLevelNode = this.categoryTree[i]
+        for (let i = 0; i < this.categoryTree.length; i += 1) {
+            const topLevelNode = this.categoryTree[i]
             if (topLevelNode.children != undefined) {
                 topLevelNode.children.push({
                     category : {
@@ -106,7 +105,7 @@ export class CategoryEditorComponent implements OnInit {
         this.categoriesDataSource.data = this.categoryTree
     }
 
-    private nestedToFlat = (node: categoryNode, level: number): categoryFlatNode => {
+    private readonly nestedToFlat = (node: categoryNode, level: number): categoryFlatNode => {
         const existingNode = this.nodes.get(node.category.ID)
 
         if (existingNode != undefined) {
@@ -136,9 +135,9 @@ export class CategoryEditorComponent implements OnInit {
     }
 
     private setSubmitting(type: CategoryType, name: string): void {
-        let topLevelNode = this.categoryTree[type]
+        const topLevelNode = this.categoryTree[type]
         if (topLevelNode.children != undefined) {
-            const node = topLevelNode.children[topLevelNode.children.length-1]
+            const node = topLevelNode.children[topLevelNode.children.length - 1]
             node.category.Name = name
             node.submitting = true
         }
@@ -146,13 +145,13 @@ export class CategoryEditorComponent implements OnInit {
     }
 
     private categoryAdded(category: Category): void {
-        let topLevelNode = this.categoryTree[category.Type]
+        const topLevelNode = this.categoryTree[category.Type]
         if (topLevelNode.children != undefined) {
             topLevelNode.children.splice(-1, 0, {
                 category: category,
                 submitting: false,
             })
-            const node = topLevelNode.children[topLevelNode.children.length-1]
+            const node = topLevelNode.children[topLevelNode.children.length - 1]
             node.category.Name = ''
             node.submitting = false
         }
