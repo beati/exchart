@@ -2,6 +2,28 @@
     font-weight: 500;
 }
 
+.category-node {
+    display: table-row;
+}
+
+.category-node span {
+    display: table-cell;
+}
+
+.category-node-buttons {
+    display: flex;
+    padding-right: 5px;
+}
+
+.category-node-padding {
+    padding-left: 40px;
+    padding-right: 16px;
+}
+
+mat-form-field {
+    width: 180px;
+}
+
 .add-button {
     margin-left: 5px;
 }

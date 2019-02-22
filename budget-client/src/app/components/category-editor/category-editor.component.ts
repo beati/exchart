@@ -9,13 +9,19 @@ import { BudgetService } from '../../services/budget.service'
 
 interface categoryNode {
     category: Category
-    submitting: boolean
+    form?: {
+        submitting: boolean
+        error: string
+    },
     children?: categoryNode[]
 }
 
 interface categoryFlatNode {
     category: Category
-    submitting: boolean
+    form?: {
+        submitting: boolean
+        error: string
+    },
     expandable: boolean
     level: number
 }
@@ -71,7 +77,6 @@ export class CategoryEditorComponent implements OnInit {
                     Name: CategoryTypes[i],
                     Type: i,
                 },
-                submitting: false,
                 children: [],
             })
         }
@@ -82,7 +87,6 @@ export class CategoryEditorComponent implements OnInit {
                 if (children != undefined) {
                     children.push({
                         category: category,
-                        submitting: false,
                     })
                 }
             }
@@ -97,7 +101,10 @@ export class CategoryEditorComponent implements OnInit {
                         Name: '',
                         Type: i,
                     },
-                    submitting: false,
+                    form: {
+                        submitting: false,
+                        error: '',
+                    },
                 })
             }
         }
@@ -109,13 +116,13 @@ export class CategoryEditorComponent implements OnInit {
         const existingNode = this.nodes.get(node.category.ID)
 
         if (existingNode != undefined) {
-            existingNode.submitting = node.submitting
+            existingNode.form = node.form
             return existingNode
         }
 
         const newNode = {
             category: node.category,
-            submitting: node.submitting,
+            form: node.form,
             expandable: node.children != undefined && node.children.length > 0,
             level: level,
         }
@@ -125,22 +132,54 @@ export class CategoryEditorComponent implements OnInit {
         return newNode
     }
 
-    async AddCategory(type: CategoryType, name: string): Promise<void> {
+    async AddCategory(type: CategoryType, id: string, name: string): Promise<void> {
+        if (name === '') {
+            this.setError(type, id, 'Empty')
+            return
+        }
+
         try {
-            this.setSubmitting(type, name)
+            this.setSubmitting(type, id, name)
             const category = await this.budgetService.AddCategory(this.Budget.ID, type, name)
             this.categoryAdded(category)
         } catch (error) {
+            this.setError(type, id, 'AlreadyExists')
         }
     }
 
-    private setSubmitting(type: CategoryType, name: string): void {
+    private getNode(type: CategoryType, id: string): categoryNode | undefined {
         const topLevelNode = this.categoryTree[type]
         if (topLevelNode.children != undefined) {
-            const node = topLevelNode.children[topLevelNode.children.length - 1]
-            node.category.Name = name
-            node.submitting = true
+            for (const node of topLevelNode.children) {
+                if (node.category.ID === id) {
+                    return node
+                }
+            }
         }
+    }
+
+    private setError(type: CategoryType, id: string, error: string): void {
+        const node = this.getNode(type, id)
+        if (node != undefined) {
+            if (node.form != undefined) {
+                node.form.error = error
+            }
+        }
+
+        console.log(this.categoryTree)
+
+        this.categoriesDataSource.data = this.categoryTree
+    }
+
+    private setSubmitting(type: CategoryType, id: string, name: string): void {
+        const node = this.getNode(type, id)
+        if (node != undefined) {
+            if (node.form != undefined) {
+                node.category.Name = name
+                node.form.submitting = true
+            }
+        }
+
         this.categoriesDataSource.data = this.categoryTree
     }
 
@@ -149,13 +188,21 @@ export class CategoryEditorComponent implements OnInit {
         if (topLevelNode.children != undefined) {
             topLevelNode.children.splice(-1, 0, {
                 category: category,
-                submitting: false,
             })
             const node = topLevelNode.children[topLevelNode.children.length - 1]
             node.category.Name = ''
-            node.submitting = false
+            if (node.form != undefined) {
+                node.form.submitting = false
+                node.form.error = ''
+            }
         }
         this.categoriesDataSource.data = this.categoryTree
+    }
+
+    EditCategory(): void {
+    }
+
+    async UpdateCategory(): Promise<void> {
     }
 
     async DeleteCategory(): Promise<void> {
@@ -165,7 +212,7 @@ export class CategoryEditorComponent implements OnInit {
         return node.expandable
     }
 
-    IsEmpty(_: number, node: categoryFlatNode): boolean {
-        return node.category.Name === ''
+    IsForm(_: number, node: categoryFlatNode): boolean {
+        return node.form != undefined
     }
 }

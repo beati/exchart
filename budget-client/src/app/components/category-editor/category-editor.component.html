@@ -7,19 +7,30 @@
         </button>
         <span class="top-level-name">{{ node.category.Name }}</span>
     </mat-tree-node>
-    <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
-        <span>{{ node.category.Name }}</span>
-        <button mat-icon-button>
-            <mat-icon>clear</mat-icon>
-        </button>
+    <mat-tree-node *matTreeNodeDef="let node" class="category-node">
+        <span class="category-node-padding">{{ node.category.Name }}</span>
+        <div class="category-node-buttons">
+            <button mat-icon-button>
+                <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button>
+                <mat-icon>clear</mat-icon>
+            </button>
+        </div>
     </mat-tree-node>
-    <mat-tree-node *matTreeNodeDef="let node: when: IsEmpty" matTreeNodePadding>
-        <form (ngSubmit)="AddCategory(node.category.Type, categoryName.value)">
+    <mat-tree-node *matTreeNodeDef="let node: when: IsForm" matTreeNodePadding>
+        <form (ngSubmit)="AddCategory(node.category.Type, node.category.ID, categoryName.value)">
             <mat-form-field>
-                <input #categoryName matInput placeholder="New category">
+                <input #categoryName [value]="node.category.Name" placeholder="{{ 'CategoryEditor.New' | translate }}" matInput>
+                <mat-error>
+                    test
+                </mat-error>
+                <mat-error *ngIf="false && node.form.error !== ''">
+                    {{ 'CategoryEditor.Errors.' + node.form.error | translate }}
+                </mat-error>
             </mat-form-field>
-            <button *ngIf="!node.submitting" type="submit" mat-button class="add-button">Add</button>
-            <mat-spinner *ngIf="node.submitting"></mat-spinner>
+            <button *ngIf="!node.form.submitting" type="submit" mat-button class="add-button">{{ 'CategoryEditor.Add' | translate }}</button>
+            <mat-spinner *ngIf="node.form.submitting"></mat-spinner>
         </form>
     </mat-tree-node>
 </mat-tree>
