@@ -1,0 +1,6 @@
+<div *ngIf="!Mobile" class="container">
+    <mat-card>
+        <app-category-editor [Budget]="Budget"></app-category-editor>
+    </mat-card>
+</div>
+<app-category-editor *ngIf="Mobile" [Budget]="Budget"></app-category-editor>

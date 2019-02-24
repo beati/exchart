@@ -129,7 +129,7 @@ func (h *checkOriginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	allowed := false
 	origin := r.Header.Get("Origin")
 
-	if origin == "" {
+	if r.Method == "GET" || r.Method == "HEAD" {
 		allowed = true
 		goto done
 	}

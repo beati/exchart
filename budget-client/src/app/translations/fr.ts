@@ -1,10 +1,14 @@
 export const fr = {
     CategoryEditor: {
-        Add: 'Ajouter',
         New: 'Nouvelle catégorie',
         Errors: {
             Empty: 'Choisissez un nom pour la catégorie',
-            AlreadyExists: 'Une catégorie avec le même nom existe déjà',
+            AlreadyExists: 'La catégorie existe déjà',
+        },
+        DeleteDialog: {
+            Content: 'Êtes vous sur de vouloir supprimer la categorie',
+            Yes: 'Oui',
+            Cancel: 'Annuler',
         },
     },
     CategoryTypes: {

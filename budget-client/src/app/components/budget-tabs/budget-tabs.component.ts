@@ -8,5 +8,13 @@ import { Budget } from '../../domain/domain'
     styleUrls: ['./budget-tabs.component.scss'],
 })
 export class BudgetTabsComponent {
-    @Input() Budget: Budget
+    private budget: Budget
+
+    @Input()
+    set Budget(budget: Budget) {
+        this.budget = budget
+    }
+    get Budget(): Budget {
+        return this.budget
+    }
 }

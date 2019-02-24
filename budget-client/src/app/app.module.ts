@@ -1,11 +1,12 @@
 import { HttpClientModule } from '@angular/common/http'
 import { NgModule } from '@angular/core'
-import { FormsModule } from '@angular/forms'
+import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { BrowserModule } from '@angular/platform-browser'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 
 import {
     MatButtonModule,
+    MatCardModule,
     MatDialogModule,
     MatDividerModule,
     MatIconModule,
@@ -16,6 +17,7 @@ import {
     MatRadioModule,
     MatSelectModule,
     MatSidenavModule,
+    MatSnackBarModule,
     MatTabsModule,
     MatToolbarModule,
     MatTreeModule,
@@ -31,7 +33,9 @@ import { BudgetAdderDialogComponent } from './components/budget-adder-dialog/bud
 import { BudgetAdderComponent } from './components/budget-adder/budget-adder.component'
 import { BudgetAnalyticsComponent } from './components/budget-analytics/budget-analytics.component'
 import { BudgetTabsComponent } from './components/budget-tabs/budget-tabs.component'
+import { CategoryEditorContainerComponent } from './components/category-editor-container/category-editor-container.component'
 import { CategoryEditorComponent } from './components/category-editor/category-editor.component'
+import { DeleteCategoryDialogComponent } from './components/delete-category-dialog/delete-category-dialog.component'
 import { LandingPageComponent } from './components/landing-page/landing-page.component'
 import { LoginComponent } from './components/login/login.component'
 import { MainComponent } from './components/main/main.component'
@@ -53,6 +57,7 @@ import { YearSelectorComponent } from './components/year-selector/year-selector.
         BudgetAnalyticsComponent,
         BudgetTabsComponent,
         CategoryEditorComponent,
+        DeleteCategoryDialogComponent,
         LandingPageComponent,
         LoginComponent,
         MainComponent,
@@ -65,9 +70,11 @@ import { YearSelectorComponent } from './components/year-selector/year-selector.
         SettingsComponent,
         ShellComponent,
         YearSelectorComponent,
+        CategoryEditorContainerComponent,
     ],
     entryComponents: [
         BudgetAdderDialogComponent,
+        DeleteCategoryDialogComponent,
         MovementAdderDialogComponent,
     ],
     imports: [
@@ -76,8 +83,10 @@ import { YearSelectorComponent } from './components/year-selector/year-selector.
         BrowserModule,
         FormsModule,
         HttpClientModule,
+        ReactiveFormsModule,
         // Angular material
         MatButtonModule,
+        MatCardModule,
         MatDialogModule,
         MatDividerModule,
         MatIconModule,
@@ -88,6 +97,7 @@ import { YearSelectorComponent } from './components/year-selector/year-selector.
         MatRadioModule,
         MatSelectModule,
         MatSidenavModule,
+        MatSnackBarModule,
         MatTabsModule,
         MatToolbarModule,
         MatTreeModule,

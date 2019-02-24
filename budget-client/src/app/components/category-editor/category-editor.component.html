@@ -7,30 +7,67 @@
         </button>
         <span class="top-level-name">{{ node.category.Name }}</span>
     </mat-tree-node>
-    <mat-tree-node *matTreeNodeDef="let node" class="category-node">
-        <span class="category-node-padding">{{ node.category.Name }}</span>
-        <div class="category-node-buttons">
-            <button mat-icon-button>
-                <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button>
-                <mat-icon>clear</mat-icon>
-            </button>
-        </div>
+    <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
+        <ng-container *ngIf="node.form == undefined">
+            <span class="category-name">{{ node.category.Name }}</span>
+            <div class="category-controls">
+                <ng-container *ngIf="!node.submitting">
+                    <button (click)="EditCategory(node.category.Type, node.category.ID)" mat-icon-button>
+                        <mat-icon>edit</mat-icon>
+                    </button>
+                    <button (click)="DeleteCategory(node.category.Type, node.category.ID)" mat-icon-button>
+                        <mat-icon>clear</mat-icon>
+                    </button>
+                </ng-container>
+                <div *ngIf="node.submitting" class="spinner-container">
+                    <mat-spinner color="accent" diameter="20" strokeWidth="2"></mat-spinner>
+                </div>
+            </div>
+        </ng-container>
+        <ng-container *ngIf="node.form != undefined">
+            <form (ngSubmit)="UpdateCategory(node.category.Type, node.category.ID, categoryName.value)">
+                <span class="category-name">
+                    <mat-form-field>
+                        <input #categoryName [value]="node.category.Name" [formControl]="node.form.formControl" placeholder="{{ 'CategoryEditor.New' | translate }}" matInput>
+                        <mat-error *ngIf="node.form.formControl.hasError('alreadyExists') && !node.form.formControl.hasError('required')">
+                            {{ 'CategoryEditor.Errors.AlreadyExists' | translate }}
+                        </mat-error>
+                        <mat-error *ngIf="node.form.formControl.hasError('required')">
+                            {{ 'CategoryEditor.Errors.Empty' | translate }}
+                        </mat-error>
+                    </mat-form-field>
+                </span>
+                <div class="category-controls category-controls-form">
+                    <button *ngIf="!node.submitting" type="submit" mat-icon-button>
+                        <mat-icon>check</mat-icon>
+                    </button>
+                    <button *ngIf="!node.submitting" type="button" (click)="CancelCategoryEdition(node.category.Type, node.category.ID)" mat-icon-button>
+                        <mat-icon>cancel</mat-icon>
+                    </button>
+                    <div *ngIf="node.submitting" class="spinner-container">
+                        <mat-spinner color="accent" diameter="20" strokeWidth="2"></mat-spinner>
+                    </div>
+                </div>
+            </form>
+        </ng-container>
     </mat-tree-node>
-    <mat-tree-node *matTreeNodeDef="let node: when: IsForm" matTreeNodePadding>
+    <mat-tree-node *matTreeNodeDef="let node: when: IsAdder" matTreeNodePadding>
         <form (ngSubmit)="AddCategory(node.category.Type, node.category.ID, categoryName.value)">
             <mat-form-field>
-                <input #categoryName [value]="node.category.Name" placeholder="{{ 'CategoryEditor.New' | translate }}" matInput>
-                <mat-error>
-                    test
+                <input #categoryName [value]="node.category.Name" [formControl]="node.form.formControl" placeholder="{{ 'CategoryEditor.New' | translate }}" matInput>
+                <mat-error *ngIf="node.form.formControl.hasError('alreadyExists') && !node.form.formControl.hasError('required')">
+                    {{ 'CategoryEditor.Errors.AlreadyExists' | translate }}
                 </mat-error>
-                <mat-error *ngIf="false && node.form.error !== ''">
-                    {{ 'CategoryEditor.Errors.' + node.form.error | translate }}
+                <mat-error *ngIf="node.form.formControl.hasError('required')">
+                    {{ 'CategoryEditor.Errors.Empty' | translate }}
                 </mat-error>
             </mat-form-field>
-            <button *ngIf="!node.form.submitting" type="submit" mat-button class="add-button">{{ 'CategoryEditor.Add' | translate }}</button>
-            <mat-spinner *ngIf="node.form.submitting"></mat-spinner>
+            <button *ngIf="!node.submitting" type="submit" mat-icon-button class="add-button">
+                <mat-icon>add</mat-icon>
+            </button>
+            <div *ngIf="node.submitting" class="spinner-container add-button">
+                <mat-spinner color="accent" diameter="20" strokeWidth="2"></mat-spinner>
+            </div>
         </form>
     </mat-tree-node>
 </mat-tree>

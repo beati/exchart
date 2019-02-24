@@ -1,27 +1,33 @@
 import { Component, Input, OnInit } from '@angular/core'
+import { AbstractControl, FormControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms'
 
 import { FlatTreeControl } from '@angular/cdk/tree'
+import { MatDialog } from '@angular/material/dialog'
+import { MatSnackBar } from '@angular/material/snack-bar'
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree'
 
 import { Budget, Category, CategoryType, CategoryTypes } from '../../domain/domain'
 
 import { BudgetService } from '../../services/budget.service'
 
+import { DeleteCategoryDialogComponent } from '../delete-category-dialog/delete-category-dialog.component'
+
+interface categoryForm {
+    update: boolean
+    formControl: FormControl
+}
+
 interface categoryNode {
     category: Category
-    form?: {
-        submitting: boolean
-        error: string
-    },
+    submitting: boolean
+    form?: categoryForm
     children?: categoryNode[]
 }
 
 interface categoryFlatNode {
     category: Category
-    form?: {
-        submitting: boolean
-        error: string
-    },
+    submitting: boolean
+    form?: categoryForm
     expandable: boolean
     level: number
 }
@@ -32,18 +38,42 @@ interface categoryFlatNode {
     styleUrls: ['./category-editor.component.scss'],
 })
 export class CategoryEditorComponent implements OnInit {
-    @Input() Budget: Budget
+    private initialized = false
 
-    categoryTree: categoryNode[] = []
-    nodes = new Map<string, categoryFlatNode>()
+    private budget: Budget
+    @Input()
+    set Budget(budget: Budget) {
+        this.budget = budget
+        if (this.initialized) {
+            this.init()
+        }
+    }
+    get Budget(): Budget {
+        return this.budget
+    }
+
+    categoryTree: categoryNode[]
+    nodes: Map<string, categoryFlatNode>
 
     TreeControl: FlatTreeControl<categoryFlatNode>
     treeFlattener: MatTreeFlattener<categoryNode, categoryFlatNode>
     categoriesDataSource: MatTreeFlatDataSource<categoryNode, categoryFlatNode>
 
     constructor(
+        private readonly dialog: MatDialog,
+        private readonly snackBar: MatSnackBar,
         private readonly budgetService: BudgetService,
-    ) {
+    ) {}
+
+    ngOnInit(): void {
+        this.init()
+        this.initialized = true
+    }
+
+    private init(): void {
+        this.categoryTree = []
+        this.nodes = new Map<string, categoryFlatNode>()
+
         this.TreeControl = new FlatTreeControl<categoryFlatNode>(
             (node: categoryFlatNode): number => {
                 return node.level
@@ -67,9 +97,7 @@ export class CategoryEditorComponent implements OnInit {
         )
 
         this.categoriesDataSource = new MatTreeFlatDataSource(this.TreeControl, this.treeFlattener)
-    }
 
-    ngOnInit(): void {
         for (let i = 0; i < CategoryTypes.length; i += 1) {
             this.categoryTree.push({
                 category: {
@@ -77,6 +105,7 @@ export class CategoryEditorComponent implements OnInit {
                     Name: CategoryTypes[i],
                     Type: i,
                 },
+                submitting: false,
                 children: [],
             })
         }
@@ -87,6 +116,7 @@ export class CategoryEditorComponent implements OnInit {
                 if (children != undefined) {
                     children.push({
                         category: category,
+                        submitting: false,
                     })
                 }
             }
@@ -101,9 +131,13 @@ export class CategoryEditorComponent implements OnInit {
                         Name: '',
                         Type: i,
                     },
+                    submitting: false,
                     form: {
-                        submitting: false,
-                        error: '',
+                        update: false,
+                        formControl: new FormControl('', [
+                            Validators.required,
+                            this.alreadyExistsValidator(i),
+                        ]),
                     },
                 })
             }
@@ -116,12 +150,14 @@ export class CategoryEditorComponent implements OnInit {
         const existingNode = this.nodes.get(node.category.ID)
 
         if (existingNode != undefined) {
+            existingNode.submitting = node.submitting
             existingNode.form = node.form
             return existingNode
         }
 
         const newNode = {
             category: node.category,
+            submitting: node.submitting,
             form: node.form,
             expandable: node.children != undefined && node.children.length > 0,
             level: level,
@@ -132,87 +168,196 @@ export class CategoryEditorComponent implements OnInit {
         return newNode
     }
 
+    private alreadyExistsValidator(type: CategoryType): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const name = control.value
+
+            if (typeof name === 'string') {
+                const topLevelNode = this.categoryTree[type]
+                if (topLevelNode.children == undefined) {
+                    return null
+                }
+
+                for (const node of topLevelNode.children) {
+                    if (node.form == undefined && node.category.Name === name) {
+                        return {
+                            'alreadyExists': {
+                                value: control.value,
+                            },
+                        }
+                    }
+                }
+            }
+
+            return null
+        }
+    }
+
     async AddCategory(type: CategoryType, id: string, name: string): Promise<void> {
-        if (name === '') {
-            this.setError(type, id, 'Empty')
+        if (this.hasError(type, id)) {
             return
         }
 
         try {
-            this.setSubmitting(type, id, name)
+            this.setSubmitting(type, id, name, true)
             const category = await this.budgetService.AddCategory(this.Budget.ID, type, name)
             this.categoryAdded(category)
         } catch (error) {
-            this.setError(type, id, 'AlreadyExists')
+            this.setSubmitting(type, id, name, false)
+            this.snackBar.open('An error occured', 'Ok', { duration: 3000 })
+        }
+    }
+
+    EditCategory(type: CategoryType, id: string): void {
+        const node = this.getNode(type, id)
+        if (node == undefined) {
+            return
+        }
+
+        node.form = {
+            update: true,
+            formControl: new FormControl(node.category.Name, [
+                Validators.required,
+                this.alreadyExistsValidator(type),
+            ]),
+        }
+
+        this.categoriesDataSource.data = this.categoryTree
+    }
+
+    CancelCategoryEdition(type: CategoryType, id: string): void {
+        const node = this.getNode(type, id)
+        if (node == undefined) {
+            return
+        }
+
+        node.submitting = false
+        node.form = undefined
+
+        this.categoriesDataSource.data = this.categoryTree
+    }
+
+    async UpdateCategory(type: CategoryType, id: string, name: string): Promise<void> {
+        if (this.hasError(type, id)) {
+            return
+        }
+
+        try {
+            this.setSubmitting(type, id, name, true)
+            await this.budgetService.UpdateCategory(id, name)
+            this.CancelCategoryEdition(type, id)
+        } catch (error) {
+            this.setSubmitting(type, id, name, false)
+            this.snackBar.open('An error occured', 'Ok', { duration: 3000 })
+        }
+    }
+
+    async DeleteCategory(type: CategoryType, id: string): Promise<void> {
+        const node = this.getNode(type, id)
+        if (node == undefined) {
+            return
+        }
+
+        const dialogRef = this.dialog.open(DeleteCategoryDialogComponent, {
+            data: node.category,
+        })
+
+        const deleteAccepted = await dialogRef.afterClosed().toPromise()
+
+        if (typeof deleteAccepted === 'boolean' && deleteAccepted) {
+            try {
+                this.setSubmitting(type, id, node.category.Name, true)
+                await this.budgetService.DeleteCategory(id)
+                this.categoryDeleted(type, id)
+            } catch (error) {
+                this.setSubmitting(type, id, node.category.Name, false)
+                this.snackBar.open('An error occured', 'Ok', { duration: 3000 })
+            }
         }
     }
 
     private getNode(type: CategoryType, id: string): categoryNode | undefined {
         const topLevelNode = this.categoryTree[type]
-        if (topLevelNode.children != undefined) {
-            for (const node of topLevelNode.children) {
-                if (node.category.ID === id) {
-                    return node
-                }
+        if (topLevelNode.children == undefined) {
+            return undefined
+        }
+
+        for (const node of topLevelNode.children) {
+            if (node.category.ID === id) {
+                return node
             }
         }
+        return undefined
     }
 
-    private setError(type: CategoryType, id: string, error: string): void {
+    private hasError(type: CategoryType, id: string): boolean {
         const node = this.getNode(type, id)
-        if (node != undefined) {
-            if (node.form != undefined) {
-                node.form.error = error
-            }
+        if (node == undefined) {
+            return false
         }
 
-        console.log(this.categoryTree)
+        if (node.form == undefined) {
+            return false
+        }
 
-        this.categoriesDataSource.data = this.categoryTree
+        if (node.form.formControl.hasError('required') || node.form.formControl.hasError('alreadyExists')) {
+            return true
+        }
+        return false
     }
 
-    private setSubmitting(type: CategoryType, id: string, name: string): void {
+    private setSubmitting(type: CategoryType, id: string, name: string, submitting: boolean): void {
         const node = this.getNode(type, id)
-        if (node != undefined) {
-            if (node.form != undefined) {
-                node.category.Name = name
-                node.form.submitting = true
-            }
+        if (node == undefined) {
+            return
         }
+
+        node.category.Name = name
+        node.submitting = submitting
 
         this.categoriesDataSource.data = this.categoryTree
     }
 
     private categoryAdded(category: Category): void {
         const topLevelNode = this.categoryTree[category.Type]
-        if (topLevelNode.children != undefined) {
-            topLevelNode.children.splice(-1, 0, {
-                category: category,
-            })
-            const node = topLevelNode.children[topLevelNode.children.length - 1]
-            node.category.Name = ''
-            if (node.form != undefined) {
-                node.form.submitting = false
-                node.form.error = ''
-            }
+        if (topLevelNode.children == undefined) {
+            return
         }
+
+        topLevelNode.children.splice(-1, 0, {
+            category: category,
+            submitting: false,
+        })
+        const node = topLevelNode.children[topLevelNode.children.length - 1]
+        node.category.Name = ''
+        node.submitting = false
+
         this.categoriesDataSource.data = this.categoryTree
     }
 
-    EditCategory(): void {
-    }
+    private categoryDeleted(type: CategoryType, id: string): void {
+        const topLevelNode = this.categoryTree[type]
+        if (topLevelNode.children == undefined) {
+            return
+        }
 
-    async UpdateCategory(): Promise<void> {
-    }
+        for (let i = 0; i < topLevelNode.children.length; i += 1) {
+            const node = topLevelNode.children[i]
+            if (node.category.ID === id) {
+                topLevelNode.children.splice(i, 1)
+            }
+        }
 
-    async DeleteCategory(): Promise<void> {
+        this.nodes.delete(id)
+
+        this.categoriesDataSource.data = this.categoryTree
     }
 
     IsTopLevel(_: number, node: categoryFlatNode): boolean {
         return node.expandable
     }
 
-    IsForm(_: number, node: categoryFlatNode): boolean {
-        return node.form != undefined
+    IsAdder(_: number, node: categoryFlatNode): boolean {
+        return node.form != undefined && !node.form.update
     }
 }

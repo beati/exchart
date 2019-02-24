@@ -1,27 +1,39 @@
+mat-tree {
+    min-height: 100%;
+}
+
 .top-level-name {
     font-weight: 500;
 }
 
-.category-node {
-    display: table-row;
-}
-
-.category-node span {
-    display: table-cell;
-}
-
-.category-node-buttons {
+form {
     display: flex;
-    padding-right: 5px;
-}
-
-.category-node-padding {
-    padding-left: 40px;
-    padding-right: 16px;
+    width: 100%;
 }
 
 mat-form-field {
     width: 180px;
+}
+
+.category-name {
+    flex: 1;
+}
+
+.category-controls {
+    display: flex;
+    padding-right: 5px;
+}
+
+.category-controls-form {
+    padding-top: 4px;
+}
+
+.spinner-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
 }
 
 .add-button {

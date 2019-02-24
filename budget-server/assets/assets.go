@@ -11,13 +11,14 @@ import (
 )
 
 const (
-	defaultSrc = "default-src 'none'"
-	scriptSrc  = "script-src 'self'" + devUnsafeEval
-	styleSrc   = "style-src 'self' fonts.googleapis.com 'unsafe-inline'"
-	imgSrc     = "img-src 'self'"
-	connectSrc = "connect-src 'self'"
-	fontSrc    = "font-src 'self' fonts.gstatic.com"
-	cspHeader  = defaultSrc + "; " + scriptSrc + "; " + styleSrc + ";" + imgSrc + ";" + connectSrc + ";" + fontSrc + ";"
+	defaultSrc     = "default-src 'none'"
+	scriptSrc      = "script-src 'self'" + devUnsafeEval
+	styleSrc       = "style-src 'self' fonts.googleapis.com 'unsafe-inline'"
+	imgSrc         = "img-src 'self'"
+	connectSrc     = "connect-src 'self'"
+	fontSrc        = "font-src 'self' fonts.gstatic.com"
+	frameAncestors = "frame-ancestors 'none'"
+	cspHeader      = defaultSrc + "; " + scriptSrc + "; " + styleSrc + ";" + imgSrc + ";" + connectSrc + ";" + fontSrc + ";" + frameAncestors + ";"
 )
 
 type assetHandler struct {

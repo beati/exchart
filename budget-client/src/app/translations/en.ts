@@ -1,10 +1,14 @@
 export const en = {
     CategoryEditor: {
-        Add: 'Add',
         New: 'New category',
         Errors: {
             Empty: 'Chose a name for the category',
-            AlreadyExists: 'A category with the same name already exists',
+            AlreadyExists: 'The category already exists',
+        },
+        DeleteDialog: {
+            Content: 'Are you sure you want to delete category',
+            Yes: 'Yes',
+            Cancel: 'Cancel',
         },
     },
     CategoryTypes: {
