@@ -8,6 +8,7 @@ mat-sidenav {
 
 .shell-content {
     height: calc(100% - 56px);
+    overflow-y: auto;
 }
 
 @media screen and (min-width: 600px) {

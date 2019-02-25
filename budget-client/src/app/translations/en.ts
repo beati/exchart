@@ -16,6 +16,20 @@ export const en = {
         Transport: 'Transport',
     },
     Error: 'Operation not curently possible',
+    Months: {
+        January: 'Januray',
+        February: 'February',
+        March: 'March',
+        April: 'April',
+        May: 'May',
+        June: 'June',
+        July: 'July',
+        August: 'August',
+        September: 'September',
+        October: 'October',
+        November: 'November',
+        December: 'December',
+    },
     MovementAdder: {
         Sign: {
             Revenue: 'Revenue',
@@ -25,7 +39,14 @@ export const en = {
             Me: 'Only me',
             With: 'With',
         },
-        Amount: 'Amount',
+        Category: {
+            Category: 'Category',
+            Choose: 'Choose a category',
+        },
+        Amount: {
+            Amount: 'Amount',
+            Empty: 'Fill in the amount',
+        },
         Period: {
             Period: 'Period',
             OneTime: 'One time',

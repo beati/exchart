@@ -1,10 +1,12 @@
-import { Component, Input, OnInit } from '@angular/core'
+import { Component, Input, OnInit, ViewChild } from '@angular/core'
+import { FormControl, NgForm, Validators } from '@angular/forms'
 
 import { DateTime } from 'luxon'
 
 import { Budget, BudgetStatus, Category, CategoryType, Months, Period } from '../../domain/domain'
 
 import { BudgetService } from '../../services/budget.service'
+import { ErrorService } from '../../services/error.service'
 
 @Component({
     selector: 'app-movement-adder',
@@ -14,26 +16,31 @@ import { BudgetService } from '../../services/budget.service'
 export class MovementAdderComponent implements OnInit {
     BudgetStatus = BudgetStatus
     CategoryType = CategoryType
+    Months = Months
 
     @Input() Budgets: Budget[]
-    Months = Months
     Categories: Category[][] = new Array<Category[]>(CategoryType.CategoryTypeCount)
 
     MovementFormData = {
         Submitting: false,
-        Error: false,
         Sign: '-1',
         Amount: '',
+        AmountFormControl: new FormControl('', [
+            Validators.required,
+        ]),
         BudgetID: '',
-        CategoryName: '',
-        CategoryID: '',
+        Category: <Category><unknown>undefined,
+        CategoryEmpty: false,
         Period: 0,
         Year: 0,
         Month: 0,
     }
 
+    @ViewChild('f') form: NgForm;
+
     constructor(
         private readonly budgetService: BudgetService,
+        private readonly errorService: ErrorService,
     ) {}
 
     ngOnInit(): void {
@@ -81,18 +88,31 @@ export class MovementAdderComponent implements OnInit {
         event.target.value = newValue
     }
 
-    SetCategory(categoryID: string): void {
-        this.MovementFormData.CategoryID = categoryID
+    SetCategory(category: Category): void {
+        this.MovementFormData.Category = category
+    }
+
+    Submit(): void {
+        this.form.ngSubmit.emit()
     }
 
     async AddMovement(): Promise<void> {
+        if (this.MovementFormData.Category == undefined) {
+            this.MovementFormData.CategoryEmpty = true
+            return
+        }
+
+        if (this.MovementFormData.AmountFormControl.hasError('required')) {
+            return
+        }
+
         try {
             this.MovementFormData.Submitting = true
             console.log(this.MovementFormData)
             this.MovementFormData.Submitting = false
         } catch (error) {
             this.MovementFormData.Submitting = false
-            this.MovementFormData.Error = true
+            await this.errorService.DisplayError()
         }
     }
 }

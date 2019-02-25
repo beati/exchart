@@ -1,1 +1,7 @@
-<app-movement-adder></app-movement-adder>
+<div mat-dialog-content>
+    <app-movement-adder #form></app-movement-adder>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="Cancel()">Cancel</button>
+  <button mat-button (click)="form.Submit()" cdkFocusInitial>Ok</button>
+</div>

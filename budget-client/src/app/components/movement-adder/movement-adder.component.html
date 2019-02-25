@@ -1,4 +1,4 @@
-<form (ngSubmit)="AddMovement()">
+<form #f (ngSubmit)="AddMovement()">
     <div>
         <mat-button-toggle-group name="Sign" [(ngModel)]="MovementFormData.Sign">
             <mat-button-toggle value="-1">{{ 'MovementAdder.Sign.Expense' | translate }}</mat-button-toggle>
@@ -25,32 +25,34 @@
     </div>
 
     <div class="category-container full-width">
-        <button type="button" [matMenuTriggerFor]="categoryTypes" mat-stroked-button>Category</button>
+        <button type="button" [matMenuTriggerFor]="categoryTypes" mat-stroked-button>{{ 'MovementAdder.Category.Category' | translate }}</button>
         <mat-menu #categoryTypes="matMenu">
             <button [matMenuTriggerFor]="housing" mat-menu-item>Housing</button>
             <button [matMenuTriggerFor]="transport" mat-menu-item>Transport</button>
         </mat-menu>
         <mat-menu #housing="matMenu">
-            <button *ngFor="let category of Categories[CategoryType.Housing]" (click)="SetCategory(category.ID)" mat-menu-item>{{ category.Name }}</button>
+            <button *ngFor="let category of Categories[CategoryType.Housing]" (click)="SetCategory(category)" mat-menu-item>{{ category.Name }}</button>
         </mat-menu>
         <mat-menu #transport="matMenu">
-            <button *ngFor="let category of Categories[CategoryType.Transport]" (click)="SetCategory(category.ID)" mat-menu-item>{{ category.Name }}</button>
+            <button *ngFor="let category of Categories[CategoryType.Transport]" (click)="SetCategory(category)" mat-menu-item>{{ category.Name }}</button>
         </mat-menu>
-        <span>Assurance</span>
+        <span *ngIf="MovementFormData.Category == undefined" [class.color-warn]="MovementFormData.CategoryEmpty" class="category-name">{{ 'MovementAdder.Category.Choose' | translate }}</span>
+        <span *ngIf="MovementFormData.Category != undefined" class="category-name">{{ MovementFormData.Category.Name }}</span>
     </div>
 
     <div>
         <mat-form-field color="accent" appearance="outline" class="full-width">
-            <mat-label>{{ 'MovementAdder.Amount' | translate }}</mat-label>
-            <input type="text" name="Amount" [(ngModel)]="MovementFormData.Amount" (input)="CheckAmount($event)" matInput>
+            <mat-label>{{ 'MovementAdder.Amount.Amount' | translate }}</mat-label>
+            <input type="text" name="Amount" (input)="CheckAmount($event)" [formControl]="MovementFormData.AmountFormControl" matInput>
             <mat-icon matSuffix>euro_symbol</mat-icon>
+            <mat-error *ngIf="MovementFormData.AmountFormControl.hasError('required')">{{ 'MovementAdder.Amount.Empty' | translate }}</mat-error>
         </mat-form-field>
     </div>
 
     <div>
         <mat-form-field color="accent" appearance="outline" class="full-width">
             <mat-label>{{ 'MovementAdder.Period.Period' | translate }}</mat-label>
-            <mat-select name="Period" [(ngModel)]="MovementFormData.Period" placeholder="Period">
+            <mat-select name="Period" [(ngModel)]="MovementFormData.Period">
                 <mat-option [value]="0">
                     {{ 'MovementAdder.Period.OneTime' | translate }}
                 </mat-option>
@@ -68,18 +70,14 @@
     </div>
 
     <div>
-        <mat-form-field color="accent" appearance="outline">
+        <mat-form-field color="accent" appearance="outline" class="month">
             <mat-label>{{ 'MovementAdder.Month' | translate }}</mat-label>
-            <mat-select name="Month" [(ngModel)]="MovementFormData.Month" placeholder="Month">
+            <mat-select name="Month" [(ngModel)]="MovementFormData.Month">
                 <mat-option *ngFor="let month of Months" [value]="month.Code">
-                    {{ month.String }}
+                    {{ month.String | translate }}
                 </mat-option>
             </mat-select>
         </mat-form-field>
-        <app-year-selector name="Year" [(ngModel)]="MovementFormData.Year"></app-year-selector>
+        <app-year-selector name="Year" [(ngModel)]="MovementFormData.Year" class="year"></app-year-selector>
     </div>
-
-    <button type="submit" mat-raised-button>
-        Ok
-    </button>
 </form>
