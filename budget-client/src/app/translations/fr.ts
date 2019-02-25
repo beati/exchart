@@ -1,20 +1,21 @@
 export const fr = {
     CategoryEditor: {
-        New: 'Nouvelle catégorie',
-        Errors: {
-            Empty: 'Choisissez un nom pour la catégorie',
-            AlreadyExists: 'La catégorie existe déjà',
-        },
         DeleteDialog: {
+            Cancel: 'Annuler',
             Content: 'Êtes vous sur de vouloir supprimer la categorie',
             Yes: 'Oui',
-            Cancel: 'Annuler',
         },
+        Errors: {
+            AlreadyExists: 'La catégorie existe déjà',
+            Empty: 'Choisissez un nom pour la catégorie',
+        },
+        New: 'Nouvelle catégorie',
     },
     CategoryTypes: {
         Housing: 'Logement',
         Transport: 'Transport',
     },
+    Error: 'Opération impossible actuellement',
     PeriodSelector: {
         Mode: {
             All: 'Tout',

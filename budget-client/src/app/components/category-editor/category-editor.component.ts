@@ -3,12 +3,12 @@ import { AbstractControl, FormControl, ValidationErrors, ValidatorFn, Validators
 
 import { FlatTreeControl } from '@angular/cdk/tree'
 import { MatDialog } from '@angular/material/dialog'
-import { MatSnackBar } from '@angular/material/snack-bar'
 import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree'
 
 import { Budget, Category, CategoryType, CategoryTypes } from '../../domain/domain'
 
 import { BudgetService } from '../../services/budget.service'
+import { ErrorService } from '../../services/error.service'
 
 import { DeleteCategoryDialogComponent } from '../delete-category-dialog/delete-category-dialog.component'
 
@@ -61,8 +61,8 @@ export class CategoryEditorComponent implements OnInit {
 
     constructor(
         private readonly dialog: MatDialog,
-        private readonly snackBar: MatSnackBar,
         private readonly budgetService: BudgetService,
+        private readonly errorService: ErrorService,
     ) {}
 
     ngOnInit(): void {
@@ -204,7 +204,7 @@ export class CategoryEditorComponent implements OnInit {
             this.categoryAdded(category)
         } catch (error) {
             this.setSubmitting(type, id, name, false)
-            this.snackBar.open('An error occured', 'Ok', { duration: 3000 })
+            await this.errorService.DisplayError()
         }
     }
 
@@ -248,7 +248,7 @@ export class CategoryEditorComponent implements OnInit {
             this.CancelCategoryEdition(type, id)
         } catch (error) {
             this.setSubmitting(type, id, name, false)
-            this.snackBar.open('An error occured', 'Ok', { duration: 3000 })
+            await this.errorService.DisplayError()
         }
     }
 
@@ -271,7 +271,7 @@ export class CategoryEditorComponent implements OnInit {
                 this.categoryDeleted(type, id)
             } catch (error) {
                 this.setSubmitting(type, id, node.category.Name, false)
-                this.snackBar.open('An error occured', 'Ok', { duration: 3000 })
+                await this.errorService.DisplayError()
             }
         }
     }

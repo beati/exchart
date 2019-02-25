@@ -1,20 +1,21 @@
 export const en = {
     CategoryEditor: {
-        New: 'New category',
-        Errors: {
-            Empty: 'Chose a name for the category',
-            AlreadyExists: 'The category already exists',
-        },
         DeleteDialog: {
+            Cancel: 'Cancel',
             Content: 'Are you sure you want to delete category',
             Yes: 'Yes',
-            Cancel: 'Cancel',
         },
+        Errors: {
+            AlreadyExists: 'The category already exists',
+            Empty: 'Chose a name for the category',
+        },
+        New: 'New category',
     },
     CategoryTypes: {
         Housing: 'Housing',
         Transport: 'Transport',
     },
+    Error: 'Operation not curently possible',
     PeriodSelector: {
         Mode: {
             All: 'All',
