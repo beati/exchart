@@ -47,7 +47,7 @@
             <app-settings *ngSwitchCase="'Settings'"></app-settings>
             <app-budget-tabs *ngSwitchDefault [Budget]="SelectedBudget"></app-budget-tabs>
         </div>
-        <ng-container *ngIf="Mobile">
+        <ng-container *ngIf="Mobile && State !== 'MovementAdder'">
             <button type="button" (click)="SetState(false, 'MovementAdder')" mat-fab color="accent" class="add-fab">
                 <mat-icon>add</mat-icon>
             </button>

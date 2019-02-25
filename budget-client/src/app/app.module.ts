@@ -6,6 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 
 import {
     MatButtonModule,
+    MatButtonToggleModule,
     MatCardModule,
     MatDialogModule,
     MatDividerModule,
@@ -86,6 +87,7 @@ import { YearSelectorComponent } from './components/year-selector/year-selector.
         ReactiveFormsModule,
         // Angular material
         MatButtonModule,
+        MatButtonToggleModule,
         MatCardModule,
         MatDialogModule,
         MatDividerModule,
@@ -94,7 +96,7 @@ import { YearSelectorComponent } from './components/year-selector/year-selector.
         MatListModule,
         MatMenuModule,
         MatProgressSpinnerModule,
-        MatRadioModule,
+        //MatRadioModule,
         MatSelectModule,
         MatSidenavModule,
         MatSnackBarModule,

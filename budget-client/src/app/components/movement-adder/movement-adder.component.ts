@@ -23,8 +23,9 @@ export class MovementAdderComponent implements OnInit {
         Submitting: false,
         Error: false,
         Sign: '-1',
-        Amount: 0,
+        Amount: '',
         BudgetID: '',
+        CategoryName: '',
         CategoryID: '',
         Period: 0,
         Year: 0,
@@ -52,6 +53,32 @@ export class MovementAdderComponent implements OnInit {
                 }
             }
         }
+    }
+
+    CheckAmount(event: any): void {
+        let newValue: string = event.target.value
+
+        newValue = newValue.replace(/[^0-9,.]/g, "")
+        newValue = newValue.replace(/,/g, '.')
+        const splited = newValue.split('.')
+        switch (splited.length) {
+        case 0:
+            newValue = ''
+            break
+        case 1:
+            newValue = splited[0]
+            break
+        default:
+            if (splited[0] === '') {
+                newValue = ''
+            } else {
+                newValue = `${splited[0]}.${splited[1].slice(0, 2)}`
+            }
+            break
+        }
+
+        this.MovementFormData.Amount = newValue
+        event.target.value = newValue
     }
 
     SetCategory(categoryID: string): void {

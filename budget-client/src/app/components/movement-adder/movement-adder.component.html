@@ -1,64 +1,85 @@
 <form (ngSubmit)="AddMovement()">
-    <mat-radio-group name="Sign" [(ngModel)]="MovementFormData.Sign">
-        <mat-radio-button value="-1">Depense</mat-radio-button>
-        <mat-radio-button value="1">Recette</mat-radio-button>
-    </mat-radio-group>
-    <mat-form-field class="example-full-width">
-        <input type="number" name="Amount" [(ngModel)]="MovementFormData.Amount" placeholder="Amount" matInput>
-    </mat-form-field>
-    <mat-form-field>
-        <mat-select name="BudgetID" [(ngModel)]="MovementFormData.BudgetID">
-            <mat-option *ngFor="let budget of Budgets" [value]="budget.ID">
-                <ng-container [ngSwitch]="budget.Status">
-                    <ng-container *ngSwitchCase="BudgetStatus.Main">
-                        Pour moi
+    <div>
+        <mat-button-toggle-group name="Sign" [(ngModel)]="MovementFormData.Sign">
+            <mat-button-toggle value="-1">{{ 'MovementAdder.Sign.Expense' | translate }}</mat-button-toggle>
+            <mat-button-toggle value="1">{{ 'MovementAdder.Sign.Revenue' | translate }}</mat-button-toggle>
+        </mat-button-toggle-group>
+    </div>
+
+    <div>
+        <mat-form-field color="accent" appearance="outline" class="full-width">
+            <mat-label>{{ 'MovementAdder.With.With' | translate }}</mat-label>
+            <mat-select name="BudgetID" [(ngModel)]="MovementFormData.BudgetID">
+                <mat-option *ngFor="let budget of Budgets" [value]="budget.ID">
+                    <ng-container [ngSwitch]="budget.Status">
+                        <ng-container *ngSwitchCase="BudgetStatus.Main">
+                            {{ 'MovementAdder.With.Me' | translate }}
+                        </ng-container>
+                        <ng-container *ngSwitchCase="BudgetStatus.Open">
+                            {{ budget.With }}
+                        </ng-container>
                     </ng-container>
-                    <ng-container *ngSwitchCase="BudgetStatus.Open">
-                        Avec {{ budget.With }}
-                    </ng-container>
-                </ng-container>
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
 
-    <button type="button" [matMenuTriggerFor]="categoryTypes" mat-stroked-button>Category</button>
-    <mat-menu #categoryTypes="matMenu">
-        <button [matMenuTriggerFor]="housing" mat-menu-item>Housing</button>
-        <button [matMenuTriggerFor]="transport" mat-menu-item>Transport</button>
-    </mat-menu>
-    <mat-menu #housing="matMenu">
-        <button *ngFor="let category of Categories[CategoryType.Housing]" (click)="SetCategory(category.ID)" mat-menu-item>{{ category.Name }}</button>
-    </mat-menu>
-    <mat-menu #transport="matMenu">
-        <button *ngFor="let category of Categories[CategoryType.Transport]" (click)="SetCategory(category.ID)" mat-menu-item>{{ category.Name }}</button>
-    </mat-menu>
+    <div class="category-container full-width">
+        <button type="button" [matMenuTriggerFor]="categoryTypes" mat-stroked-button>Category</button>
+        <mat-menu #categoryTypes="matMenu">
+            <button [matMenuTriggerFor]="housing" mat-menu-item>Housing</button>
+            <button [matMenuTriggerFor]="transport" mat-menu-item>Transport</button>
+        </mat-menu>
+        <mat-menu #housing="matMenu">
+            <button *ngFor="let category of Categories[CategoryType.Housing]" (click)="SetCategory(category.ID)" mat-menu-item>{{ category.Name }}</button>
+        </mat-menu>
+        <mat-menu #transport="matMenu">
+            <button *ngFor="let category of Categories[CategoryType.Transport]" (click)="SetCategory(category.ID)" mat-menu-item>{{ category.Name }}</button>
+        </mat-menu>
+        <span>Assurance</span>
+    </div>
 
-    <mat-form-field>
-        <mat-select name="Period" [(ngModel)]="MovementFormData.Period" placeholder="Period">
-            <mat-option [value]="0">
-                One time
-            </mat-option>
-            <mat-option [value]="1">
-                On the year
-            </mat-option>
-            <mat-option [value]="2">
-                Monthly
-            </mat-option>
-            <mat-option [value]="3">
-                Yearly
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
+    <div>
+        <mat-form-field color="accent" appearance="outline" class="full-width">
+            <mat-label>{{ 'MovementAdder.Amount' | translate }}</mat-label>
+            <input type="text" name="Amount" [(ngModel)]="MovementFormData.Amount" (input)="CheckAmount($event)" matInput>
+            <mat-icon matSuffix>euro_symbol</mat-icon>
+        </mat-form-field>
+    </div>
 
-    <mat-form-field>
-        <mat-select name="Month" [(ngModel)]="MovementFormData.Month" placeholder="Month">
-            <mat-option *ngFor="let month of Months" [value]="month.Code">
-                {{ month.String }}
-            </mat-option>
-        </mat-select>
-    </mat-form-field>
-    <app-year-selector name="Year" [(ngModel)]="MovementFormData.Year"></app-year-selector>
+    <div>
+        <mat-form-field color="accent" appearance="outline" class="full-width">
+            <mat-label>{{ 'MovementAdder.Period.Period' | translate }}</mat-label>
+            <mat-select name="Period" [(ngModel)]="MovementFormData.Period" placeholder="Period">
+                <mat-option [value]="0">
+                    {{ 'MovementAdder.Period.OneTime' | translate }}
+                </mat-option>
+                <mat-option [value]="1">
+                    {{ 'MovementAdder.Period.OverTheYear' | translate }}
+                </mat-option>
+                <mat-option [value]="2">
+                    {{ 'MovementAdder.Period.Monthly' | translate }}
+                </mat-option>
+                <mat-option [value]="3">
+                    {{ 'MovementAdder.Period.Yearly' | translate }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+
+    <div>
+        <mat-form-field color="accent" appearance="outline">
+            <mat-label>{{ 'MovementAdder.Month' | translate }}</mat-label>
+            <mat-select name="Month" [(ngModel)]="MovementFormData.Month" placeholder="Month">
+                <mat-option *ngFor="let month of Months" [value]="month.Code">
+                    {{ month.String }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <app-year-selector name="Year" [(ngModel)]="MovementFormData.Year"></app-year-selector>
+    </div>
+
     <button type="submit" mat-raised-button>
-        <mat-spinner diameter="24" strokeWidth="3"></mat-spinner>
+        Ok
     </button>
 </form>

@@ -16,6 +16,25 @@ export const fr = {
         Transport: 'Transport',
     },
     Error: 'Opération impossible actuellement',
+    MovementAdder: {
+        Sign: {
+            Revenue: 'Recette',
+            Expense: 'Dépense',
+        },
+        With: {
+            Me: 'Moi seulement',
+            With: 'Avec',
+        },
+        Amount: 'Montant',
+        Period: {
+            Period: 'Période',
+            OneTime: 'Une fois',
+            OverTheYear: 'Sur l\'année',
+            Monthly: 'Mensuel',
+            Yearly: 'Annuel',
+        },
+        Month: 'Mois',
+    },
     PeriodSelector: {
         Mode: {
             All: 'Tout',
