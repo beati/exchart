@@ -48,11 +48,6 @@ export class MovementAdderComponent implements OnInit {
 
     ngOnInit(): void {
         this.resetDate()
-
-        for (let i = 0; i < this.Categories.length; i += 1) {
-            this.Categories[i] = []
-        }
-
         this.setBudgetMain()
     }
 
@@ -66,9 +61,12 @@ export class MovementAdderComponent implements OnInit {
     }
 
     private setCategories(budgetID: string): void {
+        for (let i = 0; i < this.Categories.length; i += 1) {
+            this.Categories[i] = []
+        }
+
         for (const budget of this.Budgets) {
             if (budget.ID === budgetID) {
-                this.Categories = []
                 for (const category of budget.Categories) {
                     this.Categories[category.Type].push(category)
                 }

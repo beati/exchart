@@ -19,9 +19,7 @@
                         <mat-icon>clear</mat-icon>
                     </button>
                 </ng-container>
-                <div *ngIf="node.submitting" class="spinner-container">
-                    <mat-spinner color="accent" diameter="20" strokeWidth="2"></mat-spinner>
-                </div>
+                <app-icon-button-spinner *ngIf="node.submitting" color="accent"></app-icon-button-spinner>
             </div>
         </ng-container>
         <ng-container *ngIf="node.form != undefined">
@@ -44,9 +42,7 @@
                     <button *ngIf="!node.submitting" type="button" (click)="CancelCategoryEdition(node.category.Type, node.category.ID)" mat-icon-button>
                         <mat-icon>cancel</mat-icon>
                     </button>
-                    <div *ngIf="node.submitting" class="spinner-container">
-                        <mat-spinner color="accent" diameter="20" strokeWidth="2"></mat-spinner>
-                    </div>
+                    <app-icon-button-spinner *ngIf="node.submitting" color="accent"></app-icon-button-spinner>
                 </div>
             </form>
         </ng-container>
@@ -65,9 +61,7 @@
             <button *ngIf="!node.submitting" type="submit" mat-icon-button class="add-button">
                 <mat-icon>add</mat-icon>
             </button>
-            <div *ngIf="node.submitting" class="spinner-container add-button">
-                <mat-spinner color="accent" diameter="20" strokeWidth="2"></mat-spinner>
-            </div>
+            <app-icon-button-spinner *ngIf="node.submitting" color="accent"></app-icon-button-spinner>
         </form>
     </mat-tree-node>
 </mat-tree>

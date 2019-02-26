@@ -37,6 +37,7 @@ import { BudgetTabsComponent } from './components/budget-tabs/budget-tabs.compon
 import { CategoryEditorContainerComponent } from './components/category-editor-container/category-editor-container.component'
 import { CategoryEditorComponent } from './components/category-editor/category-editor.component'
 import { DeleteCategoryDialogComponent } from './components/delete-category-dialog/delete-category-dialog.component'
+import { IconButtonSpinnerComponent } from './components/icon-button-spinner/icon-button-spinner.component'
 import { LandingPageComponent } from './components/landing-page/landing-page.component'
 import { LoginComponent } from './components/login/login.component'
 import { MainComponent } from './components/main/main.component'
@@ -61,6 +62,7 @@ import { YearSelectorComponent } from './components/year-selector/year-selector.
         CategoryEditorContainerComponent,
         CategoryEditorComponent,
         DeleteCategoryDialogComponent,
+        IconButtonSpinnerComponent,
         LandingPageComponent,
         LoginComponent,
         MainComponent,

@@ -26,3 +26,9 @@ $theme: mat-light-theme($primary, $accent, $warn);
 .color-warn {
     color: mat-color($warn);
 }
+
+$background: map-get($theme, background);
+
+.menu-entry-selected {
+    background-color: mat-color($background, 'hover');
+}

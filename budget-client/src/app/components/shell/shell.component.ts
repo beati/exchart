@@ -6,6 +6,7 @@ import { Account, Budget, BudgetStatus } from '../../domain/domain'
 
 import { AuthService } from '../../services/auth.service'
 import { BudgetService } from '../../services/budget.service'
+import { ErrorService } from '../../services/error.service'
 import { DisplayType, ResponsiveService } from '../../services/responsive.service'
 
 import { BudgetAcceptDialogComponent } from '../budget-accept-dialog/budget-accept-dialog.component'
@@ -24,6 +25,8 @@ export class ShellComponent implements OnInit {
 
     Mobile: boolean
 
+    Loading = false
+
     Account: Account
     OpenBudgets: Budget[]
 
@@ -35,6 +38,7 @@ export class ShellComponent implements OnInit {
         private readonly responsive: ResponsiveService,
         private readonly authService: AuthService,
         private readonly budgetService: BudgetService,
+        private readonly errorService: ErrorService,
     ) {}
 
     async ngOnInit(): Promise<void> {
@@ -72,6 +76,11 @@ export class ShellComponent implements OnInit {
         }
     }
 
+    async Refresh(): Promise<void> {
+        this.Loading = true
+        this.Loading = false
+    }
+
     async SetState(state: string): Promise<void> {
         this.State = state
 
@@ -95,6 +104,16 @@ export class ShellComponent implements OnInit {
             })
             const accepted = await dialogRef.afterClosed().toPromise()
             if (typeof accepted === 'boolean' && accepted) {
+                try {
+                    this.Loading = true
+                    await this.budgetService.AcceptJointBudget(budget.ID)
+                    budget.Status = BudgetStatus.Open
+                    this.Account.Budgets.sort(orderBudget)
+                    this.Loading = false
+                } catch (error) {
+                    this.Loading = false
+                    this.errorService.DisplayError()
+                }
             }
             break
         }
