@@ -14,22 +14,28 @@
 <mat-sidenav-container class="sidenav-container">
     <mat-sidenav #sidenav [mode]="Mobile ? 'over' : 'side'" [opened]="!Mobile">
         <mat-nav-list *ngIf="Account != undefined">
-            <a (click)="SetState(false, 'All')" mat-list-item>
-                <mat-icon>arrow_right_alt</mat-icon>
-                <span>All</span>
+            <a (click)="SetState('All')" mat-list-item>
+                <mat-icon>timeline</mat-icon>
+                <span class="menu-entry-text">{{ 'Shell.Menu.All' | translate }}</span>
             </a>
-            <a *ngFor="let budget of Account.Budgets" (click)="SetState(true, budget.ID)" mat-list-item>
-                <mat-icon>arrow_right_alt</mat-icon>
-                <span>Main</span>
+            <a *ngFor="let budget of Account.Budgets" (click)="BudgetMenuAction(budget)" mat-list-item>
+                <ng-container [ngSwitch]="budget.Status">
+                    <mat-icon *ngSwitchCase="BudgetStatus.Main">label_outlined</mat-icon>
+                    <mat-icon *ngSwitchCase="BudgetStatus.Open">people</mat-icon>
+                    <mat-icon *ngSwitchCase="BudgetStatus.NotAccepted">how_to_reg</mat-icon>
+                    <mat-icon *ngSwitchCase="BudgetStatus.ToAccept" class="color-warn">new_releases</mat-icon>
+                </ng-container>
+                <span *ngIf="budget.Status === BudgetStatus.Main" class="menu-entry-text">{{ 'Shell.Menu.Main' | translate }}</span>
+                <span *ngIf="budget.Status !== BudgetStatus.Main" class="menu-entry-text">{{ 'Shell.Menu.With' | translate }} {{ budget.With }}</span>
             </a>
             <a (click)="AddBudget()" mat-list-item>
-                <mat-icon>arrow_right_alt</mat-icon>
-                <span>Add</span>
+                <mat-icon>person_add</mat-icon>
+                <span class="menu-entry-text">{{ 'Shell.Menu.NewJointBudget' | translate }}</span>
             </a>
             <mat-divider></mat-divider>
-            <a (click)="SetState(false, 'Settings')" mat-list-item>
-                <mat-icon>arrow_right_alt</mat-icon>
-                <span>Settings</span>
+            <a (click)="SetState('Settings')" mat-list-item>
+                <mat-icon>settings</mat-icon>
+                <span class="menu-entry-text">{{ 'Shell.Menu.Settings' | translate }}</span>
             </a>
         </mat-nav-list>
     </mat-sidenav>
@@ -48,7 +54,7 @@
             <app-budget-tabs *ngSwitchDefault [Budget]="SelectedBudget"></app-budget-tabs>
         </div>
         <ng-container *ngIf="Mobile && State !== 'MovementAdder'">
-            <button type="button" (click)="SetState(false, 'MovementAdder')" mat-fab color="accent" class="add-fab">
+            <button type="button" (click)="SetState('MovementAdder')" mat-fab color="accent" class="add-fab">
                 <mat-icon>add</mat-icon>
             </button>
         </ng-container>

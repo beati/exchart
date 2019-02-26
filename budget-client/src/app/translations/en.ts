@@ -1,4 +1,9 @@
 export const en = {
+    BudgetAcceptDialog: {
+        Message: 'wants to establish a joint budget with you',
+        Refuse: 'Refuse',
+        Accept: 'Accept',
+    },
     CategoryEditor: {
         DeleteDialog: {
             Cancel: 'Cancel',
@@ -36,25 +41,28 @@ export const en = {
             Expense: 'Expense',
         },
         With: {
+            Label: 'With',
             Me: 'Only me',
-            With: 'With',
         },
         Category: {
-            Category: 'Category',
+            Label: 'Category',
             Choose: 'Choose a category',
         },
         Amount: {
-            Amount: 'Amount',
+            Label: 'Amount',
             Empty: 'Fill in the amount',
         },
         Period: {
-            Period: 'Period',
+            Label: 'Period',
             OneTime: 'One time',
             OverTheYear: 'Over the year',
             Monthly: 'Monthly',
             Yearly: 'Yearly',
         },
-        Month: 'Month',
+        Month: {
+            Label: 'Month',
+            All: 'All year',
+        },
     },
     PeriodSelector: {
         Mode: {
@@ -67,5 +75,14 @@ export const en = {
         Data: 'Data',
         Movements: 'Movements',
         Categories: 'Categories',
+    },
+    Shell: {
+        Menu: {
+            All: 'All',
+            Main: 'Main',
+            With: 'With',
+            NewJointBudget: 'New joint budget',
+            Settings: 'Settings',
+        },
     },
 }

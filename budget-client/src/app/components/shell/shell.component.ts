@@ -8,6 +8,7 @@ import { AuthService } from '../../services/auth.service'
 import { BudgetService } from '../../services/budget.service'
 import { DisplayType, ResponsiveService } from '../../services/responsive.service'
 
+import { BudgetAcceptDialogComponent } from '../budget-accept-dialog/budget-accept-dialog.component'
 import { BudgetAdderDialogComponent } from '../budget-adder-dialog/budget-adder-dialog.component'
 import { MovementAdderDialogComponent } from '../movement-adder-dialog/movement-adder-dialog.component'
 
@@ -43,35 +44,15 @@ export class ShellComponent implements OnInit {
             this.Mobile = display === DisplayType.Mobile
         })
 
-        this.budgetService.BudgetAdded.subscribe(async (budget) => {
+        this.budgetService.BudgetAdded.subscribe((budget) => {
             this.Account.Budgets.push(budget)
-            await this.SetState(true, budget.ID)
+            this.Account.Budgets.sort(orderBudget)
         })
 
         try {
             this.Account = await this.budgetService.GetAcount()
 
-            this.Account.Budgets.sort((a: Budget, b: Budget): number => {
-                if (a.Status === BudgetStatus.Main) {
-                    return -1
-                } else if (b.Status === BudgetStatus.Main) {
-                    return 1
-                }
-
-                if (a.Status === BudgetStatus.Open) {
-                    return -1
-                } else if (b.Status === BudgetStatus.Open) {
-                    return 1
-                }
-
-                if (a.Status === BudgetStatus.NotAccepted) {
-                    return -1
-                } else if (b.Status === BudgetStatus.NotAccepted) {
-                    return 1
-                }
-
-                return 0
-            })
+            this.Account.Budgets.sort(orderBudget)
 
             const budgets: Budget[] = []
             for (const budget of this.Account.Budgets) {
@@ -91,26 +72,37 @@ export class ShellComponent implements OnInit {
         }
     }
 
-    async SetState(budgetSelected: boolean, state: string): Promise<void> {
+    async SetState(state: string): Promise<void> {
         this.State = state
-
-        if (budgetSelected) {
-            for (const budget of this.Account.Budgets) {
-                if (state === budget.ID) {
-                    this.SelectedBudget = budget
-                    break
-                }
-            }
-        }
 
         if (this.Mobile) {
             await this.sidenav.close()
         }
     }
 
+    async BudgetMenuAction(budget: Budget): Promise<void> {
+        switch (budget.Status) {
+        case BudgetStatus.Main:
+        case BudgetStatus.Open:
+            this.SelectedBudget = budget
+            await this.SetState(budget.ID)
+            break
+        case BudgetStatus.NotAccepted:
+            break
+        case BudgetStatus.ToAccept:
+            const dialogRef = this.dialog.open(BudgetAcceptDialogComponent, {
+                data: budget.With,
+            })
+            const accepted = await dialogRef.afterClosed().toPromise()
+            if (typeof accepted === 'boolean' && accepted) {
+            }
+            break
+        }
+    }
+
     async AddBudget(): Promise<void> {
         if (this.Mobile) {
-            await this.SetState(false, 'BudgetAdder')
+            await this.SetState('BudgetAdder')
         } else {
             this.dialog.open(BudgetAdderDialogComponent)
         }
@@ -119,4 +111,26 @@ export class ShellComponent implements OnInit {
     OpenMovementAdderDialog(): void {
         this.dialog.open(MovementAdderDialogComponent)
     }
+}
+
+function orderBudget(a: Budget, b: Budget): number {
+    if (a.Status === BudgetStatus.Main) {
+        return -1
+    } else if (b.Status === BudgetStatus.Main) {
+        return 1
+    }
+
+    if (a.Status === BudgetStatus.Open) {
+        return -1
+    } else if (b.Status === BudgetStatus.Open) {
+        return 1
+    }
+
+    if (a.Status === BudgetStatus.NotAccepted) {
+        return -1
+    } else if (b.Status === BudgetStatus.NotAccepted) {
+        return 1
+    }
+
+    return 0
 }

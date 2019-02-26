@@ -3,10 +3,12 @@ import { FormControl, NgForm, Validators } from '@angular/forms'
 
 import { DateTime } from 'luxon'
 
-import { Budget, BudgetStatus, Category, CategoryType, Months, Period } from '../../domain/domain'
+import { Budget, BudgetStatus, Category, CategoryType, CategoryTypes, Months } from '../../domain/domain'
 
 import { BudgetService } from '../../services/budget.service'
 import { ErrorService } from '../../services/error.service'
+
+enum FormPeriod { OneTime, OverTheYear, Monthly, Yearly }
 
 @Component({
     selector: 'app-movement-adder',
@@ -16,27 +18,28 @@ import { ErrorService } from '../../services/error.service'
 export class MovementAdderComponent implements OnInit {
     BudgetStatus = BudgetStatus
     CategoryType = CategoryType
+    CategoryTypes = CategoryTypes
+    FormPeriod = FormPeriod
     Months = Months
 
     @Input() Budgets: Budget[]
     Categories: Category[][] = new Array<Category[]>(CategoryType.CategoryTypeCount)
 
     MovementFormData = {
-        Submitting: false,
         Sign: '-1',
         Amount: '',
         AmountFormControl: new FormControl('', [
             Validators.required,
         ]),
         BudgetID: '',
-        Category: <Category><unknown>undefined,
+        Category: undefined as unknown as Category,
         CategoryEmpty: false,
-        Period: 0,
+        Period: FormPeriod.OneTime,
         Year: 0,
         Month: 0,
     }
 
-    @ViewChild('f') form: NgForm;
+    @ViewChild('f') form: NgForm
 
     constructor(
         private readonly budgetService: BudgetService,
@@ -44,28 +47,64 @@ export class MovementAdderComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        const now = DateTime.local()
-        this.MovementFormData.Year = now.year
-        this.MovementFormData.Month = now.month
+        this.resetDate()
 
         for (let i = 0; i < this.Categories.length; i += 1) {
             this.Categories[i] = []
         }
 
+        this.setBudgetMain()
+    }
+
+    private setBudgetMain(): void {
         for (const budget of this.Budgets) {
             if (budget.Status === BudgetStatus.Main) {
                 this.MovementFormData.BudgetID = budget.ID
+            }
+        }
+        this.setCategories(this.MovementFormData.BudgetID)
+    }
+
+    private setCategories(budgetID: string): void {
+        for (const budget of this.Budgets) {
+            if (budget.ID === budgetID) {
+                this.Categories = []
                 for (const category of budget.Categories) {
                     this.Categories[category.Type].push(category)
                 }
             }
         }
+
+        this.MovementFormData.Category = undefined as unknown as Category
+        this.MovementFormData.CategoryEmpty = false
+    }
+
+    private resetDate(): void {
+        const now = DateTime.local()
+        this.MovementFormData.Year = now.year
+        this.MovementFormData.Month = now.month
+    }
+
+    private resetMonth(): void {
+        const now = DateTime.local()
+        this.MovementFormData.Month = now.month
+    }
+
+    SignChanged(sign: string): void {
+        this.setBudgetMain()
+
+        this.MovementFormData.Period = FormPeriod.OneTime
+        this.resetDate()
+    }
+
+    BudgetChanged(budgetID: string): void {
+        this.setCategories(budgetID)
     }
 
     CheckAmount(event: any): void {
         let newValue: string = event.target.value
 
-        newValue = newValue.replace(/[^0-9,.]/g, "")
+        newValue = newValue.replace(/[^0-9,.]/g, '')
         newValue = newValue.replace(/,/g, '.')
         const splited = newValue.split('.')
         switch (splited.length) {
@@ -92,6 +131,14 @@ export class MovementAdderComponent implements OnInit {
         this.MovementFormData.Category = category
     }
 
+    PeriodChanged(period: number): void {
+        if (period === FormPeriod.OverTheYear || period === FormPeriod.Yearly) {
+            this.MovementFormData.Month = 0
+        } else if (this.MovementFormData.Month === 0) {
+            this.resetMonth()
+        }
+    }
+
     Submit(): void {
         this.form.ngSubmit.emit()
     }
@@ -107,11 +154,8 @@ export class MovementAdderComponent implements OnInit {
         }
 
         try {
-            this.MovementFormData.Submitting = true
             console.log(this.MovementFormData)
-            this.MovementFormData.Submitting = false
         } catch (error) {
-            this.MovementFormData.Submitting = false
             await this.errorService.DisplayError()
         }
     }

@@ -5,7 +5,7 @@
                 {{ TreeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
             </mat-icon>
         </button>
-        <span class="top-level-name">{{ node.category.Name }}</span>
+        <span class="top-level-name">{{ 'CategoryTypes.' + node.category.Name | translate  }}</span>
     </mat-tree-node>
     <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
         <ng-container *ngIf="node.form == undefined">

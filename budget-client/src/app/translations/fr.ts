@@ -1,4 +1,9 @@
 export const fr = {
+    BudgetAcceptDialog: {
+        Message: 'veux établir un budget commun avec vous',
+        Refuse: 'Refuser',
+        Accept: 'Accepter',
+    },
     CategoryEditor: {
         DeleteDialog: {
             Cancel: 'Annuler',
@@ -36,25 +41,28 @@ export const fr = {
             Expense: 'Dépense',
         },
         With: {
+            Label: 'Avec',
             Me: 'Moi seulement',
-            With: 'Avec',
         },
         Category: {
-            Category: 'Catégorie',
+            Label: 'Catégorie',
             Choose: 'Choisissez une catégories',
         },
         Amount: {
-            Amount: 'Montant',
+            Label: 'Montant',
             Empty: 'Renseignez le montant',
         },
         Period: {
-            Period: 'Période',
+            Label: 'Période',
             OneTime: 'Une fois',
             OverTheYear: 'Sur l\'année',
             Monthly: 'Mensuel',
             Yearly: 'Annuel',
         },
-        Month: 'Mois',
+        Month: {
+            Label: 'Mois',
+            All: 'Toute l\'année',
+        },
     },
     PeriodSelector: {
         Mode: {
@@ -67,5 +75,14 @@ export const fr = {
         Data: 'Données',
         Movements: 'Mouvements',
         Categories: 'Catégories',
+    },
+    Shell: {
+        Menu: {
+            All: 'Tout',
+            Main: 'Personnel',
+            With: 'Avec',
+            NewJointBudget: 'Nouveau budget commun',
+            Settings: 'Paramètres',
+        },
     },
 }

@@ -1,15 +1,15 @@
 <form #f (ngSubmit)="AddMovement()">
     <div>
-        <mat-button-toggle-group name="Sign" [(ngModel)]="MovementFormData.Sign">
+        <mat-button-toggle-group name="Sign" [(ngModel)]="MovementFormData.Sign" (ngModelChange)="SignChanged($event)">
             <mat-button-toggle value="-1">{{ 'MovementAdder.Sign.Expense' | translate }}</mat-button-toggle>
             <mat-button-toggle value="1">{{ 'MovementAdder.Sign.Revenue' | translate }}</mat-button-toggle>
         </mat-button-toggle-group>
     </div>
 
-    <div>
+    <div *ngIf="MovementFormData.Sign === '-1'">
         <mat-form-field color="accent" appearance="outline" class="full-width">
-            <mat-label>{{ 'MovementAdder.With.With' | translate }}</mat-label>
-            <mat-select name="BudgetID" [(ngModel)]="MovementFormData.BudgetID">
+            <mat-label>{{ 'MovementAdder.With.Label' | translate }}</mat-label>
+            <mat-select name="BudgetID" [(ngModel)]="MovementFormData.BudgetID" (ngModelChange)="BudgetChanged($event)">
                 <mat-option *ngFor="let budget of Budgets" [value]="budget.ID">
                     <ng-container [ngSwitch]="budget.Status">
                         <ng-container *ngSwitchCase="BudgetStatus.Main">
@@ -24,17 +24,15 @@
         </mat-form-field>
     </div>
 
-    <div class="category-container full-width">
-        <button type="button" [matMenuTriggerFor]="categoryTypes" mat-stroked-button>{{ 'MovementAdder.Category.Category' | translate }}</button>
-        <mat-menu #categoryTypes="matMenu">
-            <button [matMenuTriggerFor]="housing" mat-menu-item>Housing</button>
-            <button [matMenuTriggerFor]="transport" mat-menu-item>Transport</button>
-        </mat-menu>
-        <mat-menu #housing="matMenu">
-            <button *ngFor="let category of Categories[CategoryType.Housing]" (click)="SetCategory(category)" mat-menu-item>{{ category.Name }}</button>
-        </mat-menu>
-        <mat-menu #transport="matMenu">
-            <button *ngFor="let category of Categories[CategoryType.Transport]" (click)="SetCategory(category)" mat-menu-item>{{ category.Name }}</button>
+    <div *ngIf="MovementFormData.Sign === '-1'" class="category-container full-width">
+        <button type="button" [matMenuTriggerFor]="categoryMenu" mat-stroked-button>{{ 'MovementAdder.Category.Label' | translate }}</button>
+        <mat-menu #categoryMenu="matMenu">
+            <ng-container *ngFor="let categoryType of CategoryTypes; index as i">
+                <button [matMenuTriggerFor]="subMenu" mat-menu-item>{{ 'CategoryTypes.' + categoryType | translate }}</button>
+                <mat-menu #subMenu="matMenu">
+                    <button *ngFor="let category of Categories[i]" (click)="SetCategory(category)" mat-menu-item>{{ category.Name }}</button>
+                </mat-menu>
+            </ng-container>
         </mat-menu>
         <span *ngIf="MovementFormData.Category == undefined" [class.color-warn]="MovementFormData.CategoryEmpty" class="category-name">{{ 'MovementAdder.Category.Choose' | translate }}</span>
         <span *ngIf="MovementFormData.Category != undefined" class="category-name">{{ MovementFormData.Category.Name }}</span>
@@ -42,17 +40,17 @@
 
     <div>
         <mat-form-field color="accent" appearance="outline" class="full-width">
-            <mat-label>{{ 'MovementAdder.Amount.Amount' | translate }}</mat-label>
+            <mat-label>{{ 'MovementAdder.Amount.Label' | translate }}</mat-label>
             <input type="text" name="Amount" (input)="CheckAmount($event)" [formControl]="MovementFormData.AmountFormControl" matInput>
             <mat-icon matSuffix>euro_symbol</mat-icon>
             <mat-error *ngIf="MovementFormData.AmountFormControl.hasError('required')">{{ 'MovementAdder.Amount.Empty' | translate }}</mat-error>
         </mat-form-field>
     </div>
 
-    <div>
+    <div *ngIf="MovementFormData.Sign === '-1'">
         <mat-form-field color="accent" appearance="outline" class="full-width">
-            <mat-label>{{ 'MovementAdder.Period.Period' | translate }}</mat-label>
-            <mat-select name="Period" [(ngModel)]="MovementFormData.Period">
+            <mat-label>{{ 'MovementAdder.Period.Label' | translate }}</mat-label>
+            <mat-select name="Period" [(ngModel)]="MovementFormData.Period" (ngModelChange)="PeriodChanged($event)">
                 <mat-option [value]="0">
                     {{ 'MovementAdder.Period.OneTime' | translate }}
                 </mat-option>
@@ -71,8 +69,13 @@
 
     <div>
         <mat-form-field color="accent" appearance="outline" class="month">
-            <mat-label>{{ 'MovementAdder.Month' | translate }}</mat-label>
-            <mat-select name="Month" [(ngModel)]="MovementFormData.Month">
+            <mat-label>{{ 'MovementAdder.Month.Label' | translate }}</mat-label>
+            <mat-select *ngIf="MovementFormData.Month === 0" name="Month" [(ngModel)]="MovementFormData.Month" disabled="true">
+                <mat-option [value]="0">
+                    {{ 'MovementAdder.Month.All' | translate }}
+                </mat-option>
+            </mat-select>
+            <mat-select *ngIf="MovementFormData.Month !== 0" name="Month" [(ngModel)]="MovementFormData.Month">
                 <mat-option *ngFor="let month of Months" [value]="month.Code">
                     {{ month.String | translate }}
                 </mat-option>

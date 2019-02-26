@@ -15,7 +15,6 @@ import {
     MatListModule,
     MatMenuModule,
     MatProgressSpinnerModule,
-    MatRadioModule,
     MatSelectModule,
     MatSidenavModule,
     MatSnackBarModule,
@@ -30,6 +29,7 @@ import { TranslationLoader } from './translations/translation'
 import { AppRoutingModule } from './app-routing.module'
 
 import { AppComponent } from './app.component'
+import { BudgetAcceptDialogComponent } from './components/budget-accept-dialog/budget-accept-dialog.component'
 import { BudgetAdderDialogComponent } from './components/budget-adder-dialog/budget-adder-dialog.component'
 import { BudgetAdderComponent } from './components/budget-adder/budget-adder.component'
 import { BudgetAnalyticsComponent } from './components/budget-analytics/budget-analytics.component'
@@ -53,10 +53,12 @@ import { YearSelectorComponent } from './components/year-selector/year-selector.
 @NgModule({
     declarations: [
         AppComponent,
+        BudgetAcceptDialogComponent,
         BudgetAdderDialogComponent,
         BudgetAdderComponent,
         BudgetAnalyticsComponent,
         BudgetTabsComponent,
+        CategoryEditorContainerComponent,
         CategoryEditorComponent,
         DeleteCategoryDialogComponent,
         LandingPageComponent,
@@ -71,9 +73,9 @@ import { YearSelectorComponent } from './components/year-selector/year-selector.
         SettingsComponent,
         ShellComponent,
         YearSelectorComponent,
-        CategoryEditorContainerComponent,
     ],
     entryComponents: [
+        BudgetAcceptDialogComponent,
         BudgetAdderDialogComponent,
         DeleteCategoryDialogComponent,
         MovementAdderDialogComponent,
@@ -96,7 +98,6 @@ import { YearSelectorComponent } from './components/year-selector/year-selector.
         MatListModule,
         MatMenuModule,
         MatProgressSpinnerModule,
-        //MatRadioModule,
         MatSelectModule,
         MatSidenavModule,
         MatSnackBarModule,
