@@ -1,9 +1,9 @@
 <button mat-stroked-button (click)="Today()">Today</button>
 <button mat-icon-button (click)="Previous()">
-    <mat-icon>keyboard_arrow_left</mat-icon>
+    <mat-icon>chevron_left</mat-icon>
 </button>
 <button mat-icon-button (click)="Next()">
-    <mat-icon>arrow_forward_ios</mat-icon>
+    <mat-icon>chevron_right</mat-icon>
 </button>
 <ng-container [ngSwitch]="Period.Duration">
     <span *ngSwitchCase="PeriodDuration.All">{{ 'PeriodSelector.Mode.All' | translate }}</span>

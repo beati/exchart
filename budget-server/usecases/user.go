@@ -254,11 +254,15 @@ func (interactor *UserInteractor) AddUser(ctx context.Context, email, password, 
 		return
 	}
 
-	return interactor.mailer.Send(ctx, &Mail{
-		To:      []string{user.Email},
-		Subject: "Welcome",
-		Text:    buffer.String(),
-	})
+	if false {
+		return interactor.mailer.Send(ctx, &Mail{
+			To:      []string{user.Email},
+			Subject: "Welcome",
+			Text:    buffer.String(),
+		})
+	} else {
+		return nil
+	}
 }
 
 // VerifyUserEmail check that email is owned by the user.

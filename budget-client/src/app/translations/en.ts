@@ -78,11 +78,12 @@ export const en = {
     },
     Shell: {
         Menu: {
-            All: 'All',
+            Analytics: 'Analytics',
             Main: 'Main',
             With: 'With',
             NewJointBudget: 'New joint budget',
             Settings: 'Settings',
+            Logout: 'Logout',
         },
     },
 }

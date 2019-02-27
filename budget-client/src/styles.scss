@@ -12,3 +12,7 @@ body {
 mat-tab-group, mat-tab-group > div {
     height: 100%;
 }
+
+.dialog-buttons-align-right {
+    justify-content: flex-end;
+}

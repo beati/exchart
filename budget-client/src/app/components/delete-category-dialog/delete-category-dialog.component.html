@@ -1,7 +1,7 @@
 <div mat-dialog-content>
     {{ 'CategoryEditor.DeleteDialog.Content' | translate }} {{ Data.Name }} ?
 </div>
-<div mat-dialog-actions>
+<div mat-dialog-actions class="dialog-buttons-align-right">
     <button (click)="Cancel()" mat-button>{{ 'CategoryEditor.DeleteDialog.Cancel' | translate }}</button>
     <button (click)="Delete()" mat-button cdkFocusInitial>{{ 'CategoryEditor.DeleteDialog.Yes' | translate }}</button>
 </div>

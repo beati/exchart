@@ -30,8 +30,9 @@ export class ShellComponent implements OnInit {
     Account: Account
     OpenBudgets: Budget[]
 
-    State = 'All'
+    Page = 'Analytics'
     SelectedBudget: Budget
+    SubPage = ''
 
     constructor(
         private readonly dialog: MatDialog,
@@ -81,8 +82,16 @@ export class ShellComponent implements OnInit {
         this.Loading = false
     }
 
-    async SetState(state: string): Promise<void> {
-        this.State = state
+    async SetPage(page: string): Promise<void> {
+        this.Page = page
+
+        if (this.Mobile) {
+            await this.sidenav.close()
+        }
+    }
+
+    async SetSubPage(subPage: string): Promise<void> {
+        this.SubPage = subPage
 
         if (this.Mobile) {
             await this.sidenav.close()
@@ -94,20 +103,33 @@ export class ShellComponent implements OnInit {
         case BudgetStatus.Main:
         case BudgetStatus.Open:
             this.SelectedBudget = budget
-            await this.SetState(budget.ID)
+            await this.SetPage(budget.ID)
             break
         case BudgetStatus.NotAccepted:
             break
         case BudgetStatus.ToAccept:
+            if (this.Mobile) {
+                this.sidenav.close().then(() => {})
+            }
+
             const dialogRef = this.dialog.open(BudgetAcceptDialogComponent, {
                 data: budget.With,
             })
             const accepted = await dialogRef.afterClosed().toPromise()
-            if (typeof accepted === 'boolean' && accepted) {
+            if (typeof accepted === 'boolean') {
                 try {
                     this.Loading = true
-                    await this.budgetService.AcceptJointBudget(budget.ID)
-                    budget.Status = BudgetStatus.Open
+                    if (accepted) {
+                        await this.budgetService.AcceptJointBudget(budget.ID)
+                        budget.Status = BudgetStatus.Open
+                    } else {
+                        await this.budgetService.DisableJointBudget(budget.ID)
+                        for (let i = 0; i < this.Account.Budgets.length; i++) {
+                            if (budget.ID === this.Account.Budgets[i].ID) {
+                                this.Account.Budgets.splice(i, 1)
+                            }
+                        }
+                    }
                     this.Account.Budgets.sort(orderBudget)
                     this.Loading = false
                 } catch (error) {
@@ -121,14 +143,20 @@ export class ShellComponent implements OnInit {
 
     async AddBudget(): Promise<void> {
         if (this.Mobile) {
-            await this.SetState('BudgetAdder')
+            await this.SetSubPage('BudgetAdder')
         } else {
             this.dialog.open(BudgetAdderDialogComponent)
         }
     }
 
-    OpenMovementAdderDialog(): void {
-        this.dialog.open(MovementAdderDialogComponent)
+    async AddMovement(): Promise<void> {
+        if (this.Mobile) {
+            await this.SetSubPage('MovementAdder')
+        } else {
+            this.dialog.open(MovementAdderDialogComponent, {
+                data: this.OpenBudgets,
+            })
+        }
     }
 }
 

@@ -78,11 +78,12 @@ export const fr = {
     },
     Shell: {
         Menu: {
-            All: 'Tout',
+            Analytics: 'Analyse',
             Main: 'Personnel',
             With: 'Avec',
             NewJointBudget: 'Nouveau budget commun',
             Settings: 'Paramètres',
+            Logout: 'Se déconnecter',
         },
     },
 }

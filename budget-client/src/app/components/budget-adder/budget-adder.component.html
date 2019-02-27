@@ -1,4 +1,9 @@
 <form (ngSubmit)="AddBudget()">
-    <input type="email" name="Email" [(ngModel)]="BudgetFormData.Email">
-    <button type="submit">Add</button>
+    <mat-form-field color="accent" appearance="outline" class="full-width">
+        <mat-label>{{ 'MovementAdder.Amount.Label' | translate }}</mat-label>
+        <input type="email" name="Email" [formControl]="EmailFormControl" matInput>
+        <mat-icon matSuffix>euro_symbol</mat-icon>
+        <mat-error *ngIf="EmailFormControl.hasError('required')">{{ 'MovementAdder.Amount.Empty' | translate }}</mat-error>
+        <mat-error *ngIf="EmailFormControl.hasError('email')">{{ 'MovementAdder.Amount.Empty' | translate }}</mat-error>
+    </mat-form-field>
 </form>
