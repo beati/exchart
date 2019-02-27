@@ -65,6 +65,9 @@
             </ng-container>
             <ng-container *ngIf="SubPage !== ''" [ngSwitch]="SubPage">
                 <ng-container *ngSwitchCase="'BudgetAdder'">
+                    <button *ngIf="!Loading" type="button" (click)="SubmitAddBudget()" mat-icon-button>
+                        <mat-icon>check</mat-icon>
+                    </button>
                     <app-icon-button-spinner *ngIf="Loading" color="warn"></app-icon-button-spinner>
                 </ng-container>
                 <ng-container *ngSwitchCase="'MovementAdder'">
@@ -82,7 +85,7 @@
                 <app-budget-tabs *ngSwitchDefault [Budget]="SelectedBudget"></app-budget-tabs>
             </ng-container>
             <ng-container *ngIf="SubPage !== ''" [ngSwitch]="SubPage">
-                <app-budget-adder *ngSwitchCase="'BudgetAdder'"></app-budget-adder>
+                <app-budget-adder #budgetAdder *ngSwitchCase="'BudgetAdder'"></app-budget-adder>
                 <app-movement-adder *ngSwitchCase="'MovementAdder'" [Budgets]="OpenBudgets"></app-movement-adder>
             </ng-container>
         </div>

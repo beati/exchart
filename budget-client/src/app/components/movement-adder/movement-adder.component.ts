@@ -1,5 +1,5 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core'
-import { FormControl, NgForm, Validators } from '@angular/forms'
+import { Component, Input, OnInit } from '@angular/core'
+import { FormControl, Validators } from '@angular/forms'
 
 import { DateTime } from 'luxon'
 
@@ -38,8 +38,6 @@ export class MovementAdderComponent implements OnInit {
         Year: 0,
         Month: 0,
     }
-
-    @ViewChild('f') form: NgForm
 
     constructor(
         private readonly budgetService: BudgetService,
@@ -137,11 +135,9 @@ export class MovementAdderComponent implements OnInit {
         }
     }
 
-    Submit(): void {
-        this.form.ngSubmit.emit()
-    }
-
     async AddMovement(): Promise<void> {
+        this.MovementFormData.AmountFormControl.markAsTouched()
+
         if (this.MovementFormData.Category == undefined) {
             this.MovementFormData.CategoryEmpty = true
             return

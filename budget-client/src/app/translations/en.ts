@@ -4,6 +4,14 @@ export const en = {
         Refuse: 'Refuse',
         Accept: 'Accept',
     },
+    BudgetAdder: {
+        Message: '',
+        Label: 'Email',
+        Errors: {
+            Empty: '',
+            Email: 'Invalid email address',
+        },
+    },
     CategoryEditor: {
         DeleteDialog: {
             Cancel: 'Cancel',

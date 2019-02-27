@@ -12,6 +12,7 @@ import { DisplayType, ResponsiveService } from '../../services/responsive.servic
 import { BudgetAcceptDialogComponent } from '../budget-accept-dialog/budget-accept-dialog.component'
 import { BudgetAdderDialogComponent } from '../budget-adder-dialog/budget-adder-dialog.component'
 import { MovementAdderDialogComponent } from '../movement-adder-dialog/movement-adder-dialog.component'
+import { BudgetAdderComponent } from '../budget-adder/budget-adder.component'
 
 @Component({
     selector: 'app-shell',
@@ -22,6 +23,7 @@ export class ShellComponent implements OnInit {
     BudgetStatus = BudgetStatus
 
     @ViewChild('sidenav') sidenav: MatSidenav
+    @ViewChild('budgetAdder') BudgetAdder: BudgetAdderComponent
 
     Mobile: boolean
 
@@ -147,6 +149,10 @@ export class ShellComponent implements OnInit {
         } else {
             this.dialog.open(BudgetAdderDialogComponent)
         }
+    }
+
+    SubmitAddBudget(): void {
+        this.BudgetAdder.AddBudget()
     }
 
     async AddMovement(): Promise<void> {

@@ -1,6 +1,8 @@
-import { Component } from '@angular/core'
+import { Component} from '@angular/core'
+import { FormControl, Validators } from '@angular/forms'
 
 import { BudgetService } from '../../services/budget.service'
+import { ErrorService } from '../../services/error.service'
 
 @Component({
     selector: 'app-budget-adder',
@@ -8,24 +10,27 @@ import { BudgetService } from '../../services/budget.service'
     styleUrls: ['./budget-adder.component.scss'],
 })
 export class BudgetAdderComponent {
-    BudgetFormData = {
-        Submitting: false,
-        Error: false,
-        Email: '',
-    }
+    EmailFormControl = new FormControl('', [
+        Validators.required,
+        Validators.email,
+    ])
 
     constructor(
         private readonly budgetService: BudgetService,
+        private readonly errorService: ErrorService,
     ) {}
 
     async AddBudget(): Promise<void> {
+        this.EmailFormControl.markAsTouched()
+
+        if (this.EmailFormControl.hasError('required') || this.EmailFormControl.hasError('email')) {
+            return
+        }
+
         try {
-            this.BudgetFormData.Submitting = true
-            await this.budgetService.AddJointBudget(this.BudgetFormData.Email)
-            this.BudgetFormData.Submitting = false
+            await this.budgetService.AddJointBudget(this.EmailFormControl.value)
         } catch (error) {
-            this.BudgetFormData.Submitting = false
-            this.BudgetFormData.Error = true
+            this.errorService.DisplayError()
         }
     }
 }
