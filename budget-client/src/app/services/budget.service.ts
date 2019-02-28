@@ -76,7 +76,7 @@ export class BudgetService {
 
     async AddMovement(categoryID: string, amount: number, year: number, month: number): Promise<Movement> {
         const movement = await this.http.post<Movement>('/api/movement', {
-            Category: categoryID,
+            CategoryID: categoryID,
             Amount: amount,
             Year: year,
             Month: month,
@@ -87,7 +87,7 @@ export class BudgetService {
 
     async UpdateMovement(movementID: string, categoryID: string, year: number, month: number): Promise<void> {
         return this.http.post<void>(`/api/movement/${movementID}`, {
-            Category: categoryID,
+            CategoryID: categoryID,
             Year: year,
             Month: month,
         })
@@ -111,7 +111,7 @@ export class BudgetService {
 
     async AddRecurringMovement(categoryID: string, amount: number, period: number, firstYear: number, firstMonth: number): Promise<RecurringMovement> {
         const movement = await this.http.post<RecurringMovement>('/api/recurring_movement', {
-            Category: categoryID,
+            CategoryID: categoryID,
             Amount: amount,
             Period: period,
             FirstYear: firstYear,
@@ -123,7 +123,7 @@ export class BudgetService {
 
     async UpdateRecurringMovement(movementID: string, categoryID: string, firstYear: number, firstMonth: number, lastYear: number, lastMonth: number): Promise<void> {
         return this.http.post<void>(`/api/recurring_movement/${movementID}`, {
-            Category: categoryID,
+            CategoryID: categoryID,
             FirstYear: firstYear,
             FirstMonth: firstMonth,
             LastYear: lastYear,

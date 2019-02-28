@@ -39,7 +39,7 @@ type RecurringMovementTx interface {
 
 // NewRecurringMovement returns a new RecurringMovement.
 func NewRecurringMovement(categoryID EntityID, amount int64, period Period, firstYear int, firstMonth time.Month) (*RecurringMovement, error) {
-	if amount == 0 {
+	if amount >= 0 {
 		return nil, ErrBadParameters
 	}
 

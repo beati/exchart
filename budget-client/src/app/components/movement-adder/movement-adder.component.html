@@ -51,16 +51,16 @@
         <mat-form-field color="accent" appearance="outline" class="full-width">
             <mat-label>{{ 'MovementAdder.Period.Label' | translate }}</mat-label>
             <mat-select name="Period" [(ngModel)]="MovementFormData.Period" (ngModelChange)="PeriodChanged($event)">
-                <mat-option [value]="0">
+                <mat-option [value]="FormPeriod.OneTime">
                     {{ 'MovementAdder.Period.OneTime' | translate }}
                 </mat-option>
-                <mat-option [value]="1">
+                <mat-option [value]="FormPeriod.OverTheYear">
                     {{ 'MovementAdder.Period.OverTheYear' | translate }}
                 </mat-option>
-                <mat-option [value]="2">
+                <mat-option [value]="FormPeriod.Monthly">
                     {{ 'MovementAdder.Period.Monthly' | translate }}
                 </mat-option>
-                <mat-option [value]="3">
+                <mat-option [value]="FormPeriod.Yearly">
                     {{ 'MovementAdder.Period.Yearly' | translate }}
                 </mat-option>
             </mat-select>

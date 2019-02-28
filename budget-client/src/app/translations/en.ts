@@ -5,11 +5,15 @@ export const en = {
         Accept: 'Accept',
     },
     BudgetAdder: {
-        Message: '',
+        Message: 'Enter the email address of the account to link.',
         Label: 'Email',
         Errors: {
-            Empty: '',
+            Empty: 'Enter the email address',
             Email: 'Invalid email address',
+        },
+        Buttons: {
+            Cancel: 'Cancel',
+            Ok: 'Ok',
         },
     },
     CategoryEditor: {
@@ -28,7 +32,10 @@ export const en = {
         Housing: 'Housing',
         Transport: 'Transport',
     },
-    Error: 'Operation not curently possible',
+    Errors: {
+        Default: 'Operation not curently possible',
+        UserNotFound: 'User not found',
+    },
     Months: {
         January: 'Januray',
         February: 'February',
@@ -70,6 +77,10 @@ export const en = {
         Month: {
             Label: 'Month',
             All: 'All year',
+        },
+        Buttons: {
+            Cancel: 'Cancel',
+            Ok: 'Ok',
         },
     },
     PeriodSelector: {

@@ -1,5 +1,5 @@
 <form #f (ngSubmit)="AddBudget()">
-    <div>{{ 'BudgetAdder.Message' | translate }}</div>
+    <div class="message">{{ 'BudgetAdder.Message' | translate }}</div>
     <mat-form-field color="accent" appearance="outline" class="full-width">
         <mat-label>{{ 'BudgetAdder.Label' | translate }}</mat-label>
         <input type="email" name="Email" [formControl]="EmailFormControl" matInput>

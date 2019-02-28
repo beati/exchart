@@ -1,7 +1,7 @@
 <div mat-dialog-content>
-    <app-movement-adder #form [Budgets]="Budgets"></app-movement-adder>
+    <app-movement-adder #movementAdder [Budgets]="Budgets"></app-movement-adder>
 </div>
 <div mat-dialog-actions class="dialog-buttons-align-right">
-  <button (click)="Cancel()" mat-button>Cancel</button>
-  <button (click)="form.AddMovement()" mat-button cdkFocusInitial>Ok</button>
+    <button (click)="Cancel()" mat-button>{{ 'MovementAdder.Buttons.Cancel' | translate }}</button>
+    <button (click)="AddMovement()" mat-button cdkFocusInitial>{{ 'MovementAdder.Buttons.Ok' | translate }}</button>
 </div>

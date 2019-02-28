@@ -8,7 +8,7 @@ import { Budget, BudgetStatus, Category, CategoryType, CategoryTypes, Months } f
 import { BudgetService } from '../../services/budget.service'
 import { ErrorService } from '../../services/error.service'
 
-enum FormPeriod { OneTime, OverTheYear, Monthly, Yearly }
+enum FormPeriod { Monthly, Yearly, OneTime, OverTheYear }
 
 @Component({
     selector: 'app-movement-adder',
@@ -27,7 +27,6 @@ export class MovementAdderComponent implements OnInit {
 
     MovementFormData = {
         Sign: '-1',
-        Amount: '',
         AmountFormControl: new FormControl('', [
             Validators.required,
         ]),
@@ -88,7 +87,9 @@ export class MovementAdderComponent implements OnInit {
 
     SignChanged(sign: string): void {
         this.setBudgetMain()
-
+        if (sign === '1') {
+            this.MovementFormData.Category = this.Categories[0][0]
+        }
         this.MovementFormData.Period = FormPeriod.OneTime
         this.resetDate()
     }
@@ -119,8 +120,7 @@ export class MovementAdderComponent implements OnInit {
             break
         }
 
-        this.MovementFormData.Amount = newValue
-        event.target.value = newValue
+        this.MovementFormData.AmountFormControl.setValue(newValue)
     }
 
     SetCategory(category: Category): void {
@@ -135,22 +135,56 @@ export class MovementAdderComponent implements OnInit {
         }
     }
 
-    async AddMovement(): Promise<void> {
+    async AddMovement(): Promise<boolean> {
         this.MovementFormData.AmountFormControl.markAsTouched()
 
         if (this.MovementFormData.Category == undefined) {
             this.MovementFormData.CategoryEmpty = true
-            return
+            return false
         }
 
         if (this.MovementFormData.AmountFormControl.hasError('required')) {
-            return
+            return false
         }
 
         try {
-            console.log(this.MovementFormData)
+            let amountString = this.MovementFormData.AmountFormControl.value
+            if (amountString.slice(-1) === '.') {
+                amountString = amountString + '0'
+            }
+
+            let amount = parseFloat(amountString)
+            amount *= 100
+
+            switch (this.MovementFormData.Period) {
+            case FormPeriod.OneTime:
+            case FormPeriod.OverTheYear:
+                if (this.MovementFormData.Sign === '-1') {
+                    amount = -amount
+                }
+
+                this.budgetService.AddMovement(
+                    this.MovementFormData.Category.ID,
+                    amount,
+                    this.MovementFormData.Year,
+                    this.MovementFormData.Month,
+                )
+                break
+            case FormPeriod.Monthly:
+            case FormPeriod.Yearly:
+                this.budgetService.AddRecurringMovement(
+                    this.MovementFormData.Category.ID,
+                    amount,
+                    this.MovementFormData.Period,
+                    this.MovementFormData.Year,
+                    this.MovementFormData.Month,
+                )
+                break
+            }
         } catch (error) {
             await this.errorService.DisplayError()
+            return false
         }
+        return true
     }
 }

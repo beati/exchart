@@ -13,8 +13,12 @@ export class ErrorService {
         private readonly translate: TranslateService,
     ) {}
 
-    async DisplayError(): Promise<void> {
-        const message = await this.translate.get('Error').toPromise()
+    async DisplayError(error?: string): Promise<void> {
+        let errorReference = 'Default'
+        if (error != undefined) {
+            errorReference = error
+        }
+        const message = await this.translate.get(`Errors.${errorReference}`).toPromise()
         if (typeof message !== 'string') {
             return
         }

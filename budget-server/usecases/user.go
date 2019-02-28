@@ -409,6 +409,9 @@ func (interactor *UserInteractor) RequestPasswordReset(ctx context.Context, emai
 	defer tx.Close(&err)
 
 	user, err := tx.GetUserByEmail(email)
+	if err == domain.ErrNotFound {
+		err = ErrBadCredentials
+	}
 	if err != nil {
 		return
 	}
@@ -492,6 +495,9 @@ func (interactor *UserInteractor) Authenticate(ctx context.Context, email string
 	defer tx.Close(&err)
 
 	user, err = tx.GetUserByEmail(email)
+	if err == domain.ErrNotFound {
+		err = ErrBadCredentials
+	}
 	if err != nil {
 		return
 	}

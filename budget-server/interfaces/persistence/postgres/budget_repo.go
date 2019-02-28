@@ -45,7 +45,7 @@ func (tx Tx) LockBudgetByCategoryID(categoryID domain.EntityID) (*domain.Budget,
 	budget := &domain.Budget{}
 	rows, err := tx.sqlTx.Query(`
 		SELECT budgets.* FROM budgets
-		JOIN categories ON budget.budget_id = categories.budget_id 
+		JOIN categories ON budgets.budget_id = categories.budget_id 
 		WHERE categories.category_id = ?
 		FOR UPDATE OF budgets
 	`, categoryID)

@@ -21,7 +21,10 @@
             </a>
             <a *ngFor="let budget of Account.Budgets" (click)="BudgetMenuAction(budget)" [class.menu-entry-selected]="Page === budget.ID" mat-list-item>
                 <ng-container [ngSwitch]="budget.Status">
-                    <mat-icon *ngSwitchCase="BudgetStatus.Main">label_outlined</mat-icon>
+                    <!--<mat-icon *ngSwitchCase="BudgetStatus.Main">attach_money</mat-icon>-->
+                    <!--<mat-icon *ngSwitchCase="BudgetStatus.Main">local_atm</mat-icon>-->
+                    <!--<mat-icon *ngSwitchCase="BudgetStatus.Main">person</mat-icon>-->
+                    <mat-icon *ngSwitchCase="BudgetStatus.Main">account_balance</mat-icon>
                     <mat-icon *ngSwitchCase="BudgetStatus.Open">people</mat-icon>
                     <mat-icon *ngSwitchCase="BudgetStatus.NotAccepted">how_to_reg</mat-icon>
                     <mat-icon *ngSwitchCase="BudgetStatus.ToAccept" class="color-warn">new_releases</mat-icon>
@@ -71,7 +74,7 @@
                     <app-icon-button-spinner *ngIf="Loading" color="warn"></app-icon-button-spinner>
                 </ng-container>
                 <ng-container *ngSwitchCase="'MovementAdder'">
-                    <button *ngIf="!Loading" type="button" mat-icon-button>
+                    <button *ngIf="!Loading" type="button" (click)="SubmitAddMovement()" mat-icon-button>
                         <mat-icon>check</mat-icon>
                     </button>
                     <app-icon-button-spinner *ngIf="Loading" color="warn"></app-icon-button-spinner>
@@ -86,7 +89,7 @@
             </ng-container>
             <ng-container *ngIf="SubPage !== ''" [ngSwitch]="SubPage">
                 <app-budget-adder #budgetAdder *ngSwitchCase="'BudgetAdder'"></app-budget-adder>
-                <app-movement-adder *ngSwitchCase="'MovementAdder'" [Budgets]="OpenBudgets"></app-movement-adder>
+                <app-movement-adder #movementAdder *ngSwitchCase="'MovementAdder'" [Budgets]="OpenBudgets"></app-movement-adder>
             </ng-container>
         </div>
     </mat-sidenav-content>

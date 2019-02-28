@@ -69,6 +69,8 @@ func wrap(f func(w http.ResponseWriter, r *http.Request) (interface{}, error)) h
 				fallthrough
 			case domain.ErrAlreadyExists:
 				code = http.StatusBadRequest
+			case domain.ErrNotFound:
+				code = http.StatusNotFound
 			default:
 				code = http.StatusInternalServerError
 			}

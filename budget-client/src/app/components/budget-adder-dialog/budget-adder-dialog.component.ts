@@ -1,10 +1,8 @@
-import { Component } from '@angular/core'
-import { FormControl, NgForm, Validators } from '@angular/forms'
+import { Component, ViewChild } from '@angular/core'
 
 import { MatDialogRef } from '@angular/material'
 
-import { BudgetService } from '../../services/budget.service'
-import { ErrorService } from '../../services/error.service'
+import { BudgetAdderComponent } from '../budget-adder/budget-adder.component'
 
 @Component({
     selector: 'app-budget-adder-dialog',
@@ -12,23 +10,24 @@ import { ErrorService } from '../../services/error.service'
     styleUrls: ['./budget-adder-dialog.component.scss'],
 })
 export class BudgetAdderDialogComponent {
-    EmailFormControl = new FormControl('', [
-        Validators.required,
-        Validators.email,
-    ])
+    @ViewChild('budgetAdder') BudgetAdder: BudgetAdderComponent
+
+    Submitting = false
 
     constructor(
-        readonly DialogRef: MatDialogRef<BudgetAdderDialogComponent>,
-        private readonly budgetService: BudgetService,
-        private readonly errorService: ErrorService,
+        private readonly dialogRef: MatDialogRef<BudgetAdderDialogComponent>,
     ) { }
 
+    Cancel(): void {
+        this.dialogRef.close()
+    }
+
     async AddBudget(): Promise<void> {
-        try {
-            await this.budgetService.AddJointBudget(this.EmailFormControl.value)
-            this.DialogRef.close()
-        } catch (error) {
-            this.errorService.DisplayError()
+        this.Submitting = true
+        const success = await this.BudgetAdder.AddBudget()
+        this.Submitting = false
+        if (success) {
+            this.dialogRef.close()
         }
     }
 }

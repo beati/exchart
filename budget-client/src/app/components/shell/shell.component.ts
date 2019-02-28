@@ -13,6 +13,7 @@ import { BudgetAcceptDialogComponent } from '../budget-accept-dialog/budget-acce
 import { BudgetAdderDialogComponent } from '../budget-adder-dialog/budget-adder-dialog.component'
 import { MovementAdderDialogComponent } from '../movement-adder-dialog/movement-adder-dialog.component'
 import { BudgetAdderComponent } from '../budget-adder/budget-adder.component'
+import { MovementAdderComponent } from '../movement-adder/movement-adder.component'
 
 @Component({
     selector: 'app-shell',
@@ -23,11 +24,8 @@ export class ShellComponent implements OnInit {
     BudgetStatus = BudgetStatus
 
     @ViewChild('sidenav') sidenav: MatSidenav
-    @ViewChild('budgetAdder') BudgetAdder: BudgetAdderComponent
 
     Mobile: boolean
-
-    Loading = false
 
     Account: Account
     OpenBudgets: Budget[]
@@ -35,6 +33,10 @@ export class ShellComponent implements OnInit {
     Page = 'Analytics'
     SelectedBudget: Budget
     SubPage = ''
+
+    Loading = false
+    @ViewChild('budgetAdder') BudgetAdder: BudgetAdderComponent
+    @ViewChild('movementAdder') MovementAdder: MovementAdderComponent
 
     constructor(
         private readonly dialog: MatDialog,
@@ -49,6 +51,10 @@ export class ShellComponent implements OnInit {
 
         this.responsive.DisplayChange.subscribe((display) => {
             this.Mobile = display === DisplayType.Mobile
+
+            if (!this.Mobile) {
+                this.SubPage = ''
+            }
         })
 
         this.budgetService.BudgetAdded.subscribe((budget) => {
@@ -76,6 +82,7 @@ export class ShellComponent implements OnInit {
         try {
             await this.authService.Unauthenticate()
         } catch (error) {
+            this.errorService.DisplayError()
         }
     }
 
@@ -151,8 +158,13 @@ export class ShellComponent implements OnInit {
         }
     }
 
-    SubmitAddBudget(): void {
-        this.BudgetAdder.AddBudget()
+    async SubmitAddBudget(): Promise<void> {
+        this.Loading = true
+        const success = await this.BudgetAdder.AddBudget()
+        this.Loading = false
+        if (success) {
+            this.SubPage = ''
+        }
     }
 
     async AddMovement(): Promise<void> {
@@ -162,6 +174,15 @@ export class ShellComponent implements OnInit {
             this.dialog.open(MovementAdderDialogComponent, {
                 data: this.OpenBudgets,
             })
+        }
+    }
+
+    async SubmitAddMovement(): Promise<void> {
+        this.Loading = true
+        const success = await this.MovementAdder.AddMovement()
+        this.Loading = false
+        if (success) {
+            this.SubPage = ''
         }
     }
 }

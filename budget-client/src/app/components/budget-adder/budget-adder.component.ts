@@ -1,5 +1,8 @@
 import { Component} from '@angular/core'
 import { FormControl, Validators } from '@angular/forms'
+import { HttpErrorResponse } from '@angular/common/http'
+
+import { StatusCode } from '../../services/http-status-codes'
 
 import { BudgetService } from '../../services/budget.service'
 import { ErrorService } from '../../services/error.service'
@@ -20,17 +23,25 @@ export class BudgetAdderComponent {
         private readonly errorService: ErrorService,
     ) {}
 
-    async AddBudget(): Promise<void> {
+    async AddBudget(): Promise<boolean> {
         this.EmailFormControl.markAsTouched()
 
         if (this.EmailFormControl.hasError('required') || this.EmailFormControl.hasError('email')) {
-            return
+            return false
         }
 
         try {
             await this.budgetService.AddJointBudget(this.EmailFormControl.value)
         } catch (error) {
-            this.errorService.DisplayError()
+            let errorReference: string | undefined
+            if (error instanceof HttpErrorResponse) {
+                if (error.status === StatusCode.NotFound) {
+                    errorReference = 'UserNotFound'
+                }
+            }
+            this.errorService.DisplayError(errorReference)
+            return false
         }
+        return true
     }
 }

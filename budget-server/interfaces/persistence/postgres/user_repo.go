@@ -23,7 +23,7 @@ func (tx Tx) GetUserByEmail(email string) (*usecases.User, error) {
 	user := &usecases.User{}
 	err := tx.sqlTx.Collection("users").Find("email", email).One(user)
 	if err == db.ErrNoMoreRows {
-		return nil, usecases.ErrBadCredentials
+		return nil, domain.ErrNotFound
 	}
 	return user, err
 }

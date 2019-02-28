@@ -1,7 +1,7 @@
-<h2 mat-dialog-title>Add budget</h2>
 <div mat-dialog-content>
+    <app-budget-adder #budgetAdder></app-budget-adder>
 </div>
 <div mat-dialog-actions class="dialog-buttons-align-right">
-    <button mat-button (click)="DialogRef.close()">Cancel</button>
-    <button (click)="AddBudget()" mat-button>Ok</button>
+    <button (click)="Cancel()" mat-button>{{ 'BudgetAdder.Buttons.Cancel' | translate }}</button>
+    <button (click)="AddBudget()" mat-button>{{ 'BudgetAdder.Buttons.Ok' | translate }}</button>
 </div>
