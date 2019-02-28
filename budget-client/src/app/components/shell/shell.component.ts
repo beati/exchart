@@ -11,9 +11,31 @@ import { DisplayType, ResponsiveService } from '../../services/responsive.servic
 
 import { BudgetAcceptDialogComponent } from '../budget-accept-dialog/budget-accept-dialog.component'
 import { BudgetAdderDialogComponent } from '../budget-adder-dialog/budget-adder-dialog.component'
-import { MovementAdderDialogComponent } from '../movement-adder-dialog/movement-adder-dialog.component'
 import { BudgetAdderComponent } from '../budget-adder/budget-adder.component'
+import { MovementAdderDialogComponent } from '../movement-adder-dialog/movement-adder-dialog.component'
 import { MovementAdderComponent } from '../movement-adder/movement-adder.component'
+
+const orderBudget = (a: Budget, b: Budget): number => {
+    if (a.Status === BudgetStatus.Main) {
+        return -1
+    } else if (b.Status === BudgetStatus.Main) {
+        return 1
+    }
+
+    if (a.Status === BudgetStatus.Open) {
+        return -1
+    } else if (b.Status === BudgetStatus.Open) {
+        return 1
+    }
+
+    if (a.Status === BudgetStatus.NotAccepted) {
+        return -1
+    } else if (b.Status === BudgetStatus.NotAccepted) {
+        return 1
+    }
+
+    return 0
+}
 
 @Component({
     selector: 'app-shell',
@@ -82,7 +104,7 @@ export class ShellComponent implements OnInit {
         try {
             await this.authService.Unauthenticate()
         } catch (error) {
-            this.errorService.DisplayError()
+            await this.errorService.DisplayError()
         }
     }
 
@@ -133,7 +155,7 @@ export class ShellComponent implements OnInit {
                         budget.Status = BudgetStatus.Open
                     } else {
                         await this.budgetService.DisableJointBudget(budget.ID)
-                        for (let i = 0; i < this.Account.Budgets.length; i++) {
+                        for (let i = 0; i < this.Account.Budgets.length; i += 1) {
                             if (budget.ID === this.Account.Budgets[i].ID) {
                                 this.Account.Budgets.splice(i, 1)
                             }
@@ -143,7 +165,7 @@ export class ShellComponent implements OnInit {
                     this.Loading = false
                 } catch (error) {
                     this.Loading = false
-                    this.errorService.DisplayError()
+                    await this.errorService.DisplayError()
                 }
             }
             break
@@ -185,26 +207,4 @@ export class ShellComponent implements OnInit {
             this.SubPage = ''
         }
     }
-}
-
-function orderBudget(a: Budget, b: Budget): number {
-    if (a.Status === BudgetStatus.Main) {
-        return -1
-    } else if (b.Status === BudgetStatus.Main) {
-        return 1
-    }
-
-    if (a.Status === BudgetStatus.Open) {
-        return -1
-    } else if (b.Status === BudgetStatus.Open) {
-        return 1
-    }
-
-    if (a.Status === BudgetStatus.NotAccepted) {
-        return -1
-    } else if (b.Status === BudgetStatus.NotAccepted) {
-        return 1
-    }
-
-    return 0
 }

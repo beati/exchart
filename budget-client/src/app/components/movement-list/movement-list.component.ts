@@ -6,8 +6,6 @@ import { Component, OnInit } from '@angular/core'
     styleUrls: ['./movement-list.component.scss'],
 })
 export class MovementListComponent implements OnInit {
-    constructor() { }
-
     ngOnInit(): void {
     }
 }

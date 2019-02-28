@@ -31,7 +31,7 @@ export class MovementAdderComponent implements OnInit {
             Validators.required,
         ]),
         BudgetID: '',
-        Category: undefined as unknown as Category,
+        Category: undefined as Category | undefined,
         CategoryEmpty: false,
         Period: FormPeriod.OneTime,
         Year: 0,
@@ -70,7 +70,7 @@ export class MovementAdderComponent implements OnInit {
             }
         }
 
-        this.MovementFormData.Category = undefined as unknown as Category
+        this.MovementFormData.Category = undefined
         this.MovementFormData.CategoryEmpty = false
     }
 
@@ -115,7 +115,8 @@ export class MovementAdderComponent implements OnInit {
             if (splited[0] === '') {
                 newValue = ''
             } else {
-                newValue = `${splited[0]}.${splited[1].slice(0, 2)}`
+                const digitsCount = 2
+                newValue = `${splited[0]}.${splited[1].slice(0, digitsCount)}`
             }
             break
         }
@@ -148,22 +149,22 @@ export class MovementAdderComponent implements OnInit {
         }
 
         try {
-            let amountString = this.MovementFormData.AmountFormControl.value
+            let amountString: string = this.MovementFormData.AmountFormControl.value
             if (amountString.slice(-1) === '.') {
-                amountString = amountString + '0'
+                amountString = `${amountString}0`
             }
 
             let amount = parseFloat(amountString)
-            amount *= 100
+            const centFactor = 100
+            amount *= centFactor
+            if (this.MovementFormData.Sign === '-1') {
+                amount = -amount
+            }
 
             switch (this.MovementFormData.Period) {
             case FormPeriod.OneTime:
             case FormPeriod.OverTheYear:
-                if (this.MovementFormData.Sign === '-1') {
-                    amount = -amount
-                }
-
-                this.budgetService.AddMovement(
+                await this.budgetService.AddMovement(
                     this.MovementFormData.Category.ID,
                     amount,
                     this.MovementFormData.Year,
@@ -172,7 +173,7 @@ export class MovementAdderComponent implements OnInit {
                 break
             case FormPeriod.Monthly:
             case FormPeriod.Yearly:
-                this.budgetService.AddRecurringMovement(
+                await this.budgetService.AddRecurringMovement(
                     this.MovementFormData.Category.ID,
                     amount,
                     this.MovementFormData.Period,

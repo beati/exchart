@@ -6,8 +6,6 @@ import { Component, OnInit } from '@angular/core'
     styleUrls: ['./budget-analytics.component.scss'],
 })
 export class BudgetAnalyticsComponent implements OnInit {
-    constructor() { }
-
     ngOnInit(): void {
     }
 }

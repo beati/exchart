@@ -1,6 +1,6 @@
-import { Component} from '@angular/core'
-import { FormControl, Validators } from '@angular/forms'
 import { HttpErrorResponse } from '@angular/common/http'
+import { Component } from '@angular/core'
+import { FormControl, Validators } from '@angular/forms'
 
 import { StatusCode } from '../../services/http-status-codes'
 
@@ -31,7 +31,8 @@ export class BudgetAdderComponent {
         }
 
         try {
-            await this.budgetService.AddJointBudget(this.EmailFormControl.value)
+            const email: string = this.EmailFormControl.value
+            await this.budgetService.AddJointBudget(email)
         } catch (error) {
             let errorReference: string | undefined
             if (error instanceof HttpErrorResponse) {
@@ -39,7 +40,7 @@ export class BudgetAdderComponent {
                     errorReference = 'UserNotFound'
                 }
             }
-            this.errorService.DisplayError(errorReference)
+            await this.errorService.DisplayError(errorReference)
             return false
         }
         return true

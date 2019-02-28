@@ -23,12 +23,20 @@ $theme: mat-light-theme($primary, $accent, $warn);
 // that you are using.
 @include angular-material-theme($theme);
 
+.color-accent {
+    color: mat-color($accent);
+}
+
 .color-warn {
     color: mat-color($warn);
 }
 
 $background: map-get($theme, background);
 
+.material-background {
+    background-color: mat-color($background, background);
+}
+
 .menu-entry-selected {
-    background-color: mat-color($background, 'hover');
+    background-color: mat-color($background, hover);
 }

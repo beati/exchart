@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http'
 import { Component, OnInit } from '@angular/core'
+import { FormControl, Validators } from '@angular/forms'
 import { Router } from '@angular/router'
 
 import { StatusCode } from '../../services/http-status-codes'
@@ -15,8 +16,13 @@ export class LoginComponent implements OnInit {
     LoginFormData = {
         Submitting: false,
         Error: '',
-        Email: '',
-        Password: '',
+        Email: new FormControl('', [
+            Validators.required,
+            Validators.email,
+        ]),
+        Password: new FormControl('', [
+            Validators.required,
+        ]),
     }
 
     constructor(
@@ -31,9 +37,20 @@ export class LoginComponent implements OnInit {
     }
 
     async Login(): Promise<void> {
+        if (this.LoginFormData.Email.hasError('required') || this.LoginFormData.Email.hasError('email')) {
+            return
+        }
+
+        if (this.LoginFormData.Password.hasError('required')) {
+            return
+        }
+
         try {
+            const email: string = this.LoginFormData.Email.value
+            const password: string = this.LoginFormData.Password.value
+
             this.LoginFormData.Submitting = true
-            await this.auth.Authenticate(this.LoginFormData.Email, this.LoginFormData.Password)
+            await this.auth.Authenticate(email, password)
             this.LoginFormData.Submitting = false
             await this.router.navigate(['/'])
         } catch (error) {

@@ -36,6 +36,25 @@ export const en = {
         Default: 'Operation not curently possible',
         UserNotFound: 'User not found',
     },
+    Login: {
+        Title: 'Budget login',
+        Email: {
+            Label: 'Email',
+            Empty: 'Enter your email address',
+            Invalid: 'Enter a valid email address',
+        },
+        Password: {
+            Label: 'Password',
+            Empty: 'Enter your password',
+        },
+        Button: 'Login',
+        Errors: {
+        },
+        Links: {
+            Register: 'Signup !',
+            ForgotPassword: 'Forgot password ?',
+        },
+    },
     Months: {
         January: 'Januray',
         February: 'February',

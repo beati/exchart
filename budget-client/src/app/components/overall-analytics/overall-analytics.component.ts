@@ -6,8 +6,6 @@ import { Component, OnInit } from '@angular/core'
     styleUrls: ['./overall-analytics.component.scss'],
 })
 export class OverallAnalyticsComponent implements OnInit {
-    constructor() { }
-
     ngOnInit(): void {
     }
 }

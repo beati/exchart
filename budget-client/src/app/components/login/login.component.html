@@ -1,5 +1,36 @@
-<form (ngSubmit)="Login()">
-    <input type="email" name="Email" [(ngModel)]="LoginFormData.Email">
-    <input type="password" name="Password" [(ngModel)]="LoginFormData.Password">
-    <button type="submit">Login</button>
-</form>
+<div class="full-height material-background">
+    <div class="card-container">
+        <mat-card>
+            <mat-card-title class="title">{{ 'Login.Title' | translate }}</mat-card-title>
+            <form (ngSubmit)="Login()">
+                <div class="field">
+                    <mat-icon class="field-icon">mail</mat-icon>
+                    <mat-form-field color="primary" class="field-input">
+                        <mat-label>{{ 'Login.Email.Label' | translate }}</mat-label>
+                        <input type="email" name="Email" [formControl]="LoginFormData.Email" matInput>
+                        <mat-error *ngIf="LoginFormData.Email.hasError('required')">{{ 'Login.Email.Empty' | translate }}</mat-error>
+                        <mat-error *ngIf="LoginFormData.Email.hasError('email')">{{ 'Login.Email.Invalid' | translate }}</mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="field">
+                    <mat-icon class="field-icon">lock</mat-icon>
+                    <mat-form-field color="primary" class="field-input">
+                        <mat-label>{{ 'Login.Password.Label' | translate }}</mat-label>
+                        <input type="password" name="Password" [formControl]="LoginFormData.Password" matInput>
+                        <mat-error *ngIf="LoginFormData.Password.hasError('required')">{{ 'Login.Password.Empty' | translate }}</mat-error>
+                    </mat-form-field>
+                </div>
+                <div>
+                    <button type="submit" mat-raised-button color="primary">{{ 'Login.Button' | translate }}</button>
+                </div>
+                <div *ngIf="LoginFormData.Error !== ''" class="color-warn error">
+                    {{ 'Login.Links.Register' | translate }}
+                </div>
+                <div class="bottom-links">
+                    <a routerLink="/register" class="color-accent">{{ 'Login.Links.Register' | translate }}</a>
+                    <a routerLink="/" class="color-accent">{{ 'Login.Links.ForgotPassword' | translate }}</a>
+                </div>
+            </form>
+        </mat-card>
+    </div>
+</div>
