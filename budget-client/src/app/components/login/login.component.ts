@@ -57,11 +57,11 @@ export class LoginComponent implements OnInit {
             this.LoginFormData.Submitting = false
             if (error instanceof HttpErrorResponse) {
                 if (error.status === StatusCode.Unauthorized) {
-                    this.LoginFormData.Error = 'bad_credentials'
+                    this.LoginFormData.Error = 'BadCredentials'
                     return
                 }
             }
-            this.LoginFormData.Error = 'error'
+            this.LoginFormData.Error = 'Default'
         }
     }
 }

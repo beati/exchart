@@ -1,0 +1,18 @@
+<button mat-button
+    [type]="type"
+    [color]="Color"
+    [class.active]="Active"
+    [class.mat-raised-button]="Raised"
+    [class.fullWidth]="FullWidth"
+    [disabled]="disabled">
+
+    <span class="button-text" [class.active]="Active">
+        <ng-content></ng-content>
+    </span>
+
+    <mat-spinner class="spinner"
+        [diameter]="19"
+        [color]="SpinnerColor"
+        [class.active]="Active">
+    </mat-spinner>
+</button>

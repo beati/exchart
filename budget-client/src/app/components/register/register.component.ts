@@ -1,4 +1,5 @@
 import { Component } from '@angular/core'
+import { FormControl, Validators } from '@angular/forms'
 import { Router } from '@angular/router'
 
 import { AuthService } from '../../services/auth.service'
@@ -13,9 +14,16 @@ export class RegisterComponent {
     RegisterFormData = {
         Submitting: false,
         Error: false,
-        Email: '',
-        Password: '',
-        Name: '',
+        Email: new FormControl('', [
+            Validators.required,
+            Validators.email,
+        ]),
+        Password: new FormControl('', [
+            Validators.required,
+        ]),
+        Name: new FormControl('', [
+            Validators.required,
+        ]),
     }
 
     constructor(
@@ -25,17 +33,26 @@ export class RegisterComponent {
     ) {}
 
     async Register(): Promise<void> {
+        if (this.RegisterFormData.Email.hasError('required') || this.RegisterFormData.Email.hasError('email')) {
+            return
+        }
+
+        if (this.RegisterFormData.Password.hasError('required')) {
+            return
+        }
+
+        if (this.RegisterFormData.Name.hasError('required')) {
+            return
+        }
+
         try {
+            const email: string = this.RegisterFormData.Email.value
+            const password: string = this.RegisterFormData.Password.value
+            const name: string = this.RegisterFormData.Password.value
+
             this.RegisterFormData.Submitting = true
-            await this.userService.Register(
-                this.RegisterFormData.Email,
-                this.RegisterFormData.Password,
-                this.RegisterFormData.Name,
-            )
-            await this.auth.Authenticate(
-                this.RegisterFormData.Email,
-                this.RegisterFormData.Password,
-            )
+            await this.userService.Register(email, password, name)
+            await this.auth.Authenticate(email, password)
             this.RegisterFormData.Submitting = false
             await this.router.navigate(['/'])
         } catch (error) {

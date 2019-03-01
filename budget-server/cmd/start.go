@@ -124,7 +124,7 @@ var startCmd = &cobra.Command{
 		router.Use(webservice.RecoverMiddleware)
 		router.Use(webservice.SecurityHeaders)
 
-		assetsHandler := assets.Handler("/", "/login", "/register")
+		assetsHandler := assets.Handler("/", "/login", "/register", "/passwordreset")
 		router.Mount("/", assetsHandler)
 		router.Mount("/api", apiRouter)
 

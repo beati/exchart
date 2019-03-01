@@ -49,6 +49,8 @@ export const en = {
         },
         Button: 'Login',
         Errors: {
+            BadCredentials: 'Incorrect email address or password.',
+            Default: 'Login currently impossible.',
         },
         Links: {
             Register: 'Signup !',
@@ -102,11 +104,48 @@ export const en = {
             Ok: 'Ok',
         },
     },
+    PasswordResetter: {
+        Title: 'Password reset',
+        Email: {
+            Label: 'Email',
+            Empty: 'Enter your email address',
+            Invalid: 'Enter a valid email address',
+        },
+        Button: 'Reset',
+        Errors: {
+            Default: 'Password reset currently impossible.',
+        },
+        Done: 'An email containing the procedure to reset your password has been sent to you.',
+    },
     PeriodSelector: {
         Mode: {
             All: 'All',
             Month: 'Month',
             Year: 'Year',
+        },
+    },
+    Register: {
+        Title: 'Create an account',
+        Email: {
+            Label: 'Email',
+            Empty: 'Enter your email address',
+            Invalid: 'Enter a valid email address',
+        },
+        Password: {
+            Label: 'Password',
+            Empty: 'Chose a password',
+        },
+        Name: {
+            Label: 'Name',
+            Empty: 'Enter your name',
+        },
+        Button: 'Signup',
+        Errors: {
+            Default: 'Signup currently impossible.',
+        },
+        Links: {
+            AlreadyRegistered: 'Already registered ?',
+            Login: 'Login',
         },
     },
     Tabs: {

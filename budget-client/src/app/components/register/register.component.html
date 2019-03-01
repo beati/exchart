@@ -1,6 +1,40 @@
-<form (ngSubmit)="Register()">
-    <input type="email" name="Email" [(ngModel)]="RegisterFormData.Email">
-    <input type="password" name="Password" [(ngModel)]="RegisterFormData.Password">
-    <input type="text" name="Name" [(ngModel)]="RegisterFormData.Name">
-    <button type="submit">Register</button>
-</form>
+<app-pre-shell-container>
+    <mat-card-title class="pre-shell-title">{{ 'Register.Title' | translate }}</mat-card-title>
+    <form (ngSubmit)="Register()" class="pre-shell-form">
+        <div class="pre-shell-field">
+            <mat-icon class="pre-shell-field-icon">mail</mat-icon>
+            <mat-form-field color="primary" class="pre-shell-field-input">
+                <mat-label>{{ 'Register.Email.Label' | translate }}</mat-label>
+                <input type="email" name="Email" [formControl]="RegisterFormData.Email" matInput>
+                <mat-error *ngIf="RegisterFormData.Email.hasError('required')">{{ 'Register.Email.Empty' | translate }}</mat-error>
+                <mat-error *ngIf="RegisterFormData.Email.hasError('email')">{{ 'Register.Email.Invalid' | translate }}</mat-error>
+            </mat-form-field>
+        </div>
+        <div class="pre-shell-field">
+            <mat-icon class="pre-shell-field-icon">lock</mat-icon>
+            <mat-form-field color="primary" class="pre-shell-field-input">
+                <mat-label>{{ 'Register.Password.Label' | translate }}</mat-label>
+                <input type="password" name="Password" [formControl]="RegisterFormData.Password" matInput>
+                <mat-error *ngIf="RegisterFormData.Password.hasError('required')">{{ 'Register.Password.Empty' | translate }}</mat-error>
+            </mat-form-field>
+        </div>
+        <div class="pre-shell-field">
+            <mat-icon class="pre-shell-field-icon">person</mat-icon>
+            <mat-form-field color="primary" class="pre-shell-field-input">
+                <mat-label>{{ 'Register.Name.Label' | translate }}</mat-label>
+                <input type="text" name="Name" [formControl]="RegisterFormData.Name" matInput>
+                <mat-error *ngIf="RegisterFormData.Name.hasError('required')">{{ 'Register.Name.Empty' | translate }}</mat-error>
+            </mat-form-field>
+        </div>
+        <div class="pre-shell-button-container">
+            <app-button-spinner type="submit" [Active]="RegisterFormData.Submitting" Color="primary" SpinnerColor="warn" [FullWidth]="true" [Raised]="true">{{ 'Register.Button' | translate }}</app-button-spinner>
+        </div>
+        <div *ngIf="RegisterFormData.Error" class="color-warn pre-shell-error">
+            {{ 'Register.Errors.Default' | translate }}
+        </div>
+        <div class="bottom-links">
+            <span>{{ 'Register.Links.AlreadyRegistered' | translate }}&nbsp;</span>
+            <a routerLink="/login" class="color-accent">{{ 'Register.Links.Login' | translate }}</a>
+        </div>
+    </form>
+</app-pre-shell-container>

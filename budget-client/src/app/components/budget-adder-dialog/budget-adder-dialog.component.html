@@ -2,6 +2,6 @@
     <app-budget-adder #budgetAdder></app-budget-adder>
 </div>
 <div mat-dialog-actions class="dialog-buttons-align-right">
-    <button (click)="Cancel()" mat-button>{{ 'BudgetAdder.Buttons.Cancel' | translate }}</button>
-    <button (click)="AddBudget()" mat-button>{{ 'BudgetAdder.Buttons.Ok' | translate }}</button>
+    <button type="button" (click)="Cancel()" mat-button>{{ 'BudgetAdder.Buttons.Cancel' | translate }}</button>
+    <app-button-spinner type="button" (click)="AddBudget()" [Active]="Submitting" SpinnerColor="accent">{{ 'BudgetAdder.Buttons.Ok' | translate }}</app-button-spinner>
 </div>

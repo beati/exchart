@@ -331,6 +331,9 @@ export class CategoryEditorComponent implements OnInit {
         const node = topLevelNode.children[topLevelNode.children.length - 1]
         node.category.Name = ''
         node.submitting = false
+        if (node.form != undefined) {
+            node.form.formControl.reset('')
+        }
 
         this.categoriesDataSource.data = this.categoryTree
     }

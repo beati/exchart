@@ -49,6 +49,8 @@ export const fr = {
         },
         Button: 'Se connecter',
         Errors: {
+            BadCredentials: 'Adresse email ou mot de passe incorrect.',
+            Default: 'Connexion actuellement impossible.',
         },
         Links: {
             Register: 'Inscription',
@@ -102,11 +104,48 @@ export const fr = {
             Ok: 'Ok',
         },
     },
+    PasswordResetter: {
+        Title: 'Réinitialisation du mot de passe',
+        Email: {
+            Label: 'Email',
+            Empty: 'Saisissez votre adresse email',
+            Invalid: 'Adresse email invalide',
+        },
+        Button: 'Réinitialiser',
+        Errors: {
+            Default: 'Réinitialisation actuellement impossible.',
+        },
+        Done: 'Un email contenant la procédure pour réinitialiser votre mot de passe vous à été envoyer.',
+    },
     PeriodSelector: {
         Mode: {
             All: 'Tout',
             Month: 'Mois',
             Year: 'Année',
+        },
+    },
+    Register: {
+        Title: 'Créer un compte',
+        Email: {
+            Label: 'Email',
+            Empty: 'Saisissez votre adresse email',
+            Invalid: 'Adresse email invalide',
+        },
+        Password: {
+            Label: 'Mot de passe',
+            Empty: 'Choisissez un mot de passe',
+        },
+        Name: {
+            Label: 'Name',
+            Empty: 'Saisissez votre nom',
+        },
+        Button: 'S\'inscrire',
+        Errors: {
+            Default: 'Inscription impossible actuellement.',
+        },
+        Links: {
+            AlreadyRegistered: 'Déjà inscrit ?',
+            Login: 'Se connecter',
         },
     },
     Tabs: {

@@ -3,5 +3,5 @@
 </div>
 <div mat-dialog-actions class="dialog-buttons-align-right">
     <button (click)="Cancel()" mat-button>{{ 'MovementAdder.Buttons.Cancel' | translate }}</button>
-    <button (click)="AddMovement()" mat-button cdkFocusInitial>{{ 'MovementAdder.Buttons.Ok' | translate }}</button>
+    <app-button-spinner type="button" (click)="AddMovement()" [Active]="Submitting" SpinnerColor="accent">{{ 'MovementAdder.Buttons.Ok' | translate }}</app-button-spinner>
 </div>

@@ -26,7 +26,7 @@
             <form (ngSubmit)="UpdateCategory(node.category.Type, node.category.ID, categoryName.value)">
                 <span class="category-name">
                     <mat-form-field>
-                        <input #categoryName [value]="node.category.Name" [formControl]="node.form.formControl" placeholder="{{ 'CategoryEditor.New' | translate }}" matInput>
+                        <input #categoryName [formControl]="node.form.formControl" placeholder="{{ 'CategoryEditor.New' | translate }}" matInput>
                         <mat-error *ngIf="node.form.formControl.hasError('alreadyExists') && !node.form.formControl.hasError('required')">
                             {{ 'CategoryEditor.Errors.AlreadyExists' | translate }}
                         </mat-error>
@@ -50,7 +50,7 @@
     <mat-tree-node *matTreeNodeDef="let node: when: IsAdder" matTreeNodePadding>
         <form (ngSubmit)="AddCategory(node.category.Type, node.category.ID, categoryName.value)">
             <mat-form-field>
-                <input #categoryName [value]="node.category.Name" [formControl]="node.form.formControl" placeholder="{{ 'CategoryEditor.New' | translate }}" matInput>
+                <input #categoryName [formControl]="node.form.formControl" placeholder="{{ 'CategoryEditor.New' | translate }}" matInput>
                 <mat-error *ngIf="node.form.formControl.hasError('alreadyExists') && !node.form.formControl.hasError('required')">
                     {{ 'CategoryEditor.Errors.AlreadyExists' | translate }}
                 </mat-error>
@@ -61,7 +61,7 @@
             <button *ngIf="!node.submitting" type="submit" mat-icon-button class="add-button">
                 <mat-icon>add</mat-icon>
             </button>
-            <app-icon-button-spinner *ngIf="node.submitting" color="accent"></app-icon-button-spinner>
+            <app-icon-button-spinner *ngIf="node.submitting" color="accent" class="add-button"></app-icon-button-spinner>
         </form>
     </mat-tree-node>
 </mat-tree>
