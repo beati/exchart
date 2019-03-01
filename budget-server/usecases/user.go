@@ -185,8 +185,8 @@ func NewUserInteractor(repo Repository, hash PasswordHash, mailer Mailer, host s
 
 var validationEmail = template.Must(template.New("validationEmail").Parse(`
 <p>Welcome {{.Name}}</p>
-<a href="https://{{.Host}}/email?action=validate&id={{.UserID}}&email={{.Email}}&token={{.Token}}">validate</a>
-<a href="https://{{.Host}}/email?action=cancel&id={{.UserID}}&token={{.Token}}">cancel</a>
+<a href="https://{{.Host}}/verify_email?action=validate&id={{.UserID}}&email={{.Email}}&token={{.Token}}">validate</a>
+<a href="https://{{.Host}}/verify_email?action=cancel&id={{.UserID}}&token={{.Token}}">cancel</a>
 `))
 
 // AddUser adds a new user to the application.
@@ -315,7 +315,7 @@ func (interactor *UserInteractor) CancelUserEmail(ctx context.Context, userID do
 }
 
 var validationChangeEmail = template.Must(template.New("validationChangeEmail").Parse(`
-<a href="https://{{.Host}}/email?action=validate&id={{.UserID}}&email={{.Email}}&token={{.Token}}">validate</a>
+<a href="https://{{.Host}}/verify_email?action=validate&id={{.UserID}}&email={{.Email}}&token={{.Token}}">validate</a>
 `))
 
 // ChangeUserEmail sends a new email address to validate it.
@@ -397,7 +397,7 @@ func (interactor *UserInteractor) ChangePassword(ctx context.Context, userID dom
 }
 
 var passwordResetEmail = template.Must(template.New("passwordResetEmail").Parse(`
-<a href="https://{{.Host}}/password?id={{.UserID}}&token={{.Token}}">Reset</a>
+<a href="https://{{.Host}}/reset_password?id={{.UserID}}&token={{.Token}}">Reset</a>
 `))
 
 // RequestPasswordReset sends an email with reset password infos to a user.

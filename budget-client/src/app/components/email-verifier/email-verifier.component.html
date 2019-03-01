@@ -1,0 +1,13 @@
+<app-pre-shell-container>
+    <mat-card-title class="pre-shell-title">{{ 'EmailVerifier.Title' | translate }}</mat-card-title>
+    <mat-card-content>
+        <ng-container *ngIf="!Done && !Error">
+        </ng-container>
+        <ng-container *ngIf="Done">
+            {{ 'EmailVerifier.Done' | translate }}
+        </ng-container>
+        <ng-container *ngIf="Error">
+            {{ 'EmailVerifier.Error' | translate }}
+        </ng-container>
+    </mat-card-content>
+</app-pre-shell-container>

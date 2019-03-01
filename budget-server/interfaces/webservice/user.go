@@ -41,9 +41,9 @@ func (uapi *userAPI) addUser(w http.ResponseWriter, r *http.Request) (interface{
 
 func (uapi *userAPI) verifyEmail(w http.ResponseWriter, r *http.Request) (interface{}, error) {
 	params := struct {
-		ID     domain.EntityID `json:"id"`
-		Action string          `json:"action"`
-		Token  string          `json:"token"`
+		ID     domain.EntityID
+		Action string
+		Token  string
 	}{}
 	err := json.NewDecoder(r.Body).Decode(&params)
 	if err != nil {
@@ -62,8 +62,8 @@ func (uapi *userAPI) verifyEmail(w http.ResponseWriter, r *http.Request) (interf
 
 func (uapi *userAPI) changeEmail(w http.ResponseWriter, r *http.Request) (interface{}, error) {
 	params := struct {
-		Password string `json:"password"`
-		Email    string `json:"email"`
+		Password string
+		Email    string
 	}{}
 	err := json.NewDecoder(r.Body).Decode(&params)
 	if err != nil {
@@ -77,8 +77,8 @@ func (uapi *userAPI) changeEmail(w http.ResponseWriter, r *http.Request) (interf
 
 func (uapi *userAPI) changePassword(w http.ResponseWriter, r *http.Request) (interface{}, error) {
 	params := struct {
-		OldPassword string `json:"old_password"`
-		NewPassword string `json:"new_password"`
+		OldPassword string
+		NewPassword string
 	}{}
 	err := json.NewDecoder(r.Body).Decode(&params)
 	if err != nil {
@@ -92,7 +92,7 @@ func (uapi *userAPI) changePassword(w http.ResponseWriter, r *http.Request) (int
 
 func (uapi *userAPI) requestPasswordReset(w http.ResponseWriter, r *http.Request) (interface{}, error) {
 	params := struct {
-		Email string `json:"email"`
+		Email string
 	}{}
 	err := json.NewDecoder(r.Body).Decode(&params)
 	if err != nil {
@@ -104,9 +104,9 @@ func (uapi *userAPI) requestPasswordReset(w http.ResponseWriter, r *http.Request
 
 func (uapi *userAPI) resetPassword(w http.ResponseWriter, r *http.Request) (interface{}, error) {
 	params := struct {
-		ID       domain.EntityID `json:"id"`
-		Password string          `json:"password"`
-		Token    string          `json:"token"`
+		ID       domain.EntityID
+		Password string
+		Token    string
 	}{}
 	err := json.NewDecoder(r.Body).Decode(&params)
 	if err != nil {

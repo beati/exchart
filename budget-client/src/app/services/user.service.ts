@@ -32,11 +32,10 @@ export class UserService {
         })
     }
 
-    async VerifyEmail(id: string, email: string, token: string, action: string): Promise<void> {
+    async VerifyEmail(id: string, token: string, action: string): Promise<void> {
         return this.http.post<void>('/api/user/email/verify', {
             Action: action,
             ID: id,
-            Email: email,
             Token: token,
         })
     }
@@ -47,12 +46,11 @@ export class UserService {
         })
     }
 
-    async ResetPassword(id: string, token: string, password: string, name?: string): Promise<void> {
+    async ResetPassword(id: string, token: string, password: string): Promise<void> {
         return this.http.post<void>('/api/user/password/reset', {
             ID: id,
             Token: token,
             Password: password,
-            Name: name,
         })
     }
 }

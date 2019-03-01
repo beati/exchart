@@ -36,6 +36,7 @@ import { ButtonSpinnerComponent } from './components/button-spinner/button-spinn
 import { CategoryEditorContainerComponent } from './components/category-editor-container/category-editor-container.component'
 import { CategoryEditorComponent } from './components/category-editor/category-editor.component'
 import { DeleteCategoryDialogComponent } from './components/delete-category-dialog/delete-category-dialog.component'
+import { EmailVerifierComponent } from './components/email-verifier/email-verifier.component'
 import { IconButtonSpinnerComponent } from './components/icon-button-spinner/icon-button-spinner.component'
 import { LandingPageComponent } from './components/landing-page/landing-page.component'
 import { LoginComponent } from './components/login/login.component'
@@ -44,6 +45,7 @@ import { MovementAdderDialogComponent } from './components/movement-adder-dialog
 import { MovementAdderComponent } from './components/movement-adder/movement-adder.component'
 import { MovementListComponent } from './components/movement-list/movement-list.component'
 import { OverallAnalyticsComponent } from './components/overall-analytics/overall-analytics.component'
+import { PasswordResetRequesterComponent } from './components/password-reset-requester/password-reset-requester.component'
 import { PasswordResetterComponent } from './components/password-resetter/password-resetter.component'
 import { PeriodSelectorComponent } from './components/period-selector/period-selector.component'
 import { PreShellContainerComponent } from './components/pre-shell-container/pre-shell-container.component'
@@ -64,6 +66,7 @@ import { YearSelectorComponent } from './components/year-selector/year-selector.
         CategoryEditorContainerComponent,
         CategoryEditorComponent,
         DeleteCategoryDialogComponent,
+        EmailVerifierComponent,
         IconButtonSpinnerComponent,
         LandingPageComponent,
         LoginComponent,
@@ -72,6 +75,7 @@ import { YearSelectorComponent } from './components/year-selector/year-selector.
         MovementAdderComponent,
         MovementListComponent,
         OverallAnalyticsComponent,
+        PasswordResetRequesterComponent,
         PasswordResetterComponent,
         PeriodSelectorComponent,
         PreShellContainerComponent,

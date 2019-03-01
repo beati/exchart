@@ -104,7 +104,7 @@ export const fr = {
             Ok: 'Ok',
         },
     },
-    PasswordResetter: {
+    PasswordResetRequester: {
         Title: 'Réinitialisation du mot de passe',
         Email: {
             Label: 'Email',
@@ -116,6 +116,19 @@ export const fr = {
             Default: 'Réinitialisation actuellement impossible.',
         },
         Done: 'Un email contenant la procédure pour réinitialiser votre mot de passe vous à été envoyer.',
+    },
+    PasswordResetter: {
+        Title: 'Réinitialisation du mot de passe',
+        Password: {
+            Label: 'Mot de passe',
+            Empty: 'Saissisez votre mot de passe',
+        },
+        Button: 'Réinitialiser',
+        Errors: {
+            Default: 'Réinitialisation actuellement impossible.',
+        },
+        Done: 'Votre mot de passe à été réinitialisé.',
+        Login: 'Se connecter',
     },
     PeriodSelector: {
         Mode: {

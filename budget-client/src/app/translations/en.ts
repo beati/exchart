@@ -32,6 +32,12 @@ export const en = {
         Housing: 'Housing',
         Transport: 'Transport',
     },
+    EmailVerifier: {
+        Title: '',
+        Message: '',
+        Done: '',
+        Error: '',
+    },
     Errors: {
         Default: 'Operation not curently possible',
         UserNotFound: 'User not found',
@@ -104,7 +110,7 @@ export const en = {
             Ok: 'Ok',
         },
     },
-    PasswordResetter: {
+    PasswordResetRequester: {
         Title: 'Password reset',
         Email: {
             Label: 'Email',
@@ -116,6 +122,19 @@ export const en = {
             Default: 'Password reset currently impossible.',
         },
         Done: 'An email containing the procedure to reset your password has been sent to you.',
+    },
+    PasswordResetter: {
+        Title: 'Password reset',
+        Password: {
+            Label: 'Password',
+            Empty: 'Enter your password',
+        },
+        Button: 'Reset',
+        Errors: {
+            Default: 'Password reset currently impossible.',
+        },
+        Done: 'Your password has been reset.',
+        Login: 'Login',
     },
     PeriodSelector: {
         Mode: {
