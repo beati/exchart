@@ -33,10 +33,11 @@ export const en = {
         Transport: 'Transport',
     },
     EmailVerifier: {
-        Title: '',
-        Message: '',
-        Done: '',
-        Error: '',
+        Title: 'Email verification',
+        Message: 'Loading',
+        Verified: 'Your email address has been successfuly verified.',
+        Canceled: 'Your registration has been canceled.',
+        Error: 'Email verification currently impossible.',
     },
     Errors: {
         Default: 'Operation not curently possible',
@@ -181,5 +182,7 @@ export const en = {
             Settings: 'Settings',
             Logout: 'Logout',
         },
+        Loading: 'Loading',
+        LoadingFailed: '',
     },
 }

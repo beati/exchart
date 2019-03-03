@@ -125,14 +125,14 @@ func (user *User) VerifyPasswordResetToken(token string) error {
 	return nil
 }
 
-// SetChangeEmailToken returns a validation token for email.
+// SetChangeEmailToken returns a verification token for email.
 func (user *User) SetChangeEmailToken(email string) (string, error) {
-	buf := bytes.NewBuffer(make([]byte, 0, len(email)+tokenSecretSize))
-	_, err := io.WriteString(buf, email)
+	buf := bytes.NewBuffer(make([]byte, 0, tokenSecretSize+len(email)))
+	_, err := io.CopyN(buf, rand.Reader, tokenSecretSize)
 	if err != nil {
 		return "", err
 	}
-	_, err = io.CopyN(buf, rand.Reader, tokenSecretSize)
+	_, err = io.WriteString(buf, email)
 	if err != nil {
 		return "", err
 	}
@@ -183,10 +183,10 @@ func NewUserInteractor(repo Repository, hash PasswordHash, mailer Mailer, host s
 	}
 }
 
-var validationEmail = template.Must(template.New("validationEmail").Parse(`
+var verificationEmail = template.Must(template.New("verificationEmail").Parse(`
 <p>Welcome {{.Name}}</p>
-<a href="https://{{.Host}}/verify_email?action=validate&id={{.UserID}}&email={{.Email}}&token={{.Token}}">validate</a>
-<a href="https://{{.Host}}/verify_email?action=cancel&id={{.UserID}}&token={{.Token}}">cancel</a>
+<a href="https://{{.Host}}/verify_email?action=verify&id={{.UserID}}&token={{.Token}}">Verify</a>
+<a href="https://{{.Host}}/verify_email?action=cancel&id={{.UserID}}&token={{.Token}}">Cancel</a>
 `))
 
 // AddUser adds a new user to the application.
@@ -239,22 +239,20 @@ func (interactor *UserInteractor) AddUser(ctx context.Context, email, password, 
 		Name   string
 		UserID domain.EntityID
 		Host   string
-		Email  string
 		Token  string
 	}{
 		Name:   account.Name,
 		UserID: user.ID,
 		Host:   interactor.host,
-		Email:  user.Email,
 		Token:  changeEmailToken,
 	}
 	var buffer bytes.Buffer
-	err = validationEmail.Execute(&buffer, emailData)
+	err = verificationEmail.Execute(&buffer, emailData)
 	if err != nil {
 		return
 	}
 
-	if false {
+	if true {
 		return interactor.mailer.Send(ctx, &Mail{
 			To:      []string{user.Email},
 			Subject: "Welcome",
@@ -289,7 +287,7 @@ func (interactor *UserInteractor) VerifyUserEmail(ctx context.Context, userID do
 	return tx.UpdateUser(user)
 }
 
-// CancelUserEmail delete a user from an email validation.
+// CancelUserEmail delete a user from an email verification.
 func (interactor *UserInteractor) CancelUserEmail(ctx context.Context, userID domain.EntityID, token string) (err error) {
 	tx, err := interactor.repo.NewTx(ctx)
 	if err != nil {
@@ -314,11 +312,11 @@ func (interactor *UserInteractor) CancelUserEmail(ctx context.Context, userID do
 	return tx.DeleteUser(userID)
 }
 
-var validationChangeEmail = template.Must(template.New("validationChangeEmail").Parse(`
-<a href="https://{{.Host}}/verify_email?action=validate&id={{.UserID}}&email={{.Email}}&token={{.Token}}">validate</a>
+var verificationChangeEmail = template.Must(template.New("verificationChangeEmail").Parse(`
+<a href="https://{{.Host}}/verify_email?action=verify&id={{.UserID}}&token={{.Token}}">Verify</a>
 `))
 
-// ChangeUserEmail sends a new email address to validate it.
+// ChangeUserEmail sends a new email address to verify it.
 func (interactor *UserInteractor) ChangeUserEmail(ctx context.Context, userID domain.EntityID, password, email string) (err error) {
 	tx, err := interactor.repo.NewTx(ctx)
 	if err != nil {
@@ -358,14 +356,14 @@ func (interactor *UserInteractor) ChangeUserEmail(ctx context.Context, userID do
 		Token:  token,
 	}
 	var buffer bytes.Buffer
-	err = validationChangeEmail.Execute(&buffer, emailData)
+	err = verificationChangeEmail.Execute(&buffer, emailData)
 	if err != nil {
 		return
 	}
 
 	return interactor.mailer.Send(ctx, &Mail{
 		To:      []string{email},
-		Subject: "Validate your address",
+		Subject: "Verify your address",
 		Text:    buffer.String(),
 	})
 }

@@ -52,6 +52,7 @@ export class ShellComponent implements OnInit {
 
     Account: Account
     OpenBudgets: Budget[]
+    LoadingFailed = false
 
     Page = 'Analytics'
     SelectedBudget: Budget
@@ -85,6 +86,10 @@ export class ShellComponent implements OnInit {
             this.Account.Budgets.sort(orderBudget)
         })
 
+        this.Load()
+    }
+
+    async Load(): Promise<void> {
         try {
             this.Account = await this.budgetService.GetAcount()
 
@@ -98,6 +103,7 @@ export class ShellComponent implements OnInit {
             }
             this.OpenBudgets = budgets
         } catch (error) {
+            this.LoadingFailed = true
         }
     }
 

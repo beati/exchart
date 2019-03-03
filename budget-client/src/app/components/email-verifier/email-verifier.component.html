@@ -2,9 +2,13 @@
     <mat-card-title class="pre-shell-title">{{ 'EmailVerifier.Title' | translate }}</mat-card-title>
     <mat-card-content>
         <ng-container *ngIf="!Done && !Error">
+            {{ 'EmailVerifier.Message' | translate }}
         </ng-container>
-        <ng-container *ngIf="Done">
-            {{ 'EmailVerifier.Done' | translate }}
+        <ng-container *ngIf="Done && Action === 'verify'">
+            {{ 'EmailVerifier.Verified' | translate }}
+        </ng-container>
+        <ng-container *ngIf="Done && Action === 'cancel'">
+            {{ 'EmailVerifier.Canceled' | translate }}
         </ng-container>
         <ng-container *ngIf="Error">
             {{ 'EmailVerifier.Error' | translate }}

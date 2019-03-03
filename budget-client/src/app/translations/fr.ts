@@ -32,6 +32,13 @@ export const fr = {
         Housing: 'Logement',
         Transport: 'Transport',
     },
+    EmailVerifier: {
+        Title: 'Vérification de l\'adresse email',
+        Message: 'Chargement',
+        Verified: 'Votre adresse email a été vérifiée avec succès.',
+        Canceled: 'Votre inscription a été annulée.',
+        Error: 'Vérification impossible actuellement.',
+    },
     Errors: {
         Default: 'Opération impossible actuellement',
         UserNotFound: 'Utilisateur non trouvé',
@@ -115,7 +122,7 @@ export const fr = {
         Errors: {
             Default: 'Réinitialisation actuellement impossible.',
         },
-        Done: 'Un email contenant la procédure pour réinitialiser votre mot de passe vous à été envoyer.',
+        Done: 'Un email contenant la procédure pour réinitialiser votre mot de passe vous a été envoyer.',
     },
     PasswordResetter: {
         Title: 'Réinitialisation du mot de passe',
@@ -127,7 +134,7 @@ export const fr = {
         Errors: {
             Default: 'Réinitialisation actuellement impossible.',
         },
-        Done: 'Votre mot de passe à été réinitialisé.',
+        Done: 'Votre mot de passe a été réinitialisé.',
         Login: 'Se connecter',
     },
     PeriodSelector: {
@@ -175,5 +182,6 @@ export const fr = {
             Settings: 'Paramètres',
             Logout: 'Se déconnecter',
         },
+        Loading: 'Chargement',
     },
 }

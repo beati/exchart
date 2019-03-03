@@ -9,6 +9,7 @@ import { UserService } from '../../services/user.service'
     styleUrls: ['./email-verifier.component.scss'],
 })
 export class EmailVerifierComponent implements OnInit {
+    Action: string
     Done = false
     Error = false
 
@@ -20,7 +21,6 @@ export class EmailVerifierComponent implements OnInit {
     async ngOnInit(): Promise<void> {
         let id = ''
         let token = ''
-        let action = ''
         let param = this.route.snapshot.queryParamMap.get('id')
         if (param != undefined) {
             id = param
@@ -31,11 +31,11 @@ export class EmailVerifierComponent implements OnInit {
         }
         param = this.route.snapshot.queryParamMap.get('action')
         if (param != undefined) {
-            action = param
+            this.Action = param
         }
 
         try {
-            this.userService.VerifyEmail(id, token, action)
+            await this.userService.VerifyEmail(id, token, this.Action)
             this.Done = true
         } catch (error) {
             this.Error = true
