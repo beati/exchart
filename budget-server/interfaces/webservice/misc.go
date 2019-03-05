@@ -57,9 +57,9 @@ func writeJSON(w io.Writer, resp interface{}) error {
 
 func wrap(f func(w http.ResponseWriter, r *http.Request) (interface{}, error)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var code int
 		resp, err := f(w, r)
 		if err != nil {
+			var code int
 			switch err {
 			case usecases.ErrBadCredentials:
 				code = http.StatusUnauthorized
@@ -74,13 +74,15 @@ func wrap(f func(w http.ResponseWriter, r *http.Request) (interface{}, error)) h
 			default:
 				code = http.StatusInternalServerError
 			}
-		} else {
-			err = writeJSON(w, resp)
-			if err != nil {
-				code = http.StatusInternalServerError
-			}
+
+			Logger(r).WithField("code", code).Error(err)
+			w.WriteHeader(code)
+			return
 		}
-		Logger(r).WithField("code", code).Error(err)
-		w.WriteHeader(code)
+
+		err = writeJSON(w, resp)
+		if err != nil {
+			Logger(r).Error(err)
+		}
 	}
 }
