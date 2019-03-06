@@ -2,6 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core'
 
 import { Subscription } from 'rxjs'
 
+import { Months } from '../../domain/domain'
+
 import { Period, PeriodDuration, PeriodService } from '../../services/period.service'
 
 @Component({
@@ -10,11 +12,12 @@ import { Period, PeriodDuration, PeriodService } from '../../services/period.ser
     styleUrls: ['./period-selector.component.scss'],
 })
 export class PeriodSelectorComponent implements OnInit, OnDestroy {
+    Months = Months
     PeriodDuration = PeriodDuration
 
     Period: Period
 
-    PeriodChangeSub: Subscription
+    private periodChangeSub: Subscription
 
     constructor(
         private readonly periodService: PeriodService,
@@ -23,13 +26,13 @@ export class PeriodSelectorComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.Period = this.periodService.PeriodChange.value
 
-        this.PeriodChangeSub = this.periodService.PeriodChange.subscribe((period) => {
+        this.periodChangeSub = this.periodService.PeriodChange.subscribe((period) => {
             this.Period = period
         })
     }
 
     ngOnDestroy(): void {
-        this.PeriodChangeSub.unsubscribe()
+        this.periodChangeSub.unsubscribe()
     }
 
     Duration(): string {

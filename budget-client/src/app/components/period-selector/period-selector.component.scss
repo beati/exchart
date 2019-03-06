@@ -1,6 +1,21 @@
 :host {
-    display: block;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    margin: 16px 0px 16px 16px;
+}
+
+.right-space {
+    margin-right: 20px;
+}
+
+.chevron-button {
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+}
+
+.period-description {
+    font-size: 22px;
 }
 
 .mode-button-icon {

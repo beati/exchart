@@ -138,6 +138,7 @@ export const fr = {
         Login: 'Se connecter',
     },
     PeriodSelector: {
+        Today: 'Aujourd\'hui',
         Mode: {
             All: 'Tout',
             Month: 'Mois',
@@ -169,7 +170,7 @@ export const fr = {
         },
     },
     Tabs: {
-        Data: 'Données',
+        Data: 'Analyse',
         Movements: 'Mouvements',
         Categories: 'Catégories',
     },

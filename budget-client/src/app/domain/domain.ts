@@ -49,7 +49,7 @@ export interface RecurringMovement {
 }
 
 export const Months = [
-    { Code: Month.January, String: 'Januray' },
+    { Code: Month.January, String: 'January' },
     { Code: Month.February, String: 'February' },
     { Code: Month.March, String: 'March' },
     { Code: Month.April, String: 'April' },
