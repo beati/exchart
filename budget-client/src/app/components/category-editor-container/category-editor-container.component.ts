@@ -12,15 +12,6 @@ import { DisplayType, ResponsiveService } from '../../services/responsive.servic
 export class CategoryEditorContainerComponent implements OnInit {
     Mobile: boolean
 
-    private budget: Budget
-    @Input()
-    set Budget(budget: Budget) {
-        this.budget = budget
-    }
-    get Budget(): Budget {
-        return this.budget
-    }
-
     constructor(
         private readonly responsive: ResponsiveService,
     ) {}

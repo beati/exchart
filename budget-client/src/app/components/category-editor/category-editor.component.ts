@@ -1,5 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core'
+import { Component, Input, OnDestroy, OnInit } from '@angular/core'
 import { AbstractControl, FormControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms'
+
+import { Subscription } from 'rxjs'
 
 import { FlatTreeControl } from '@angular/cdk/tree'
 import { MatDialog } from '@angular/material/dialog'
@@ -7,7 +9,7 @@ import { MatTreeFlatDataSource, MatTreeFlattener } from '@angular/material/tree'
 
 import { Budget, Category, CategoryType, CategoryTypes } from '../../domain/domain'
 
-import { BudgetService } from '../../services/budget.service'
+import { DataflowService } from '../../services/dataflow.service'
 import { ErrorService } from '../../services/error.service'
 
 import { DeleteCategoryDialogComponent } from '../delete-category-dialog/delete-category-dialog.component'
@@ -37,20 +39,9 @@ interface categoryFlatNode {
     templateUrl: './category-editor.component.html',
     styleUrls: ['./category-editor.component.scss'],
 })
-export class CategoryEditorComponent implements OnInit {
-    private initialized = false
-
-    private budget: Budget
-    @Input()
-    set Budget(budget: Budget) {
-        this.budget = budget
-        if (this.initialized) {
-            this.init()
-        }
-    }
-    get Budget(): Budget {
-        return this.budget
-    }
+export class CategoryEditorComponent implements OnInit, OnDestroy {
+    private budgetID: string
+    private budgetSub: Subscription
 
     categoryTree: categoryNode[]
     nodes: Map<string, categoryFlatNode>
@@ -61,16 +52,30 @@ export class CategoryEditorComponent implements OnInit {
 
     constructor(
         private readonly dialog: MatDialog,
-        private readonly budgetService: BudgetService,
+        private readonly dataflowService: DataflowService,
         private readonly errorService: ErrorService,
     ) {}
 
     ngOnInit(): void {
-        this.init()
-        this.initialized = true
+        const budget = this.dataflowService.SelectedBudget.value
+        this.budgetID = budget.ID
+        this.init(budget)
+
+        this.budgetSub = this.dataflowService.SelectedBudget.subscribe((budget) => {
+            if (budget.ID === this.budgetID) {
+                return
+            }
+
+            this.budgetID = budget.ID
+            this.init(budget)
+        })
     }
 
-    private init(): void {
+    ngOnDestroy(): void {
+        this.budgetSub.unsubscribe()
+    }
+
+    private init(budget: Budget): void {
         this.categoryTree = []
         this.nodes = new Map<string, categoryFlatNode>()
 
@@ -110,7 +115,7 @@ export class CategoryEditorComponent implements OnInit {
             })
         }
 
-        for (const category of this.Budget.Categories) {
+        for (const category of budget.Categories) {
             if (category.Name !== 'default') {
                 const children = this.categoryTree[category.Type].children
                 if (children != undefined) {
@@ -200,7 +205,7 @@ export class CategoryEditorComponent implements OnInit {
 
         try {
             this.setSubmitting(type, id, name, true)
-            const category = await this.budgetService.AddCategory(this.Budget.ID, type, name)
+            const category = await this.dataflowService.AddCategory(this.budgetID, type, name)
             this.categoryAdded(category)
         } catch (error) {
             this.setSubmitting(type, id, name, false)
@@ -244,7 +249,7 @@ export class CategoryEditorComponent implements OnInit {
 
         try {
             this.setSubmitting(type, id, name, true)
-            await this.budgetService.UpdateCategory(id, name)
+            await this.dataflowService.UpdateCategory(id, name)
             this.CancelCategoryEdition(type, id)
         } catch (error) {
             this.setSubmitting(type, id, name, false)
@@ -267,7 +272,7 @@ export class CategoryEditorComponent implements OnInit {
         if (typeof deleteAccepted === 'boolean' && deleteAccepted) {
             try {
                 this.setSubmitting(type, id, node.category.Name, true)
-                await this.budgetService.DeleteCategory(id)
+                await this.dataflowService.DeleteCategory(id)
                 this.categoryDeleted(type, id)
             } catch (error) {
                 this.setSubmitting(type, id, node.category.Name, false)

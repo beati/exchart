@@ -16,6 +16,10 @@ export class Period {
         this.Today()
     }
 
+    Equals(period: Period): boolean {
+        return this.Duration === period.Duration && this.Year === period.Year && this.Month === period.Month
+    }
+
     Today(): void {
         const now = DateTime.local()
         this.Year = now.year
@@ -59,9 +63,9 @@ export class Period {
     providedIn: 'root',
 })
 export class PeriodService {
-    PeriodChange: BehaviorSubject<Period>
+    PeriodChange = new BehaviorSubject(new Period())
 
-    constructor() {
-        this.PeriodChange = new BehaviorSubject<Period>(new Period())
+    Init(): void {
+        this.PeriodChange.next(new Period())
     }
 }

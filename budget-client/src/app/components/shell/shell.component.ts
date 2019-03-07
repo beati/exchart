@@ -1,4 +1,6 @@
-import { Component, OnInit, ViewChild } from '@angular/core'
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core'
+
+import { Subscription } from 'rxjs'
 
 import { MatDialog } from '@angular/material/dialog'
 import { MatSidenav } from '@angular/material/sidenav'
@@ -6,9 +8,10 @@ import { MatSidenav } from '@angular/material/sidenav'
 import { Account, Budget, BudgetStatus } from '../../domain/domain'
 
 import { AuthService } from '../../services/auth.service'
-import { BudgetService } from '../../services/budget.service'
+import { DataflowService } from '../../services/dataflow.service'
 import { ErrorService } from '../../services/error.service'
 import { DisplayType, ResponsiveService } from '../../services/responsive.service'
+import { PeriodService } from '../../services/period.service'
 
 import { BudgetAcceptDialogComponent } from '../budget-accept-dialog/budget-accept-dialog.component'
 import { BudgetAdderDialogComponent } from '../budget-adder-dialog/budget-adder-dialog.component'
@@ -16,64 +19,44 @@ import { BudgetAdderComponent } from '../budget-adder/budget-adder.component'
 import { MovementAdderDialogComponent } from '../movement-adder-dialog/movement-adder-dialog.component'
 import { MovementAdderComponent } from '../movement-adder/movement-adder.component'
 
-const orderBudget = (a: Budget, b: Budget): number => {
-    if (a.Status === BudgetStatus.Main) {
-        return -1
-    } else if (b.Status === BudgetStatus.Main) {
-        return 1
-    }
-
-    if (a.Status === BudgetStatus.Open) {
-        return -1
-    } else if (b.Status === BudgetStatus.Open) {
-        return 1
-    }
-
-    if (a.Status === BudgetStatus.NotAccepted) {
-        return -1
-    } else if (b.Status === BudgetStatus.NotAccepted) {
-        return 1
-    }
-
-    return 0
-}
-
 @Component({
     selector: 'app-shell',
     templateUrl: './shell.component.html',
     styleUrls: ['./shell.component.scss'],
 })
-export class ShellComponent implements OnInit {
+export class ShellComponent implements OnInit, OnDestroy {
     BudgetStatus = BudgetStatus
 
-    @ViewChild('sidenav') sidenav: MatSidenav
+    private displayChangeSub: Subscription
+    private accountSub: Subscription
+
+    @ViewChild('sidenav') Sidenav: MatSidenav
 
     Mobile: boolean
-
-    Account: Account
-    OpenBudgets: Budget[]
+    Loading = false
     LoadingFailed = false
-
     Page = 'Analytics'
-    SelectedBudget: Budget
     SubPage = ''
 
-    Loading = false
     @ViewChild('budgetAdder') BudgetAdder: BudgetAdderComponent
     @ViewChild('movementAdder') MovementAdder: MovementAdderComponent
+
+    Account: Account
+    SelectedBudgetID: string
 
     constructor(
         private readonly dialog: MatDialog,
         private readonly responsive: ResponsiveService,
+        private readonly periodService: PeriodService,
         private readonly authService: AuthService,
-        private readonly budgetService: BudgetService,
+        private readonly dataflowService: DataflowService,
         private readonly errorService: ErrorService,
     ) {}
 
     async ngOnInit(): Promise<void> {
         this.Mobile = this.responsive.Display() === DisplayType.Mobile
 
-        this.responsive.DisplayChange.subscribe((display) => {
+        this.displayChangeSub = this.responsive.DisplayChange.subscribe((display) => {
             this.Mobile = display === DisplayType.Mobile
 
             if (!this.Mobile) {
@@ -81,30 +64,22 @@ export class ShellComponent implements OnInit {
             }
         })
 
-        this.budgetService.BudgetAdded.subscribe((budget) => {
-            this.Account.Budgets.push(budget)
-            this.Account.Budgets.sort(orderBudget)
-        })
+        this.periodService.Init()
 
-        this.Load()
-    }
-
-    async Load(): Promise<void> {
         try {
-            this.Account = await this.budgetService.GetAcount()
-
-            this.Account.Budgets.sort(orderBudget)
-
-            const budgets: Budget[] = []
-            for (const budget of this.Account.Budgets) {
-                if (budget.Status === BudgetStatus.Main || budget.Status === BudgetStatus.Open) {
-                    budgets.push(budget)
-                }
-            }
-            this.OpenBudgets = budgets
+            await this.dataflowService.Init()
         } catch (error) {
             this.LoadingFailed = true
         }
+
+        this.accountSub = this.dataflowService.Account.subscribe((account) => {
+            this.Account = account
+        })
+    }
+
+    ngOnDestroy(): void {
+        this.displayChangeSub.unsubscribe()
+        this.accountSub.unsubscribe()
     }
 
     async Logout(): Promise<void> {
@@ -124,7 +99,7 @@ export class ShellComponent implements OnInit {
         this.Page = page
 
         if (this.Mobile) {
-            await this.sidenav.close()
+            await this.Sidenav.close()
         }
     }
 
@@ -132,7 +107,7 @@ export class ShellComponent implements OnInit {
         this.SubPage = subPage
 
         if (this.Mobile) {
-            await this.sidenav.close()
+            await this.Sidenav.close()
         }
     }
 
@@ -140,14 +115,15 @@ export class ShellComponent implements OnInit {
         switch (budget.Status) {
         case BudgetStatus.Main:
         case BudgetStatus.Open:
-            this.SelectedBudget = budget
+            this.SelectedBudgetID = budget.ID
+            this.dataflowService.SelectBudget(budget.ID)
             await this.SetPage(budget.ID)
             break
         case BudgetStatus.NotAccepted:
             break
         case BudgetStatus.ToAccept:
             if (this.Mobile) {
-                this.sidenav.close().then(() => {})
+                this.Sidenav.close().then(() => {})
             }
 
             const dialogRef = this.dialog.open(BudgetAcceptDialogComponent, {
@@ -158,17 +134,10 @@ export class ShellComponent implements OnInit {
                 try {
                     this.Loading = true
                     if (accepted) {
-                        await this.budgetService.AcceptJointBudget(budget.ID)
-                        budget.Status = BudgetStatus.Open
+                        await this.dataflowService.AcceptJointBudget(budget.ID)
                     } else {
-                        await this.budgetService.DisableJointBudget(budget.ID)
-                        for (let i = 0; i < this.Account.Budgets.length; i += 1) {
-                            if (budget.ID === this.Account.Budgets[i].ID) {
-                                this.Account.Budgets.splice(i, 1)
-                            }
-                        }
+                        await this.dataflowService.DisableJointBudget(budget.ID)
                     }
-                    this.Account.Budgets.sort(orderBudget)
                     this.Loading = false
                 } catch (error) {
                     this.Loading = false
@@ -200,9 +169,7 @@ export class ShellComponent implements OnInit {
         if (this.Mobile) {
             await this.SetSubPage('MovementAdder')
         } else {
-            this.dialog.open(MovementAdderDialogComponent, {
-                data: this.OpenBudgets,
-            })
+            this.dialog.open(MovementAdderDialogComponent)
         }
     }
 
@@ -214,4 +181,20 @@ export class ShellComponent implements OnInit {
             this.SubPage = ''
         }
     }
+
+    /*
+    private async getMovements(budget: Budget, period: Period): Promise<void> {
+        switch (period.Duration) {
+        case PeriodDuration.All:
+            this.Movements = await this.budgetService.GetMovements(budget.ID)
+            break;
+        case PeriodDuration.Year:
+            this.Movements = await this.budgetService.GetMovements(budget.ID, period.Year)
+            break;
+        case PeriodDuration.Month:
+            this.Movements = await this.budgetService.GetMovements(budget.ID, period.Year, period.Month)
+            break;
+        }
+    }
+    */
 }

@@ -252,7 +252,7 @@ func (interactor *UserInteractor) AddUser(ctx context.Context, email, password, 
 		return
 	}
 
-	if true {
+	if false {
 		return interactor.mailer.Send(ctx, &Mail{
 			To:      []string{user.Email},
 			Subject: "Welcome",

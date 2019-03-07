@@ -4,7 +4,7 @@ import { FormControl, Validators } from '@angular/forms'
 
 import { StatusCode } from '../../services/http-status-codes'
 
-import { BudgetService } from '../../services/budget.service'
+import { DataflowService } from '../../services/dataflow.service'
 import { ErrorService } from '../../services/error.service'
 
 @Component({
@@ -19,7 +19,7 @@ export class BudgetAdderComponent {
     ])
 
     constructor(
-        private readonly budgetService: BudgetService,
+        private readonly dataflowService: DataflowService,
         private readonly errorService: ErrorService,
     ) {}
 
@@ -32,7 +32,7 @@ export class BudgetAdderComponent {
 
         try {
             const email: string = this.EmailFormControl.value
-            await this.budgetService.AddJointBudget(email)
+            await this.dataflowService.AddJointBudget(email)
         } catch (error) {
             let errorReference: string | undefined
             if (error instanceof HttpErrorResponse) {
