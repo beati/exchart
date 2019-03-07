@@ -1,8 +1,6 @@
-import { Component, Inject, ViewChild } from '@angular/core'
+import { Component, ViewChild } from '@angular/core'
 
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
-
-import { Budget } from '../../domain/domain'
+import { MatDialogRef } from '@angular/material/dialog'
 
 import { MovementAdderComponent } from '../movement-adder/movement-adder.component'
 
@@ -18,7 +16,6 @@ export class MovementAdderDialogComponent {
 
     constructor(
         private readonly dialogRef: MatDialogRef<MovementAdderDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) public Budgets: Budget[],
     ) {}
 
     Cancel(): void {

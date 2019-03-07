@@ -1,11 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core'
+import { Component, OnInit } from '@angular/core'
 import { FormControl, Validators } from '@angular/forms'
 
 import { DateTime } from 'luxon'
 
 import { Budget, BudgetStatus, Category, CategoryType, CategoryTypes, Months } from '../../domain/domain'
 
-import { BudgetService } from '../../services/budget.service'
+import { DataflowService } from '../../services/dataflow.service'
 import { ErrorService } from '../../services/error.service'
 
 enum FormPeriod { Monthly, Yearly, OneTime, OverTheYear }
@@ -22,7 +22,7 @@ export class MovementAdderComponent implements OnInit {
     FormPeriod = FormPeriod
     Months = Months
 
-    @Input() Budgets: Budget[]
+    Budgets: Budget[]
     Categories: Category[][] = new Array<Category[]>(CategoryType.CategoryTypeCount)
 
     MovementFormData = {
@@ -39,11 +39,12 @@ export class MovementAdderComponent implements OnInit {
     }
 
     constructor(
-        private readonly budgetService: BudgetService,
+        private readonly dataflowService: DataflowService,
         private readonly errorService: ErrorService,
     ) {}
 
     ngOnInit(): void {
+        this.Budgets = this.dataflowService.OpenBudgets()
         this.resetDate()
         this.setBudgetMain()
     }
@@ -164,7 +165,7 @@ export class MovementAdderComponent implements OnInit {
             switch (this.MovementFormData.Period) {
             case FormPeriod.OneTime:
             case FormPeriod.OverTheYear:
-                await this.budgetService.AddMovement(
+                await this.dataflowService.AddMovement(
                     this.MovementFormData.Category.ID,
                     amount,
                     this.MovementFormData.Year,
@@ -173,7 +174,7 @@ export class MovementAdderComponent implements OnInit {
                 break
             case FormPeriod.Monthly:
             case FormPeriod.Yearly:
-                await this.budgetService.AddRecurringMovement(
+                await this.dataflowService.AddRecurringMovement(
                     this.MovementFormData.Category.ID,
                     amount,
                     this.MovementFormData.Period,

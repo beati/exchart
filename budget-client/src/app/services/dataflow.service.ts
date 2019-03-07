@@ -5,7 +5,7 @@ import { BehaviorSubject } from 'rxjs'
 import { Account, Budget, BudgetStatus, CategoryType, Category, Movement, RecurringMovement } from '../domain/domain'
 
 import { BudgetService } from './budget.service'
-import { Period, PeriodService } from './period.service'
+import { Period, PeriodDuration, PeriodService } from './period.service'
 
 const orderBudget = (a: Budget, b: Budget): number => {
     if (a.Status === BudgetStatus.Main) {
@@ -79,6 +79,17 @@ export class DataflowService {
         }
     }
 
+    private async getMovements(budget: Budget, period: Period): Promise<Movement[]> {
+        switch (period.Duration) {
+        case PeriodDuration.All:
+            return await this.budgetService.GetMovements(budget.ID)
+        case PeriodDuration.Year:
+            return await this.budgetService.GetMovements(budget.ID, period.Year)
+        case PeriodDuration.Month:
+            return await this.budgetService.GetMovements(budget.ID, period.Year, period.Month)
+        }
+    }
+
     async AddJointBudget(email: string): Promise<void> {
         const budget = await this.budgetService.AddJointBudget(email)
 
@@ -109,6 +120,7 @@ export class DataflowService {
         for (let i = 0; i < account.Budgets.length; i += 1) {
             if (budgetID === account.Budgets[i].ID) {
                 account.Budgets.splice(i, 1)
+                break
             }
         }
         account.Budgets.sort(orderBudget)
@@ -123,19 +135,53 @@ export class DataflowService {
             if (budget.ID === budgetID) {
                 budget.Categories.push(category)
                 this.SelectedBudget.next(budget)
+                this.Account.next(account)
                 break
             }
         }
-        this.Account.next(account)
 
         return category
     }
 
     async UpdateCategory(categoryID: string, name: string): Promise<void> {
         await this.budgetService.UpdateCategory(categoryID, name)
+
+        const account = this.Account.value
+        loop:
+        for (const budget of account.Budgets) {
+            for (const category of budget.Categories) {
+                if (category.ID === categoryID) {
+                    category.Name = name
+                    this.SelectedBudget.next(budget)
+                    this.Account.next(account)
+                    break loop
+                }
+            }
+        }
     }
 
     async DeleteCategory(categoryID: string): Promise<void> {
         await this.budgetService.DeleteCategory(categoryID)
+
+        const account = this.Account.value
+        loop:
+        for (const budget of account.Budgets) {
+            for (let i = 0; i < budget.Categories.length; i++) {
+                if (budget.Categories[i].ID === categoryID) {
+                    budget.Categories.splice(i, 1)
+                    this.SelectedBudget.next(budget)
+                    this.Account.next(account)
+                    break loop
+                }
+            }
+        }
+    }
+
+    async AddMovement(categoryID: string, amount: number, year: number, month: number): Promise<void> {
+        await this.budgetService.AddMovement(categoryID, amount, year, month)
+    }
+
+    async AddRecurringMovement(categoryID: string, amount: number, period: number, firstYear: number, firstMonth: number): Promise<void> {
+        await this.budgetService.AddRecurringMovement(categoryID, amount, period, firstYear, firstMonth)
     }
 }

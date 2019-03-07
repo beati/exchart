@@ -181,20 +181,4 @@ export class ShellComponent implements OnInit, OnDestroy {
             this.SubPage = ''
         }
     }
-
-    /*
-    private async getMovements(budget: Budget, period: Period): Promise<void> {
-        switch (period.Duration) {
-        case PeriodDuration.All:
-            this.Movements = await this.budgetService.GetMovements(budget.ID)
-            break;
-        case PeriodDuration.Year:
-            this.Movements = await this.budgetService.GetMovements(budget.ID, period.Year)
-            break;
-        case PeriodDuration.Month:
-            this.Movements = await this.budgetService.GetMovements(budget.ID, period.Year, period.Month)
-            break;
-        }
-    }
-    */
 }
