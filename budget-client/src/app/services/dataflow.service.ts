@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core'
 
 import { BehaviorSubject } from 'rxjs'
 
-import { Account, Budget, BudgetStatus, CategoryType, Category, Movement, RecurringMovement } from '../domain/domain'
+import { Account, Budget, BudgetStatus, CategoryType, Category, Movement, RecurringMovement, Month } from '../domain/domain'
 
 import { BudgetService } from './budget.service'
 import { Period, PeriodDuration, PeriodService } from './period.service'
@@ -35,8 +35,8 @@ const orderBudget = (a: Budget, b: Budget): number => {
 export class DataflowService {
     Account: BehaviorSubject<Account>
     SelectedBudget: BehaviorSubject<Budget>
-    Movements: BehaviorSubject<Movement>
-    RecurringMovements: BehaviorSubject<RecurringMovement>
+    Movements: BehaviorSubject<Movement[]>
+    RecurringMovements: BehaviorSubject<RecurringMovement[]>
 
     private period: Period
 
@@ -56,6 +56,12 @@ export class DataflowService {
         this.Account = new BehaviorSubject(account)
 
         this.SelectedBudget = new BehaviorSubject(account.Budgets[0])
+
+        const movements = await this.getMovements(account.Budgets[0], this.period)
+        this.Movements = new BehaviorSubject(movements)
+
+        const recurringMovements = await this.getRecurringMovements(account.Budgets[0], this.period)
+        this.RecurringMovements = new BehaviorSubject(recurringMovements)
     }
 
     OpenBudgets(): Budget[] {
@@ -87,6 +93,17 @@ export class DataflowService {
             return await this.budgetService.GetMovements(budget.ID, period.Year)
         case PeriodDuration.Month:
             return await this.budgetService.GetMovements(budget.ID, period.Year, period.Month)
+        }
+    }
+
+    private async getRecurringMovements(budget: Budget, period: Period): Promise<RecurringMovement[]> {
+        switch (period.Duration) {
+        case PeriodDuration.All:
+            return await this.budgetService.GetRecurringMovements(budget.ID)
+        case PeriodDuration.Year:
+            return await this.budgetService.GetRecurringMovements(budget.ID, period.Year)
+        case PeriodDuration.Month:
+            return await this.budgetService.GetRecurringMovements(budget.ID, period.Year, period.Month)
         }
     }
 
@@ -178,10 +195,48 @@ export class DataflowService {
     }
 
     async AddMovement(categoryID: string, amount: number, year: number, month: number): Promise<void> {
-        await this.budgetService.AddMovement(categoryID, amount, year, month)
+        const movement = await this.budgetService.AddMovement(categoryID, amount, year, month)
+    }
+
+    async UpdateMovement(movementID: string, categoryID: string, year: number, month: number): Promise<void> {
+        await this.budgetService.UpdateMovement(movementID, categoryID, year, month)
+    }
+
+    async DeleteMovement(movementID: string): Promise<void> {
+        await this.budgetService.DeleteMovement(movementID)
     }
 
     async AddRecurringMovement(categoryID: string, amount: number, period: number, firstYear: number, firstMonth: number): Promise<void> {
         await this.budgetService.AddRecurringMovement(categoryID, amount, period, firstYear, firstMonth)
+    }
+
+    async UpdateRecurringMovement(movementID: string, categoryID: string, firstYear: number, firstMonth: number, lastYear: number, lastMonth: number): Promise<void> {
+        await this.budgetService.UpdateRecurringMovement(movementID, categoryID, firstYear, firstMonth, lastYear, lastMonth)
+    }
+
+    async DeleteRecurringMovement(movementID: string): Promise<void> {
+        await this.budgetService.DeleteRecurringMovement(movementID)
+    }
+}
+
+function isMovementInPeriod(movement: Movement, period: Period): boolean {
+    switch (period.Duration) {
+    case PeriodDuration.All:
+        return true
+    case PeriodDuration.Year:
+        return movement.Year === period.Year
+    case PeriodDuration.Month:
+        return movement.Year === period.Year && (movement.Month === Month.All || movement.Month === movement.Month)
+    }
+}
+
+function isRecurringMovementInPeriod(movement: RecurringMovement, period: Period): boolean {
+    switch (period.Duration) {
+    case PeriodDuration.All:
+        return true
+    case PeriodDuration.Year:
+        return movement.FirstYear <= period.Year && period.Year <= movement.LastYear
+    case PeriodDuration.Month:
+        return (movement.FirstYear < period.Year || (movement.FirstYear === period.Year && (movement.FirstMonth === Month.All || movement.FirstMonth <= period.Month))) && (period.Year < movement.LastYear || (movement.LastYear === period.Year && (movement.LastMonth === Month.All || period.Month <= movement.LastMonth)))
     }
 }

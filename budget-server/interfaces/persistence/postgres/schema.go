@@ -56,7 +56,6 @@ CREATE TABLE recurring_movements (
 	recurring_movement_id bigserial PRIMARY KEY,
 	category_id bigint NOT NULL REFERENCES categories ON DELETE RESTRICT,
 	amount      bigint NOT NULL,
-	period      integer NOT NULL,
 	first_year  integer NOT NULL,
 	last_year   integer NOT NULL,
 	first_month integer NOT NULL,

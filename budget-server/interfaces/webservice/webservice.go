@@ -255,7 +255,6 @@ func (bapi *budgetAPI) addRecurringMovement(w http.ResponseWriter, r *http.Reque
 	params := struct {
 		CategoryID domain.EntityID
 		Amount     int64
-		Period     domain.Period
 		FirstYear  int
 		FirstMonth time.Month
 	}{}
@@ -264,7 +263,7 @@ func (bapi *budgetAPI) addRecurringMovement(w http.ResponseWriter, r *http.Reque
 		return nil, domain.ErrBadParameters
 	}
 
-	return bapi.budgetInteractor.AddRecurringMovement(r.Context(), session.AccountID, params.CategoryID, params.Amount, params.Period, params.FirstYear, params.FirstMonth)
+	return bapi.budgetInteractor.AddRecurringMovement(r.Context(), session.AccountID, params.CategoryID, params.Amount, params.FirstYear, params.FirstMonth)
 }
 
 func (bapi *budgetAPI) updateRecurringMovement(w http.ResponseWriter, r *http.Request) (interface{}, error) {

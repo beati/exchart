@@ -2,6 +2,9 @@ package domain
 
 import "time"
 
+// AllMonth is a time.Month value that represents all months of the year.
+const AllMonth = time.Month(0)
+
 // A Movement represents an account movement of money.
 type Movement struct {
 	ID         EntityID   `db:"movement_id,omitempty"`
@@ -37,7 +40,7 @@ func NewMovement(categoryID EntityID, amount int64, year int, month time.Month) 
 
 // Update sets some of m properties.
 func (m *Movement) Update(categoryID EntityID, year int, month time.Month) error {
-	if !(time.January <= month || month <= time.December) {
+	if !(AllMonth <= month && month <= time.December) {
 		return ErrBadParameters
 	}
 

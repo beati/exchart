@@ -77,7 +77,7 @@
             </mat-select>
             <mat-select *ngIf="MovementFormData.Month !== 0" name="Month" [(ngModel)]="MovementFormData.Month">
                 <mat-option *ngFor="let month of Months" [value]="month.Code">
-                    {{ month.String | translate }}
+                    {{ 'Months.' + month.String | translate }}
                 </mat-option>
             </mat-select>
         </mat-form-field>
