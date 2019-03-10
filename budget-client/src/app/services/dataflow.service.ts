@@ -196,6 +196,11 @@ export class DataflowService {
 
     async AddMovement(categoryID: string, amount: number, year: number, month: number): Promise<void> {
         const movement = await this.budgetService.AddMovement(categoryID, amount, year, month)
+        if (isMovementInPeriod(movement, this.period)) {
+            const movements = this.Movements.value
+            movements.push(movement)
+            this.Movements.next(movements)
+        }
     }
 
     async UpdateMovement(movementID: string, categoryID: string, year: number, month: number): Promise<void> {
@@ -204,10 +209,23 @@ export class DataflowService {
 
     async DeleteMovement(movementID: string): Promise<void> {
         await this.budgetService.DeleteMovement(movementID)
+        const movements = this.Movements.value
+        for (let i = 0; i < movements.length; i++) {
+            if (movements[i].ID === movementID) {
+                movements.splice(i, 1)
+                this.Movements.next(movements)
+                break
+            }
+        }
     }
 
     async AddRecurringMovement(categoryID: string, amount: number, period: number, firstYear: number, firstMonth: number): Promise<void> {
-        await this.budgetService.AddRecurringMovement(categoryID, amount, period, firstYear, firstMonth)
+        const movement = await this.budgetService.AddRecurringMovement(categoryID, amount, period, firstYear, firstMonth)
+        if (isRecurringMovementInPeriod(movement, this.period)) {
+            const movements = this.RecurringMovements.value
+            movements.push(movement)
+            this.RecurringMovements.next(movements)
+        }
     }
 
     async UpdateRecurringMovement(movementID: string, categoryID: string, firstYear: number, firstMonth: number, lastYear: number, lastMonth: number): Promise<void> {
@@ -216,6 +234,14 @@ export class DataflowService {
 
     async DeleteRecurringMovement(movementID: string): Promise<void> {
         await this.budgetService.DeleteRecurringMovement(movementID)
+        const movements = this.RecurringMovements.value
+        for (let i = 0; i < movements.length; i++) {
+            if (movements[i].ID === movementID) {
+                movements.splice(i, 1)
+                this.RecurringMovements.next(movements)
+                break
+            }
+        }
     }
 }
 
