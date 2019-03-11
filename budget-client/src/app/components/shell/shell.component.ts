@@ -116,8 +116,10 @@ export class ShellComponent implements OnInit, OnDestroy {
         case BudgetStatus.Main:
         case BudgetStatus.Open:
             this.SelectedBudgetID = budget.ID
-            this.dataflowService.SelectBudget(budget.ID)
-            await this.SetPage(budget.ID)
+            await Promise.all([
+                this.dataflowService.SelectBudget(budget.ID),
+                this.SetPage(budget.ID),
+            ])
             break
         case BudgetStatus.NotAccepted:
             break

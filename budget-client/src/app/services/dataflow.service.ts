@@ -72,12 +72,12 @@ export class DataflowService {
         return openBudgets
     }
 
-    SelectBudget(budgetID: string): void {
+    async SelectBudget(budgetID: string): Promise<void> {
         const account = this.Account.value
         for (const budget of account.Budgets) {
             if (budget.ID === budgetID) {
                 this.SelectedBudget.next(budget)
-                break
+                return this.getMovements()
             }
         }
     }
