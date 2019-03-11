@@ -43,25 +43,22 @@ export class DataflowService {
     constructor(
         private readonly budgetService: BudgetService,
         private readonly periodService: PeriodService,
-    ) {
-        this.period = this.periodService.PeriodChange.value
-        this.periodService.PeriodChange.subscribe((period) => {
-            this.period = period
-        })
-    }
+    ) {}
 
     async Init(): Promise<void> {
+        this.Movements = new BehaviorSubject([])
+        this.RecurringMovements = new BehaviorSubject([])
+
         const account = await this.budgetService.GetAcount()
         account.Budgets.sort(orderBudget)
         this.Account = new BehaviorSubject(account)
 
         this.SelectedBudget = new BehaviorSubject(account.Budgets[0])
 
-        const movements = await this.getMovements(account.Budgets[0], this.period)
-        this.Movements = new BehaviorSubject(movements)
-
-        const recurringMovements = await this.getRecurringMovements(account.Budgets[0], this.period)
-        this.RecurringMovements = new BehaviorSubject(recurringMovements)
+        this.periodService.PeriodChange.subscribe(async (period) => {
+            this.period = period
+            await this.getMovements()
+        })
     }
 
     OpenBudgets(): Budget[] {
@@ -85,25 +82,37 @@ export class DataflowService {
         }
     }
 
-    private async getMovements(budget: Budget, period: Period): Promise<Movement[]> {
-        switch (period.Duration) {
-        case PeriodDuration.All:
-            return await this.budgetService.GetMovements(budget.ID)
-        case PeriodDuration.Year:
-            return await this.budgetService.GetMovements(budget.ID, period.Year)
-        case PeriodDuration.Month:
-            return await this.budgetService.GetMovements(budget.ID, period.Year, period.Month)
-        }
-    }
+    private async getMovements(): Promise<void> {
+        this.Movements.next([])
+        this.RecurringMovements.next([])
 
-    private async getRecurringMovements(budget: Budget, period: Period): Promise<RecurringMovement[]> {
+        const budgetID = this.SelectedBudget.value.ID
+        const period = Object.assign(new Period(), this.period)
+
+        let year: number | undefined = undefined
+        let month: Month | undefined = undefined
+
         switch (period.Duration) {
-        case PeriodDuration.All:
-            return await this.budgetService.GetRecurringMovements(budget.ID)
         case PeriodDuration.Year:
-            return await this.budgetService.GetRecurringMovements(budget.ID, period.Year)
+            year = period.Year
+            break
         case PeriodDuration.Month:
-            return await this.budgetService.GetRecurringMovements(budget.ID, period.Year, period.Month)
+            year = period.Year
+            month = period.Month
+            break
+        }
+
+        try {
+            const movements = await Promise.all([
+                this.budgetService.GetMovements(budgetID, year, month), 
+                this.budgetService.GetRecurringMovements(budgetID, year, month),
+            ])
+
+            if (budgetID === this.SelectedBudget.value.ID && period.Equals(this.period)) {
+                this.Movements.next(movements[0])
+                this.RecurringMovements.next(movements[1])
+            }
+        } catch (error) {
         }
     }
 
@@ -219,8 +228,8 @@ export class DataflowService {
         }
     }
 
-    async AddRecurringMovement(categoryID: string, amount: number, period: number, firstYear: number, firstMonth: number): Promise<void> {
-        const movement = await this.budgetService.AddRecurringMovement(categoryID, amount, period, firstYear, firstMonth)
+    async AddRecurringMovement(categoryID: string, amount: number, firstYear: number, firstMonth: number): Promise<void> {
+        const movement = await this.budgetService.AddRecurringMovement(categoryID, amount, firstYear, firstMonth)
         if (isRecurringMovementInPeriod(movement, this.period)) {
             const movements = this.RecurringMovements.value
             movements.push(movement)

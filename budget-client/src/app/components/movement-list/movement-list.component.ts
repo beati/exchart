@@ -1,8 +1,4 @@
-import { Component, OnInit } from '@angular/core'
-
-import { Subscription } from 'rxjs'
-
-import { Movement } from '../../domain/domain'
+import { Component } from '@angular/core'
 
 import { DataflowService } from '../../services/dataflow.service'
 
@@ -11,20 +7,10 @@ import { DataflowService } from '../../services/dataflow.service'
     templateUrl: './movement-list.component.html',
     styleUrls: ['./movement-list.component.scss'],
 })
-export class MovementListComponent implements OnInit {
-    Columns = ['Amount']
-
-    Movements: Movement[]
-    MovementsSub: Subscription
+export class MovementListComponent {
+    Columns = ['Month', 'Year', 'Amount']
 
     constructor(
-        private readonly dataflowService: DataflowService,
+        readonly dataflowService: DataflowService,
     ) {}
-
-    ngOnInit(): void {
-        this.Movements = this.dataflowService.Movements.value
-        this.MovementsSub = this.dataflowService.Movements.subscribe((movements) => {
-            this.Movements = movements
-        })
-    }
 }

@@ -177,7 +177,6 @@ export class MovementAdderComponent implements OnInit {
                 await this.dataflowService.AddRecurringMovement(
                     this.MovementFormData.Category.ID,
                     amount,
-                    this.MovementFormData.Period,
                     this.MovementFormData.Year,
                     this.MovementFormData.Month,
                 )

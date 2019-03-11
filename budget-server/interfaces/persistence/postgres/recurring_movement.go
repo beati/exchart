@@ -25,7 +25,7 @@ func (tx Tx) GetRecurringMovementsByYear(budgetID domain.EntityID, year int) ([]
 		From("recurring_movements").
 		Join("categories").On("recurring_movements.category_id = categories.category_id").
 		Join("budgets").On("categories.budget_id = budgets.budget_id").
-		Where("budgets.budget_id = ? AND first_year <= year AND year <= last_year", budgetID).
+		Where("budgets.budget_id = ? AND first_year <= ? AND ? <= last_year", budgetID, year, year).
 		All(&movements)
 	return movements, err
 }

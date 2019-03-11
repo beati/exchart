@@ -35,13 +35,10 @@ export interface Movement {
     Month: Month
 }
 
-export enum Period { Monthly, Yearly }
-
 export interface RecurringMovement {
     ID: string
     CategoryID: string
     Amount: number
-    Period: Period
     FirstYear: number
     LastYear: number
     FirstMonth: Month

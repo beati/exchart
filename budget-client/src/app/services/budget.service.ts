@@ -99,11 +99,10 @@ export class BudgetService {
         return response.Movements
     }
 
-    async AddRecurringMovement(categoryID: string, amount: number, period: number, firstYear: number, firstMonth: number): Promise<RecurringMovement> {
+    async AddRecurringMovement(categoryID: string, amount: number, firstYear: number, firstMonth: number): Promise<RecurringMovement> {
         return this.http.post<RecurringMovement>('/api/recurring_movement', {
             CategoryID: categoryID,
             Amount: amount,
-            Period: period,
             FirstYear: firstYear,
             FirstMonth: firstMonth,
         })
