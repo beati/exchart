@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core'
 
 import { BehaviorSubject } from 'rxjs'
 
-import { Account, Budget, BudgetStatus, CategoryType, Category, Movement, RecurringMovement, Month } from '../domain/domain'
+import { Account, Budget, BudgetStatus, Category, CategoryType, Month, Movement, RecurringMovement } from '../domain/domain'
 
 import { BudgetService } from './budget.service'
 import { Period, PeriodDuration, PeriodService } from './period.service'
@@ -27,6 +27,28 @@ const orderBudget = (a: Budget, b: Budget): number => {
     }
 
     return 0
+}
+
+const isMovementInPeriod = (movement: Movement, period: Period): boolean => {
+    switch (period.Duration) {
+    case PeriodDuration.All:
+        return true
+    case PeriodDuration.Year:
+        return movement.Year === period.Year
+    case PeriodDuration.Month:
+        return movement.Year === period.Year && (movement.Month === Month.All || movement.Month === movement.Month)
+    }
+}
+
+const isRecurringMovementInPeriod = (movement: RecurringMovement, period: Period): boolean => {
+    switch (period.Duration) {
+    case PeriodDuration.All:
+        return true
+    case PeriodDuration.Year:
+        return movement.FirstYear <= period.Year && period.Year <= movement.LastYear
+    case PeriodDuration.Month:
+        return (movement.FirstYear < period.Year || (movement.FirstYear === period.Year && (movement.FirstMonth === Month.All || movement.FirstMonth <= period.Month))) && (period.Year < movement.LastYear || (movement.LastYear === period.Year && (movement.LastMonth === Month.All || period.Month <= movement.LastMonth)))
+    }
 }
 
 @Injectable({
@@ -89,8 +111,8 @@ export class DataflowService {
         const budgetID = this.SelectedBudget.value.ID
         const period = Object.assign(new Period(), this.period)
 
-        let year: number | undefined = undefined
-        let month: Month | undefined = undefined
+        let year: number | undefined
+        let month: Month | undefined
 
         switch (period.Duration) {
         case PeriodDuration.Year:
@@ -104,7 +126,7 @@ export class DataflowService {
 
         try {
             const movements = await Promise.all([
-                this.budgetService.GetMovements(budgetID, year, month), 
+                this.budgetService.GetMovements(budgetID, year, month),
                 this.budgetService.GetRecurringMovements(budgetID, year, month),
             ])
 
@@ -192,7 +214,7 @@ export class DataflowService {
         const account = this.Account.value
         loop:
         for (const budget of account.Budgets) {
-            for (let i = 0; i < budget.Categories.length; i++) {
+            for (let i = 0; i < budget.Categories.length; i += 1) {
                 if (budget.Categories[i].ID === categoryID) {
                     budget.Categories.splice(i, 1)
                     this.SelectedBudget.next(budget)
@@ -203,9 +225,9 @@ export class DataflowService {
         }
     }
 
-    async AddMovement(categoryID: string, amount: number, year: number, month: number): Promise<void> {
+    async AddMovement(budgetID: string, categoryID: string, amount: number, year: number, month: number): Promise<void> {
         const movement = await this.budgetService.AddMovement(categoryID, amount, year, month)
-        if (isMovementInPeriod(movement, this.period)) {
+        if (budgetID === this.SelectedBudget.value.ID && isMovementInPeriod(movement, this.period)) {
             const movements = this.Movements.value
             movements.push(movement)
             this.Movements.next(movements)
@@ -219,7 +241,7 @@ export class DataflowService {
     async DeleteMovement(movementID: string): Promise<void> {
         await this.budgetService.DeleteMovement(movementID)
         const movements = this.Movements.value
-        for (let i = 0; i < movements.length; i++) {
+        for (let i = 0; i < movements.length; i += 1) {
             if (movements[i].ID === movementID) {
                 movements.splice(i, 1)
                 this.Movements.next(movements)
@@ -228,9 +250,9 @@ export class DataflowService {
         }
     }
 
-    async AddRecurringMovement(categoryID: string, amount: number, firstYear: number, firstMonth: number): Promise<void> {
+    async AddRecurringMovement(budgetID: string, categoryID: string, amount: number, firstYear: number, firstMonth: number): Promise<void> {
         const movement = await this.budgetService.AddRecurringMovement(categoryID, amount, firstYear, firstMonth)
-        if (isRecurringMovementInPeriod(movement, this.period)) {
+        if (budgetID === this.SelectedBudget.value.ID && isRecurringMovementInPeriod(movement, this.period)) {
             const movements = this.RecurringMovements.value
             movements.push(movement)
             this.RecurringMovements.next(movements)
@@ -244,34 +266,12 @@ export class DataflowService {
     async DeleteRecurringMovement(movementID: string): Promise<void> {
         await this.budgetService.DeleteRecurringMovement(movementID)
         const movements = this.RecurringMovements.value
-        for (let i = 0; i < movements.length; i++) {
+        for (let i = 0; i < movements.length; i += 1) {
             if (movements[i].ID === movementID) {
                 movements.splice(i, 1)
                 this.RecurringMovements.next(movements)
                 break
             }
         }
-    }
-}
-
-function isMovementInPeriod(movement: Movement, period: Period): boolean {
-    switch (period.Duration) {
-    case PeriodDuration.All:
-        return true
-    case PeriodDuration.Year:
-        return movement.Year === period.Year
-    case PeriodDuration.Month:
-        return movement.Year === period.Year && (movement.Month === Month.All || movement.Month === movement.Month)
-    }
-}
-
-function isRecurringMovementInPeriod(movement: RecurringMovement, period: Period): boolean {
-    switch (period.Duration) {
-    case PeriodDuration.All:
-        return true
-    case PeriodDuration.Year:
-        return movement.FirstYear <= period.Year && period.Year <= movement.LastYear
-    case PeriodDuration.Month:
-        return (movement.FirstYear < period.Year || (movement.FirstYear === period.Year && (movement.FirstMonth === Month.All || movement.FirstMonth <= period.Month))) && (period.Year < movement.LastYear || (movement.LastYear === period.Year && (movement.LastMonth === Month.All || period.Month <= movement.LastMonth)))
     }
 }

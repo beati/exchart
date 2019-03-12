@@ -166,6 +166,7 @@ export class MovementAdderComponent implements OnInit {
             case FormPeriod.OneTime:
             case FormPeriod.OverTheYear:
                 await this.dataflowService.AddMovement(
+                    this.MovementFormData.BudgetID,
                     this.MovementFormData.Category.ID,
                     amount,
                     this.MovementFormData.Year,
@@ -175,6 +176,7 @@ export class MovementAdderComponent implements OnInit {
             case FormPeriod.Monthly:
             case FormPeriod.Yearly:
                 await this.dataflowService.AddRecurringMovement(
+                    this.MovementFormData.BudgetID,
                     this.MovementFormData.Category.ID,
                     amount,
                     this.MovementFormData.Year,

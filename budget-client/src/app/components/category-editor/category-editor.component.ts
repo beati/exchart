@@ -61,13 +61,13 @@ export class CategoryEditorComponent implements OnInit, OnDestroy {
         this.budgetID = budget.ID
         this.init(budget)
 
-        this.budgetSub = this.dataflowService.SelectedBudget.subscribe((budget) => {
-            if (budget.ID === this.budgetID) {
+        this.budgetSub = this.dataflowService.SelectedBudget.subscribe((newBudget) => {
+            if (newBudget.ID === this.budgetID) {
                 return
             }
 
-            this.budgetID = budget.ID
-            this.init(budget)
+            this.budgetID = newBudget.ID
+            this.init(newBudget)
         })
     }
 

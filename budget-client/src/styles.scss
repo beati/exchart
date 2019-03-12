@@ -1,5 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
 
+@import "chartist-settings.scss";
+@import "~chartist/dist/scss/chartist.scss";
+
 * {
     box-sizing: border-box;
 }
