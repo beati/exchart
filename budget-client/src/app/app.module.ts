@@ -36,7 +36,8 @@ import { BudgetTabsComponent } from './components/budget-tabs/budget-tabs.compon
 import { ButtonSpinnerComponent } from './components/button-spinner/button-spinner.component'
 import { CategoryEditorContainerComponent } from './components/category-editor-container/category-editor-container.component'
 import { CategoryEditorComponent } from './components/category-editor/category-editor.component'
-import { ChartComponent } from './components/chart/chart.component'
+import { ChartLineComponent } from './components/chart-line/chart-line.component'
+import { ChartPieComponent } from './components/chart-pie/chart-pie.component'
 import { DeleteCategoryDialogComponent } from './components/delete-category-dialog/delete-category-dialog.component'
 import { EmailVerifierComponent } from './components/email-verifier/email-verifier.component'
 import { IconButtonSpinnerComponent } from './components/icon-button-spinner/icon-button-spinner.component'
@@ -67,7 +68,8 @@ import { YearSelectorComponent } from './components/year-selector/year-selector.
         ButtonSpinnerComponent,
         CategoryEditorContainerComponent,
         CategoryEditorComponent,
-        ChartComponent,
+        ChartLineComponent,
+        ChartPieComponent,
         DeleteCategoryDialogComponent,
         EmailVerifierComponent,
         IconButtonSpinnerComponent,
