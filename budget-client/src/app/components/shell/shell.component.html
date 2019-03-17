@@ -28,7 +28,7 @@
     <mat-sidenav-container class="sidenav-container">
         <mat-sidenav #sidenav [mode]="Mobile ? 'over' : 'side'" [opened]="!Mobile">
             <mat-nav-list>
-                <a (click)="SetPage('Analytics')" [class.menu-entry-selected]="Page === 'Analytics'" mat-list-item>
+                <a (click)="SetPageAnalytics()" [class.menu-entry-selected]="Page === 'Analytics'" mat-list-item>
                     <mat-icon>timeline</mat-icon>
                     <span class="menu-entry-text">{{ 'Shell.Menu.Analytics' | translate }}</span>
                 </a>

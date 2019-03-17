@@ -42,7 +42,6 @@ export class ShellComponent implements OnInit, OnDestroy {
     @ViewChild('movementAdder') MovementAdder: MovementAdderComponent
 
     Account: Account
-    SelectedBudgetID: string
 
     constructor(
         private readonly dialog: MatDialog,
@@ -103,6 +102,13 @@ export class ShellComponent implements OnInit, OnDestroy {
         }
     }
 
+    async SetPageAnalytics(): Promise<void> {
+        await Promise.all([
+            this.dataflowService.SelectBudget(''),
+            this.SetPage('Analytics'),
+        ])
+    }
+
     async SetSubPage(subPage: string): Promise<void> {
         this.SubPage = subPage
 
@@ -115,7 +121,6 @@ export class ShellComponent implements OnInit, OnDestroy {
         switch (budget.Status) {
         case BudgetStatus.Main:
         case BudgetStatus.Open:
-            this.SelectedBudgetID = budget.ID
             await Promise.all([
                 this.dataflowService.SelectBudget(budget.ID),
                 this.SetPage(budget.ID),

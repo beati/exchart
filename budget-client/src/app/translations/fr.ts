@@ -16,6 +16,14 @@ export const fr = {
             Ok: 'Ok',
         },
     },
+    BudgetAnalytics: {
+        CategoryAmountsTable: {
+            Type: 'Type',
+            Category: 'Categorie',
+            Amount: 'Montant',
+            Ratio: 'Part',
+        },
+    },
     CategoryEditor: {
         DeleteDialog: {
             Cancel: 'Annuler',

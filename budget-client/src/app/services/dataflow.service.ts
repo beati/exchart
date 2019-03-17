@@ -56,7 +56,7 @@ const isRecurringMovementInPeriod = (movement: RecurringMovement, period: Period
 })
 export class DataflowService {
     Account: BehaviorSubject<Account>
-    SelectedBudget: BehaviorSubject<Budget>
+    SelectedBudget: BehaviorSubject<Budget | undefined>
     Movements: BehaviorSubject<Movement[]>
     RecurringMovements: BehaviorSubject<RecurringMovement[]>
 
@@ -75,7 +75,7 @@ export class DataflowService {
         account.Budgets.sort(orderBudget)
         this.Account = new BehaviorSubject(account)
 
-        this.SelectedBudget = new BehaviorSubject(account.Budgets[0])
+        this.SelectedBudget = new BehaviorSubject(undefined)
 
         this.periodService.PeriodChange.subscribe(async (period) => {
             this.period = period
@@ -95,12 +95,26 @@ export class DataflowService {
     }
 
     async SelectBudget(budgetID: string): Promise<void> {
+        let newBudget: Budget | undefined
         const account = this.Account.value
         for (const budget of account.Budgets) {
             if (budget.ID === budgetID) {
-                this.SelectedBudget.next(budget)
-                return this.getMovements()
+                newBudget = budget
+                break
             }
+        }
+
+        let isNew = false
+        const previousBudget = this.SelectedBudget.value
+        if (newBudget == undefined && previousBudget != undefined) {
+            isNew = true
+        } else if (newBudget != undefined && (previousBudget == undefined || (newBudget.ID !== previousBudget.ID))) {
+            isNew = true
+        }
+
+        if (isNew) {
+            this.SelectedBudget.next(newBudget)
+            return this.getMovements()
         }
     }
 
@@ -108,12 +122,9 @@ export class DataflowService {
         this.Movements.next([])
         this.RecurringMovements.next([])
 
-        const budgetID = this.SelectedBudget.value.ID
         const period = Object.assign(new Period(), this.period)
-
         let year: number | undefined
         let month: Month | undefined
-
         switch (period.Duration) {
         case PeriodDuration.Year:
             year = period.Year
@@ -124,15 +135,48 @@ export class DataflowService {
             break
         }
 
+        const movementRequests: Promise<Movement[]>[] = []
+        const recurringMovementRequests: Promise<RecurringMovement[]>[] = []
+
+        const requestedBudget = this.SelectedBudget.value
+        if (requestedBudget == undefined) {
+            for (const budget of this.OpenBudgets()) {
+                movementRequests.push(this.budgetService.GetMovements(budget.ID, year, month))
+                recurringMovementRequests.push(this.budgetService.GetRecurringMovements(budget.ID, year, month))
+            }
+        } else {
+            const budgetID = requestedBudget.ID
+            movementRequests.push(this.budgetService.GetMovements(budgetID, year, month))
+            recurringMovementRequests.push(this.budgetService.GetRecurringMovements(budgetID, year, month))
+        }
+
         try {
-            const movements = await Promise.all([
-                this.budgetService.GetMovements(budgetID, year, month),
-                this.budgetService.GetRecurringMovements(budgetID, year, month),
+            const results = await Promise.all([
+                Promise.all(movementRequests),
+                Promise.all(recurringMovementRequests),
             ])
 
-            if (budgetID === this.SelectedBudget.value.ID && period.Equals(this.period)) {
-                this.Movements.next(movements[0])
-                this.RecurringMovements.next(movements[1])
+            const selectedBudget = this.SelectedBudget.value
+            let budgetNotChanged = false
+            if (requestedBudget == undefined && selectedBudget == undefined) {
+                budgetNotChanged = true
+            } else if (requestedBudget != undefined && selectedBudget != undefined && requestedBudget.ID === selectedBudget.ID) {
+                budgetNotChanged = true
+            }
+
+            if (budgetNotChanged && period.Equals(this.period)) {
+                let movements: Movement[] = []
+                for (let movementSet of results[0]) {
+                    movements = movements.concat(movementSet)
+                }
+
+                let recurringMovement: RecurringMovement[] = []
+                for (let movementSet of results[1]) {
+                    recurringMovement = recurringMovement.concat(movementSet)
+                }
+
+                this.Movements.next(movements)
+                this.RecurringMovements.next(recurringMovement)
             }
         } catch (error) {
         }
@@ -227,7 +271,8 @@ export class DataflowService {
 
     async AddMovement(budgetID: string, categoryID: string, amount: number, year: number, month: number): Promise<void> {
         const movement = await this.budgetService.AddMovement(categoryID, amount, year, month)
-        if (budgetID === this.SelectedBudget.value.ID && isMovementInPeriod(movement, this.period)) {
+        const selectedBudget = this.SelectedBudget.value
+        if ((selectedBudget == undefined || budgetID === selectedBudget.ID) && isMovementInPeriod(movement, this.period)) {
             const movements = this.Movements.value
             movements.push(movement)
             this.Movements.next(movements)
@@ -252,7 +297,8 @@ export class DataflowService {
 
     async AddRecurringMovement(budgetID: string, categoryID: string, amount: number, firstYear: number, firstMonth: number): Promise<void> {
         const movement = await this.budgetService.AddRecurringMovement(categoryID, amount, firstYear, firstMonth)
-        if (budgetID === this.SelectedBudget.value.ID && isRecurringMovementInPeriod(movement, this.period)) {
+        const selectedBudget = this.SelectedBudget.value
+        if ((selectedBudget == undefined || budgetID === selectedBudget.ID) && isRecurringMovementInPeriod(movement, this.period)) {
             const movements = this.RecurringMovements.value
             movements.push(movement)
             this.RecurringMovements.next(movements)
