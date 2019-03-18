@@ -4,9 +4,9 @@ import { Subscription } from 'rxjs'
 
 import { TranslateService } from '@ngx-translate/core'
 
-import { Budget, Category, CategoryType, CategoryTypes, Movement, RecurringMovement } from '../../domain/domain'
+import { Budget, Category, CategoryType, CategoryTypes } from '../../domain/domain'
 
-import { DataflowService } from '../../services/dataflow.service'
+import { DataflowService, MovementEventType, MovementsEvent, RecurringMovementsEvent } from '../../services/dataflow.service'
 
 interface categoryAmount {
     Category: Category
@@ -27,10 +27,18 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
     private budget: Budget | undefined
     private budgetSub: Subscription
 
-    private movements: Movement[] = []
-    private movementsSub: Subscription
-    private recurringMovement: RecurringMovement[] = []
-    private recurringMovementsSub: Subscription
+    private movementsEvent: MovementsEvent = {
+        Type: 'loading',
+        Movements: [],
+    }
+    private movementsEventSub: Subscription
+    private recurringMovementEvent: RecurringMovementsEvent = {
+        Type: 'loading',
+        Movements: [],
+    }
+    private recurringMovementsEventSub: Subscription
+
+    LoadingState: MovementEventType = 'loading'
 
     CategoryAmountColumns = ['Type', 'Category', 'Amount', 'Ratio']
     CategoryAmounts: categoryAmount[] = []
@@ -53,30 +61,40 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
 
         this.budgetSub = this.dataflowService.SelectedBudget.subscribe((budget) => {
             this.budget = budget
-            this.Init()
+            this.init()
         })
 
-        this.movementsSub = this.dataflowService.Movements.subscribe((movements) => {
-            this.movements = movements
-            this.Init()
+        this.movementsEventSub = this.dataflowService.Movements.subscribe((movementsEvent) => {
+            this.movementsEvent = movementsEvent
+            this.init()
         })
 
-        this.recurringMovementsSub = this.dataflowService.RecurringMovements.subscribe((movements) => {
-            this.recurringMovement = movements
-            this.Init()
+        this.recurringMovementsEventSub = this.dataflowService.RecurringMovements.subscribe((movementsEvent) => {
+            this.recurringMovementEvent = movementsEvent
+            this.init()
         })
     }
 
     ngOnDestroy(): void {
         this.budgetSub.unsubscribe()
-        this.movementsSub.unsubscribe()
-        this.recurringMovementsSub.unsubscribe()
+        this.movementsEventSub.unsubscribe()
+        this.recurringMovementsEventSub.unsubscribe()
     }
 
-    Init(): void {
+    private init(): void {
         if (this.budget == undefined) {
             return
         }
+
+        if (this.movementsEvent.Type === 'error' || this.recurringMovementEvent.Type === 'error') {
+            this.LoadingState = 'error'
+            return
+        } else if (this.movementsEvent.Type === 'loading' || this.recurringMovementEvent.Type === 'loading') {
+            this.LoadingState = 'loading'
+            return
+        }
+
+        this.LoadingState = 'loaded'
 
         const categoryAmounts = new Map<string, categoryAmount>()
         for (const category of this.budget.Categories) {
@@ -94,7 +112,7 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
 
         let total = 0
 
-        for (const movement of this.movements) {
+        for (const movement of this.movementsEvent.Movements) {
             if (movement.Amount < 0) {
                 const categoryAmount = categoryAmounts.get(movement.CategoryID)
                 if (categoryAmount != undefined) {
@@ -104,7 +122,7 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
                 }
             }
         }
-        for (const movement of this.recurringMovement) {
+        for (const movement of this.recurringMovementEvent.Movements) {
             if (movement.Amount < 0) {
                 const categoryAmount = categoryAmounts.get(movement.CategoryID)
                 if (categoryAmount != undefined) {

@@ -51,14 +51,14 @@ const isRecurringMovementInPeriod = (movement: RecurringMovement, period: Period
     }
 }
 
-type MovementEventType = 'loading' | 'error' | 'loaded'
+export type MovementEventType = 'loading' | 'error' | 'loaded'
 
-interface MovementsEvent {
+export interface MovementsEvent {
     Type: MovementEventType
     Movements: Movement[]
 }
 
-interface RecurringMovementsEvent {
+export interface RecurringMovementsEvent {
     Type: MovementEventType
     Movements: RecurringMovement[]
 }
@@ -80,11 +80,14 @@ export class DataflowService {
     ) {}
 
     async Init(): Promise<void> {
-        this.Movements = new BehaviorSubject({
+        this.Movements = new BehaviorSubject<MovementsEvent>({
             Type: 'loading',
             Movements: [],
         })
-        this.RecurringMovements = new BehaviorSubject([])
+        this.RecurringMovements = new BehaviorSubject<RecurringMovementsEvent>({
+            Type: 'loading',
+            Movements: [],
+        })
 
         const account = await this.budgetService.GetAcount()
         account.Budgets.sort(orderBudget)
@@ -134,8 +137,14 @@ export class DataflowService {
     }
 
     private async getMovements(): Promise<void> {
-        this.Movements.next([])
-        this.RecurringMovements.next([])
+        this.Movements.next({
+            Type: 'loading',
+            Movements: [],
+        })
+        this.RecurringMovements.next({
+            Type: 'loading',
+            Movements: [],
+        })
 
         const period = Object.assign(new Period(), this.period)
         let year: number | undefined
@@ -190,10 +199,24 @@ export class DataflowService {
                     recurringMovement = recurringMovement.concat(movementSet)
                 }
 
-                this.Movements.next(movements)
-                this.RecurringMovements.next(recurringMovement)
+                this.Movements.next({
+                    Type: 'loaded',
+                    Movements: movements,
+                })
+                this.RecurringMovements.next({
+                    Type: 'loaded',
+                    Movements: recurringMovement,
+                })
             }
         } catch (error) {
+            this.Movements.next({
+                Type: 'error',
+                Movements: [],
+            })
+            this.RecurringMovements.next({
+                Type: 'error',
+                Movements: [],
+            })
         }
     }
 
@@ -287,25 +310,24 @@ export class DataflowService {
     async AddMovement(budgetID: string, categoryID: string, amount: number, year: number, month: number): Promise<void> {
         const movement = await this.budgetService.AddMovement(categoryID, amount, year, month)
         const selectedBudget = this.SelectedBudget.value
-        if ((selectedBudget == undefined || budgetID === selectedBudget.ID) && isMovementInPeriod(movement, this.period)) {
-            const movements = this.Movements.value
-            movements.push(movement)
-            this.Movements.next(movements)
+        const movementsEvent = this.Movements.value
+        if (movementsEvent.Type === 'loaded' && (selectedBudget == undefined || budgetID === selectedBudget.ID) && isMovementInPeriod(movement, this.period)) {
+            movementsEvent.Movements.push(movement)
+            this.Movements.next(movementsEvent)
         }
-    }
-
-    async UpdateMovement(movementID: string, categoryID: string, year: number, month: number): Promise<void> {
-        await this.budgetService.UpdateMovement(movementID, categoryID, year, month)
     }
 
     async DeleteMovement(movementID: string): Promise<void> {
         await this.budgetService.DeleteMovement(movementID)
-        const movements = this.Movements.value
-        for (let i = 0; i < movements.length; i += 1) {
-            if (movements[i].ID === movementID) {
-                movements.splice(i, 1)
-                this.Movements.next(movements)
-                break
+        const movementsEvent = this.Movements.value
+        if (movementsEvent.Type === 'loaded') {
+            const movements = movementsEvent.Movements
+            for (let i = 0; i < movements.length; i += 1) {
+                if (movements[i].ID === movementID) {
+                    movements.splice(i, 1)
+                    this.Movements.next(movementsEvent)
+                    break
+                }
             }
         }
     }
@@ -313,26 +335,39 @@ export class DataflowService {
     async AddRecurringMovement(budgetID: string, categoryID: string, amount: number, firstYear: number, firstMonth: number): Promise<void> {
         const movement = await this.budgetService.AddRecurringMovement(categoryID, amount, firstYear, firstMonth)
         const selectedBudget = this.SelectedBudget.value
-        if ((selectedBudget == undefined || budgetID === selectedBudget.ID) && isRecurringMovementInPeriod(movement, this.period)) {
-            const movements = this.RecurringMovements.value
-            movements.push(movement)
-            this.RecurringMovements.next(movements)
+        const movementsEvent = this.RecurringMovements.value
+        if (movementsEvent.Type === 'loaded' && (selectedBudget == undefined || budgetID === selectedBudget.ID) && isRecurringMovementInPeriod(movement, this.period)) {
+            movementsEvent.Movements.push(movement)
+            this.RecurringMovements.next(movementsEvent)
         }
-    }
-
-    async UpdateRecurringMovement(movementID: string, categoryID: string, firstYear: number, firstMonth: number, lastYear: number, lastMonth: number): Promise<void> {
-        await this.budgetService.UpdateRecurringMovement(movementID, categoryID, firstYear, firstMonth, lastYear, lastMonth)
     }
 
     async DeleteRecurringMovement(movementID: string): Promise<void> {
         await this.budgetService.DeleteRecurringMovement(movementID)
-        const movements = this.RecurringMovements.value
-        for (let i = 0; i < movements.length; i += 1) {
-            if (movements[i].ID === movementID) {
-                movements.splice(i, 1)
-                this.RecurringMovements.next(movements)
-                break
+        const movementsEvent = this.RecurringMovements.value
+        if (movementsEvent.Type === 'loaded') {
+            const movements = movementsEvent.Movements
+            for (let i = 0; i < movements.length; i += 1) {
+                if (movements[i].ID === movementID) {
+                    movements.splice(i, 1)
+                    this.RecurringMovements.next(movementsEvent)
+                    break
+                }
             }
         }
+    }
+
+    private movementLoaded(movements: Movement[]): void {
+        this.Movements.next({
+            Type: 'loaded',
+            Movements: movements,
+        })
+    }
+
+    private recurringMovementLoaded(movements: RecurringMovement[]): void {
+        this.RecurringMovements.next({
+            Type: 'loaded',
+            Movements: movements,
+        })
     }
 }

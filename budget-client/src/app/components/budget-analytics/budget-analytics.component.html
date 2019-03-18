@@ -1,8 +1,9 @@
 <app-period-selector></app-period-selector>
 <div class="analytics-container">
-    <div>
+    <div *ngIf="LoadingState !== 'loaded'" class="loading-container">
+        <app-loading-indication [Failed]="LoadingState === 'error'"></app-loading-indication>
     </div>
-    <ng-container>
+    <ng-container *ngIf="LoadingState === 'loaded'">
         <mat-card class="no-margin-top">
             <app-chart-pie *ngIf="CategoryTypeAmountsChartData != undefined" [Data]="CategoryTypeAmountsChartData" [Options]="CategoryTypeAmountsChartOption" [AspectRatio]="'golden-section'"></app-chart-pie>
         </mat-card>

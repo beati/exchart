@@ -11,6 +11,13 @@ mat-card {
     overflow-y: auto;
 }
 
+.loading-container {
+    height: 75%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .no-margin-top {
     margin-top: 0;
 }

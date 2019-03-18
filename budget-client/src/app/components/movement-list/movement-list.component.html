@@ -1,5 +1,5 @@
 <app-period-selector></app-period-selector>
-<table mat-table [dataSource]="dataflowService.Movements">
+<table mat-table [dataSource]="Movements">
     <ng-container matColumnDef="Month">
         <th mat-header-cell *matHeaderCellDef>Month</th>
         <td mat-cell *matCellDef="let movement">{{ movement.Month}}</td>
@@ -15,6 +15,6 @@
         <td mat-cell *matCellDef="let movement">{{ movement.Amount / 100 }}</td>
     </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="Columns; sticky: true"></tr>
+    <tr mat-header-row *matHeaderRowDef="Columns"></tr>
     <tr mat-row *matRowDef="let row; columns: Columns;"></tr>
 </table>
