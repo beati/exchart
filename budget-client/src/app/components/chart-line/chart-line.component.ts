@@ -1,4 +1,4 @@
-import { Input, AfterViewInit, Component, OnDestroy } from '@angular/core'
+import { AfterViewInit, Component, Input, OnDestroy } from '@angular/core'
 
 import * as Chartist from 'chartist'
 

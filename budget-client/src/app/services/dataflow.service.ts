@@ -51,14 +51,26 @@ const isRecurringMovementInPeriod = (movement: RecurringMovement, period: Period
     }
 }
 
+type MovementEventType = 'loading' | 'error' | 'loaded'
+
+interface MovementsEvent {
+    Type: MovementEventType
+    Movements: Movement[]
+}
+
+interface RecurringMovementsEvent {
+    Type: MovementEventType
+    Movements: RecurringMovement[]
+}
+
 @Injectable({
     providedIn: 'root',
 })
 export class DataflowService {
     Account: BehaviorSubject<Account>
     SelectedBudget: BehaviorSubject<Budget | undefined>
-    Movements: BehaviorSubject<Movement[]>
-    RecurringMovements: BehaviorSubject<RecurringMovement[]>
+    Movements: BehaviorSubject<MovementsEvent>
+    RecurringMovements: BehaviorSubject<RecurringMovementsEvent>
 
     private period: Period
 
@@ -68,7 +80,10 @@ export class DataflowService {
     ) {}
 
     async Init(): Promise<void> {
-        this.Movements = new BehaviorSubject([])
+        this.Movements = new BehaviorSubject({
+            Type: 'loading',
+            Movements: [],
+        })
         this.RecurringMovements = new BehaviorSubject([])
 
         const account = await this.budgetService.GetAcount()
@@ -166,12 +181,12 @@ export class DataflowService {
 
             if (budgetNotChanged && period.Equals(this.period)) {
                 let movements: Movement[] = []
-                for (let movementSet of results[0]) {
+                for (const movementSet of results[0]) {
                     movements = movements.concat(movementSet)
                 }
 
                 let recurringMovement: RecurringMovement[] = []
-                for (let movementSet of results[1]) {
+                for (const movementSet of results[1]) {
                     recurringMovement = recurringMovement.concat(movementSet)
                 }
 

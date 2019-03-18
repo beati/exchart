@@ -42,6 +42,7 @@ import { DeleteCategoryDialogComponent } from './components/delete-category-dial
 import { EmailVerifierComponent } from './components/email-verifier/email-verifier.component'
 import { IconButtonSpinnerComponent } from './components/icon-button-spinner/icon-button-spinner.component'
 import { LandingPageComponent } from './components/landing-page/landing-page.component'
+import { LoadingIndicationComponent } from './components/loading-indication/loading-indication.component'
 import { LoginComponent } from './components/login/login.component'
 import { MainComponent } from './components/main/main.component'
 import { MovementAdderDialogComponent } from './components/movement-adder-dialog/movement-adder-dialog.component'
@@ -74,6 +75,7 @@ import { YearSelectorComponent } from './components/year-selector/year-selector.
         EmailVerifierComponent,
         IconButtonSpinnerComponent,
         LandingPageComponent,
+        LoadingIndicationComponent,
         LoginComponent,
         MainComponent,
         MovementAdderDialogComponent,

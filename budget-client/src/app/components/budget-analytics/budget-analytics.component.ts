@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core'
+import { Component, OnDestroy, OnInit } from '@angular/core'
 
 import { Subscription } from 'rxjs'
 
@@ -22,7 +22,7 @@ interface categoryAmount {
 export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
     CategoryTypes = CategoryTypes
 
-    private categoryTypeLabels: string[] = []
+    private readonly categoryTypeLabels: string[] = []
 
     private budget: Budget | undefined
     private budgetSub: Subscription
@@ -47,7 +47,7 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
 
     async ngOnInit(): Promise<void> {
         const categoryTypeTranslations = await this.translate.get('CategoryTypes').toPromise()
-        for (let type of CategoryTypes) {
+        for (const type of CategoryTypes) {
             this.categoryTypeLabels.push(categoryTypeTranslations[type])
         }
 
@@ -79,7 +79,7 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
         }
 
         const categoryAmounts = new Map<string, categoryAmount>()
-        for (let category of this.budget.Categories) {
+        for (const category of this.budget.Categories) {
             categoryAmounts.set(category.ID, {
                 Category: category,
                 Ratio: 0,
@@ -94,7 +94,7 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
 
         let total = 0
 
-        for (let movement of this.movements) {
+        for (const movement of this.movements) {
             if (movement.Amount < 0) {
                 const categoryAmount = categoryAmounts.get(movement.CategoryID)
                 if (categoryAmount != undefined) {
@@ -104,7 +104,7 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
                 }
             }
         }
-        for (let movement of this.recurringMovement) {
+        for (const movement of this.recurringMovement) {
             if (movement.Amount < 0) {
                 const categoryAmount = categoryAmounts.get(movement.CategoryID)
                 if (categoryAmount != undefined) {
@@ -116,7 +116,7 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
         }
 
         this.CategoryAmounts = Array.from(categoryAmounts.values())
-        for (let categoryAmount of this.CategoryAmounts) {
+        for (const categoryAmount of this.CategoryAmounts) {
             categoryAmount.Ratio = Math.round((categoryAmount.Amount / total) * 100)
             categoryAmount.Amount /= 100
         }

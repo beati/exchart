@@ -5,3 +5,12 @@ table {
 mat-card {
     margin: 16px;
 }
+
+.analytics-container {
+    height: calc(100% - 38px - 32px);
+    overflow-y: auto;
+}
+
+.no-margin-top {
+    margin-top: 0;
+}

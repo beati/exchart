@@ -1,0 +1,8 @@
+<div *ngIf="!Failed" class="indication-container">
+    <mat-spinner></mat-spinner>
+    <div class="indication-text top-space">{{ 'LoadingIndication.Loading' | translate }}</div>
+</div>
+<div *ngIf="Failed" class="indication-container">
+    <div class="indication-text">{{ 'LoadingIndication.LoadingFailed' | translate }}</div>
+    <button color="primary" mat-raised-button class="top-space">{{ 'LoadingIndication.Retry' | translate }}</button>
+</div>

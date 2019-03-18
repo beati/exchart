@@ -1,14 +1,10 @@
 <ng-container *ngIf="Account == undefined">
-    <mat-toolbar *ngIf="!Mobile" color="primary">
+    <mat-toolbar color="primary">
         <span>Budget</span>
     </mat-toolbar>
-    <ng-container *ngIf="!LoadingFailed">
-        <mat-spinner></mat-spinner>
-        <div>{{ 'Shell.Loading' | translate }}</div>
-    </ng-container>
-    <ng-container *ngIf="LoadingFailed">
-        <div>{{ 'Shell.LoadingFailed' | translate }}</div>
-    </ng-container>
+    <div class="shell-content-vertical-center">
+        <app-loading-indication [Failed]="LoadingFailed" (Retry)="Refresh()"></app-loading-indication>
+    </div>
 </ng-container>
 <ng-container *ngIf="Account != undefined">
     <mat-toolbar *ngIf="!Mobile" color="primary">

@@ -51,6 +51,11 @@ export const fr = {
         Default: 'Opération impossible actuellement',
         UserNotFound: 'Utilisateur non trouvé',
     },
+    LoadingIndication: {
+        Loading: 'Chargement',
+        LoadingFailed: 'Le chargement des données a échoué',
+        Retry: 'Réessayer',
+    },
     Login: {
         Title: 'Budget login',
         Email: {
@@ -191,6 +196,5 @@ export const fr = {
             Settings: 'Paramètres',
             Logout: 'Se déconnecter',
         },
-        Loading: 'Chargement',
     },
 }
