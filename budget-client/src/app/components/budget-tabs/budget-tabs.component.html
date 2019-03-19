@@ -1,6 +1,8 @@
 <mat-tab-group mat-stretch-tabs>
     <mat-tab label="{{ 'Tabs.Data' | translate }}">
-        <app-budget-analytics></app-budget-analytics>
+        <ng-template matTabContent>
+            <app-budget-analytics></app-budget-analytics>
+        </ng-template>
     </mat-tab>
     <mat-tab label="{{ 'Tabs.Movements' | translate }}">
         <app-movement-list></app-movement-list>

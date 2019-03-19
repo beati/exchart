@@ -72,3 +72,17 @@ mat-tab-group, mat-tab-group > div {
     margin: 16px 0 -16px 0;
     text-align: center;
 }
+
+// Tab content
+
+.after-period-selector-container {
+    height: calc(100% - 38px - 32px);
+    overflow-y: auto;
+}
+
+.loading-indication-container {
+    height: 75%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

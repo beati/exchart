@@ -1,6 +1,6 @@
 <app-period-selector></app-period-selector>
-<div class="analytics-container">
-    <div *ngIf="LoadingState !== 'loaded'" class="loading-container">
+<div class="after-period-selector-container">
+    <div *ngIf="LoadingState !== 'loaded'" class="loading-indication-container">
         <app-loading-indication [Failed]="LoadingState === 'error'"></app-loading-indication>
     </div>
     <ng-container *ngIf="LoadingState === 'loaded'">
@@ -29,7 +29,7 @@
                     <td mat-cell *matCellDef="let categoryAmount">{{ categoryAmount.Ratio }} %</td>
                 </ng-container>
 
-                <tr mat-header-row *matHeaderRowDef="CategoryAmountColumns; sticky: true"></tr>
+                <tr mat-header-row *matHeaderRowDef="CategoryAmountColumns"></tr>
                 <tr mat-row *matRowDef="let row; columns: CategoryAmountColumns;"></tr>
             </table>
         </mat-card>

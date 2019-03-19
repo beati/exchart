@@ -61,5 +61,6 @@ export class MovementListComponent implements OnInit, OnDestroy {
             this.LoadingState = 'loading'
             return
         }
+        this.LoadingState = 'loaded'
     }
 }
