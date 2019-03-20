@@ -1,4 +1,5 @@
 import { OnInit, OnDestroy, Component } from '@angular/core'
+import { animate, state, style, transition, trigger } from '@angular/animations'
 
 import { Subscription, BehaviorSubject } from 'rxjs'
 
@@ -10,6 +11,13 @@ import { MovementEventType, DataflowService, MovementsEvent, RecurringMovementsE
     selector: 'app-movement-list',
     templateUrl: './movement-list.component.html',
     styleUrls: ['./movement-list.component.scss'],
+    animations: [
+        trigger('rowExpand', [
+            state('collapsed', style({ height: '0px', minHeight: '0', display: 'none' })),
+            state('expanded', style({ height: '*' })),
+            transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+        ]),
+    ],
 })
 export class MovementListComponent implements OnInit, OnDestroy {
     Months = Months
@@ -23,6 +31,7 @@ export class MovementListComponent implements OnInit, OnDestroy {
         Movements: [],
     }
     private movementsEventSub: Subscription
+    ExpandedMovement: Movement | undefined
 
     RecurringMovementsColumns = ['Period', 'Start', 'End', 'Amount']
     RecurringMovements = new BehaviorSubject<RecurringMovement[]>([])
@@ -31,6 +40,7 @@ export class MovementListComponent implements OnInit, OnDestroy {
         Movements: [],
     }
     private recurringMovementsEventSub: Subscription
+    ExpandedRecurringMovement: RecurringMovement | undefined
 
     constructor(
         readonly dataflowService: DataflowService,

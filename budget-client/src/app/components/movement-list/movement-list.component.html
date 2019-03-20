@@ -6,7 +6,7 @@
     <ng-container *ngIf="LoadingState === 'loaded'">
         <mat-card>
             <mat-card-title>Recurring Movements</mat-card-title>
-            <table mat-table [dataSource]="RecurringMovements">
+            <table mat-table [dataSource]="RecurringMovements" multiTemplateDataRows>
                 <ng-container matColumnDef="Period">
                     <th mat-header-cell *matHeaderCellDef>Period</th>
                     <td mat-cell *matCellDef="let movement">{{ movement.FirstMonth === 0 ? 'Yearly' : 'Monthly' }}</td>
@@ -48,13 +48,22 @@
                     </td>
                 </ng-container>
 
+                <ng-container matColumnDef="Expanded">
+                    <td mat-cell *matCellDef="let movement" colspan="4">
+                        <div [@rowExpand]="(ExpandedRecurringMovement != undefined && movement.ID === ExpandedRecurringMovement.ID) ? 'expanded' : 'collapsed'" class="expanded-content">
+                            Test
+                        </div>
+                    </td>
+                </ng-container>
+
                 <tr mat-header-row *matHeaderRowDef="RecurringMovementsColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: RecurringMovementsColumns;"></tr>
+                <tr mat-row *matRowDef="let movement; columns: RecurringMovementsColumns;" (click)="ExpandedRecurringMovement = (ExpandedRecurringMovement != undefined && ExpandedRecurringMovement.ID === movement.ID) ? undefined : movement" [class.expanded-row]="ExpandedRecurringMovement != undefined && movement.ID === ExpandedRecurringMovement.ID" class="movement-row"></tr>
+                <tr mat-row *matRowDef="let movement; columns: ['Expanded']" class="expanded-container"></tr>
             </table>
         </mat-card>
         <mat-card>
             <mat-card-title>Movements</mat-card-title>
-            <table mat-table [dataSource]="Movements">
+            <table mat-table [dataSource]="Movements" multiTemplateDataRows>
                 <ng-container matColumnDef="Month">
                     <th mat-header-cell *matHeaderCellDef>Month</th>
                     <td mat-cell *matCellDef="let movement">
@@ -76,8 +85,17 @@
                     </td>
                 </ng-container>
 
+                <ng-container matColumnDef="Expanded">
+                    <td mat-cell *matCellDef="let movement" colspan="3">
+                        <div [@rowExpand]="(ExpandedMovement != undefined && movement.ID === ExpandedMovement.ID) ? 'expanded' : 'collapsed'" class="expanded-content">
+                            Test
+                        </div>
+                    </td>
+                </ng-container>
+
                 <tr mat-header-row *matHeaderRowDef="MovementsColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: MovementsColumns;"></tr>
+                <tr mat-row *matRowDef="let movement; columns: MovementsColumns;" (click)="ExpandedMovement = (ExpandedMovement != undefined && ExpandedMovement.ID === movement.ID) ? undefined : movement" [class.expanded-row]="ExpandedMovement != undefined && movement.ID === ExpandedMovement.ID" class="movement-row"></tr>
+                <tr mat-row *matRowDef="let movement; columns: ['Expanded']" class="expanded-container"></tr>
             </table>
         </mat-card>
     </ng-container>
