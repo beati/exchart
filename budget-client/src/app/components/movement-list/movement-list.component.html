@@ -4,24 +4,81 @@
         <app-loading-indication [Failed]="LoadingState === 'error'"></app-loading-indication>
     </div>
     <ng-container *ngIf="LoadingState === 'loaded'">
-        <table mat-table [dataSource]="Movements">
-            <ng-container matColumnDef="Month">
-                <th mat-header-cell *matHeaderCellDef>Month</th>
-                <td mat-cell *matCellDef="let movement">{{ movement.Month}}</td>
-            </ng-container>
+        <mat-card>
+            <mat-card-title>Recurring Movements</mat-card-title>
+            <table mat-table [dataSource]="RecurringMovements">
+                <ng-container matColumnDef="Period">
+                    <th mat-header-cell *matHeaderCellDef>Period</th>
+                    <td mat-cell *matCellDef="let movement">{{ movement.FirstMonth === 0 ? 'Yearly' : 'Monthly' }}</td>
+                </ng-container>
 
-            <ng-container matColumnDef="Year">
-                <th mat-header-cell *matHeaderCellDef>Year</th>
-                <td mat-cell *matCellDef="let movement">{{ movement.Year }}</td>
-            </ng-container>
+                <ng-container matColumnDef="Start">
+                    <th mat-header-cell *matHeaderCellDef>Start</th>
+                    <td mat-cell *matCellDef="let movement">
+                        <ng-container *ngIf="movement.FirstMonth === 0">
+                            {{ movement.FirstYear }}
+                        </ng-container>
+                        <ng-container *ngIf="movement.FirstMonth !== 0">
+                            {{ Months[movement.FirstMonth-1].String }} {{ movement.FirstYear }}
+                        </ng-container>
+                    </td>
+                </ng-container>
 
-            <ng-container matColumnDef="Amount">
-                <th mat-header-cell *matHeaderCellDef>Amount</th>
-                <td mat-cell *matCellDef="let movement">{{ movement.Amount / 100 }}</td>
-            </ng-container>
+                <ng-container matColumnDef="End">
+                    <th mat-header-cell *matHeaderCellDef>End</th>
+                    <td mat-cell *matCellDef="let movement">
+                        <ng-container *ngIf="movement.LastYear === 0">
+                            Ongoing
+                        </ng-container>
+                        <ng-container *ngIf="movement.LastYear !== 0 && movement.FirstMonth === 0">
+                            {{ movement.LastYear }}
+                        </ng-container>
+                        <ng-container *ngIf="movement.LastYear !== 0 && movement.FirstMonth !== 0">
+                            {{ Months[movement.LastMonth-1].String }} {{ movement.LastYear }}
+                        </ng-container>
+                    </td>
+                </ng-container>
 
-            <tr mat-header-row *matHeaderRowDef="Columns"></tr>
-            <tr mat-row *matRowDef="let row; columns: Columns;"></tr>
-        </table>
+                <ng-container matColumnDef="Amount">
+                    <th mat-header-cell *matHeaderCellDef>Amount</th>
+                    <td mat-cell *matCellDef="let movement">
+                        <span [class.color-accent]="movement.Amount > 0" [class.color-warn]="movement.Amount < 0">
+                            {{ movement.Amount > 0 ? '+' : '' }}{{ movement.Amount / 100 }} €
+                        </span>
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="RecurringMovementsColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: RecurringMovementsColumns;"></tr>
+            </table>
+        </mat-card>
+        <mat-card>
+            <mat-card-title>Movements</mat-card-title>
+            <table mat-table [dataSource]="Movements">
+                <ng-container matColumnDef="Month">
+                    <th mat-header-cell *matHeaderCellDef>Month</th>
+                    <td mat-cell *matCellDef="let movement">
+                        {{ movement.Month === 0 ? 'Over the year' : Months[movement.Month-1].String }}
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="Year">
+                    <th mat-header-cell *matHeaderCellDef>Year</th>
+                    <td mat-cell *matCellDef="let movement">{{ movement.Year }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="Amount">
+                    <th mat-header-cell *matHeaderCellDef>Amount</th>
+                    <td mat-cell *matCellDef="let movement">
+                        <span [class.color-accent]="movement.Amount > 0" [class.color-warn]="movement.Amount < 0">
+                            {{ movement.Amount > 0 ? '+' : '' }}{{ movement.Amount / 100 }} €
+                        </span>
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="MovementsColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: MovementsColumns;"></tr>
+            </table>
+        </mat-card>
     </ng-container>
 </div>

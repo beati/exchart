@@ -2,7 +2,7 @@ import { OnInit, OnDestroy, Component } from '@angular/core'
 
 import { Subscription, BehaviorSubject } from 'rxjs'
 
-import { Movement, RecurringMovement } from '../../domain/domain'
+import { Movement, RecurringMovement, Months } from '../../domain/domain'
 
 import { MovementEventType, DataflowService, MovementsEvent, RecurringMovementsEvent } from '../../services/dataflow.service'
 
@@ -12,10 +12,11 @@ import { MovementEventType, DataflowService, MovementsEvent, RecurringMovementsE
     styleUrls: ['./movement-list.component.scss'],
 })
 export class MovementListComponent implements OnInit, OnDestroy {
+    Months = Months
+
     LoadingState: MovementEventType = 'loading'
 
-    Columns = ['Month', 'Year', 'Amount']
-
+    MovementsColumns = ['Month', 'Year', 'Amount']
     Movements = new BehaviorSubject<Movement[]>([])
     private movementsEvent: MovementsEvent = {
         Type: 'loading',
@@ -23,6 +24,7 @@ export class MovementListComponent implements OnInit, OnDestroy {
     }
     private movementsEventSub: Subscription
 
+    RecurringMovementsColumns = ['Period', 'Start', 'End', 'Amount']
     RecurringMovements = new BehaviorSubject<RecurringMovement[]>([])
     private recurringMovementEvent: RecurringMovementsEvent = {
         Type: 'loading',

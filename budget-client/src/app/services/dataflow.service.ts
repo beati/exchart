@@ -45,9 +45,9 @@ const isRecurringMovementInPeriod = (movement: RecurringMovement, period: Period
     case PeriodDuration.All:
         return true
     case PeriodDuration.Year:
-        return movement.FirstYear <= period.Year && period.Year <= movement.LastYear
+        return movement.FirstYear <= period.Year && (movement.LastYear === 0 || period.Year <= movement.LastYear)
     case PeriodDuration.Month:
-        return (movement.FirstYear < period.Year || (movement.FirstYear === period.Year && (movement.FirstMonth === Month.All || movement.FirstMonth <= period.Month))) && (period.Year < movement.LastYear || (movement.LastYear === period.Year && (movement.LastMonth === Month.All || period.Month <= movement.LastMonth)))
+        return (movement.FirstYear < period.Year || (movement.FirstYear === period.Year && (movement.FirstMonth === Month.All || movement.FirstMonth <= period.Month))) && (movement.LastYear === 0 || period.Year < movement.LastYear || (movement.LastYear === period.Year && (movement.LastMonth === Month.All || period.Month <= movement.LastMonth)))
     }
 }
 
