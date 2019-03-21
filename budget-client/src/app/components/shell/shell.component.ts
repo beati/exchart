@@ -3,7 +3,7 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core'
 import { Subscription } from 'rxjs'
 
 import { MatDialog } from '@angular/material/dialog'
-import { MatSidenav } from '@angular/material/sidenav'
+import { MatDrawerToggleResult, MatSidenav } from '@angular/material/sidenav'
 
 import { Account, Budget, BudgetStatus } from '../../domain/domain'
 
@@ -129,11 +129,13 @@ export class ShellComponent implements OnInit, OnDestroy {
         case BudgetStatus.NotAccepted:
             break
         case BudgetStatus.ToAccept:
+            let sidenavClosed: Promise<MatDrawerToggleResult> | undefined
             if (this.Mobile) {
-                this.Sidenav.close().then(() => {})
+                sidenavClosed = this.Sidenav.close()
             }
 
             const dialogRef = this.dialog.open(BudgetAcceptDialogComponent, {
+                autoFocus: false,
                 data: budget.With,
             })
             const accepted = await dialogRef.afterClosed().toPromise()
@@ -151,6 +153,10 @@ export class ShellComponent implements OnInit, OnDestroy {
                     await this.errorService.DisplayError()
                 }
             }
+
+            if (sidenavClosed != undefined) {
+                await sidenavClosed
+            }
             break
         }
     }
@@ -159,7 +165,9 @@ export class ShellComponent implements OnInit, OnDestroy {
         if (this.Mobile) {
             await this.SetSubPage('BudgetAdder')
         } else {
-            this.dialog.open(BudgetAdderDialogComponent)
+            this.dialog.open(BudgetAdderDialogComponent, {
+                autoFocus: false,
+            })
         }
     }
 
@@ -176,7 +184,9 @@ export class ShellComponent implements OnInit, OnDestroy {
         if (this.Mobile) {
             await this.SetSubPage('MovementAdder')
         } else {
-            this.dialog.open(MovementAdderDialogComponent)
+            this.dialog.open(MovementAdderDialogComponent, {
+                autoFocus: false,
+            })
         }
     }
 

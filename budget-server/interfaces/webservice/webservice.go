@@ -275,18 +275,15 @@ func (bapi *budgetAPI) updateRecurringMovement(w http.ResponseWriter, r *http.Re
 	}
 
 	params := struct {
-		CategoryID domain.EntityID
-		FirstYear  int
-		FirstMonth time.Month
-		LastYear   int
-		LastMonth  time.Month
+		LastYear  int
+		LastMonth time.Month
 	}{}
 	err = json.NewDecoder(r.Body).Decode(&params)
 	if err != nil {
 		return nil, domain.ErrBadParameters
 	}
 
-	return nil, bapi.budgetInteractor.UpdateRecurringMovement(r.Context(), session.AccountID, movementID, params.CategoryID, params.FirstYear, params.FirstMonth, params.LastYear, params.LastMonth)
+	return nil, bapi.budgetInteractor.UpdateRecurringMovement(r.Context(), session.AccountID, movementID, params.LastYear, params.LastMonth)
 }
 
 func (bapi *budgetAPI) deleteRecurringMovement(w http.ResponseWriter, r *http.Request) (interface{}, error) {

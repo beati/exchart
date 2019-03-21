@@ -1,0 +1,7 @@
+<div mat-dialog-content>
+    Delete
+</div>
+<div mat-dialog-actions class="dialog-buttons-align-right">
+    <button type="button" (click)="Cancel()" mat-button>Cancel</button>
+    <app-button-spinner type="button" (click)="DeleteMovement()" [Active]="Submitting" SpinnerColor="accent">Yes</app-button-spinner>
+</div>

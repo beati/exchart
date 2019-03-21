@@ -47,18 +47,19 @@ func NewRecurringMovement(categoryID EntityID, amount int64, firstYear int, firs
 }
 
 // Update sets some of m properties.
-func (m *RecurringMovement) Update(categoryID EntityID, firstYear int, firstMonth time.Month, lastYear int, lastMonth time.Month) error {
-	if !(AllMonth <= firstMonth && firstMonth <= time.December) {
-		return ErrBadParameters
-	}
-
+func (m *RecurringMovement) Update(lastYear int, lastMonth time.Month) error {
 	if !(AllMonth <= lastMonth && lastMonth <= time.December) {
 		return ErrBadParameters
 	}
 
-	m.CategoryID = categoryID
-	m.FirstYear = firstYear
-	m.FirstMonth = firstMonth
+	if !(lastYear >= m.FirstYear) {
+		return ErrBadParameters
+	}
+
+	if (m.FirstMonth == 0 && lastMonth != 0) || (m.FirstMonth != 0 && lastMonth == 0) {
+		return ErrBadParameters
+	}
+
 	m.LastYear = lastYear
 	m.LastMonth = lastMonth
 

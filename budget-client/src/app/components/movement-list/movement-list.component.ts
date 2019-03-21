@@ -1,11 +1,17 @@
-import { OnInit, OnDestroy, Component } from '@angular/core'
 import { animate, state, style, transition, trigger } from '@angular/animations'
+import { Component, OnDestroy, OnInit } from '@angular/core'
 
-import { Subscription, BehaviorSubject } from 'rxjs'
+import { BehaviorSubject, Subscription } from 'rxjs'
 
-import { Movement, RecurringMovement, Months } from '../../domain/domain'
+import { MatDialog } from '@angular/material/dialog'
 
-import { MovementEventType, DataflowService, MovementsEvent, RecurringMovementsEvent } from '../../services/dataflow.service'
+import { Budget, Category, CategoryTypes, Months, Movement, RecurringMovement } from '../../domain/domain'
+
+import { DataflowService, MovementEventType, MovementsEvent, RecurringMovementsEvent } from '../../services/dataflow.service'
+
+import { DeleteMovementDialogComponent } from '../delete-movement-dialog/delete-movement-dialog.component'
+import { DeleteRecurringMovementDialogComponent } from '../delete-recurring-movement-dialog/delete-recurring-movement-dialog.component'
+import { EditRecurringMovementDialogComponent } from '../edit-recurring-movement-dialog/edit-recurring-movement-dialog.component'
 
 @Component({
     selector: 'app-movement-list',
@@ -21,8 +27,13 @@ import { MovementEventType, DataflowService, MovementsEvent, RecurringMovementsE
 })
 export class MovementListComponent implements OnInit, OnDestroy {
     Months = Months
+    CategoryTypes = CategoryTypes
 
     LoadingState: MovementEventType = 'loading'
+
+    private budget: Budget | undefined
+    private budgetSub: Subscription
+    Categories: { [id: string]: Category } = {}
 
     MovementsColumns = ['Month', 'Year', 'Amount']
     Movements = new BehaviorSubject<Movement[]>([])
@@ -43,10 +54,22 @@ export class MovementListComponent implements OnInit, OnDestroy {
     ExpandedRecurringMovement: RecurringMovement | undefined
 
     constructor(
-        readonly dataflowService: DataflowService,
+        private readonly dialog: MatDialog,
+        private readonly dataflowService: DataflowService,
     ) {}
 
     ngOnInit(): void {
+        this.budgetSub = this.dataflowService.SelectedBudget.subscribe((budget) => {
+            this.budget = budget
+            if (budget != undefined) {
+                this.Categories = {}
+                for (const category of budget.Categories) {
+                    this.Categories[category.ID] = category
+                }
+            }
+            this.init()
+        })
+
         this.movementsEventSub = this.dataflowService.Movements.subscribe((movementsEvent) => {
             this.movementsEvent = movementsEvent
             this.Movements.next(this.movementsEvent.Movements)
@@ -61,11 +84,19 @@ export class MovementListComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        this.budgetSub.unsubscribe()
         this.movementsEventSub.unsubscribe()
         this.recurringMovementsEventSub.unsubscribe()
     }
 
     private init(): void {
+        this.ExpandedMovement = undefined
+        this.ExpandedRecurringMovement = undefined
+
+        if (this.budget == undefined) {
+            return
+        }
+
         if (this.movementsEvent.Type === 'error' || this.recurringMovementEvent.Type === 'error') {
             this.LoadingState = 'error'
             return
@@ -74,5 +105,26 @@ export class MovementListComponent implements OnInit, OnDestroy {
             return
         }
         this.LoadingState = 'loaded'
+    }
+
+    DeleteMovement(movement: Movement): void {
+        this.dialog.open(DeleteMovementDialogComponent, {
+            autoFocus: false,
+            data: movement,
+        })
+    }
+
+    DeleteRecurringMovement(movement: RecurringMovement): void {
+        this.dialog.open(DeleteRecurringMovementDialogComponent, {
+            autoFocus: false,
+            data: movement,
+        })
+    }
+
+    UpdateRecurringMovement(movement: RecurringMovement): void {
+        this.dialog.open(EditRecurringMovementDialogComponent, {
+            autoFocus: false,
+            data: movement,
+        })
     }
 }

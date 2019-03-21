@@ -95,7 +95,7 @@ func (interactor *BudgetInteractor) AddRecurringMovement(ctx context.Context, ac
 }
 
 // UpdateRecurringMovement updates a recurring movement.
-func (interactor *BudgetInteractor) UpdateRecurringMovement(ctx context.Context, accountID, movementID, categoryID domain.EntityID, firstYear int, firstMonth time.Month, lastYear int, lastMonth time.Month) (err error) {
+func (interactor *BudgetInteractor) UpdateRecurringMovement(ctx context.Context, accountID, movementID domain.EntityID, lastYear int, lastMonth time.Month) (err error) {
 	tx, err := interactor.repo.NewTx(ctx)
 	if err != nil {
 		return
@@ -107,7 +107,7 @@ func (interactor *BudgetInteractor) UpdateRecurringMovement(ctx context.Context,
 		return
 	}
 
-	err = movement.Update(categoryID, firstYear, firstMonth, lastYear, lastMonth)
+	err = movement.Update(lastYear, lastMonth)
 	if err != nil {
 		return
 	}
@@ -120,15 +120,6 @@ func (interactor *BudgetInteractor) UpdateRecurringMovement(ctx context.Context,
 	err = budget.IsOwner(accountID)
 	if err != nil {
 		return
-	}
-
-	category, err := tx.GetCategory(categoryID)
-	if err != nil {
-		return
-	}
-
-	if category.BudgetID != budget.ID {
-		return domain.ErrBadParameters
 	}
 
 	return tx.UpdateRecurringMovement(movement)

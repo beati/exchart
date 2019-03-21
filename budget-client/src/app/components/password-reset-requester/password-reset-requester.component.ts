@@ -27,7 +27,7 @@ export class PasswordResetRequesterComponent {
         }
 
         try {
-            const email: string = this.Email.value
+            const email = this.Email.value as string
 
             this.Submitting = true
             await this.userService.RequestPasswordReset(email)

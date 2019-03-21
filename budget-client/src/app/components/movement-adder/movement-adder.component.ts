@@ -100,8 +100,15 @@ export class MovementAdderComponent implements OnInit {
     }
 
     CheckAmount(event: any): void {
-        let newValue: string = event.target.value
+        if (event == undefined || event.target == undefined) {
+            return
+        }
+        const newValueAny = event.target.value
+        if (typeof newValueAny !== 'string') {
+            return
+        }
 
+        let newValue = newValueAny
         newValue = newValue.replace(/[^0-9,.]/g, '')
         newValue = newValue.replace(/,/g, '.')
         const splited = newValue.split('.')
@@ -150,7 +157,7 @@ export class MovementAdderComponent implements OnInit {
         }
 
         try {
-            let amountString: string = this.MovementFormData.AmountFormControl.value
+            let amountString = this.MovementFormData.AmountFormControl.value as string
             if (amountString.slice(-1) === '.') {
                 amountString = `${amountString}0`
             }

@@ -28,7 +28,7 @@ export class PasswordResetterComponent {
         }
 
         try {
-            const password: string = this.Password.value
+            const password = this.Password.value as string
             let id = ''
             let token = ''
             let param = this.route.snapshot.queryParamMap.get('id')

@@ -34,12 +34,12 @@ export class ChartPieComponent implements AfterViewInit, OnDestroy {
             this.chart.update(this.Data, this.Options, false)
         }
     }
-    get Options() {
+    get Options(): Chartist.IPieChartOptions {
         return this.options
     }
 
     ID: string
-    private chart: Chartist.IChartistPieChart
+    private chart: Chartist.IChartistPieChart | undefined
 
     constructor(domIDService: DomIDService) {
         this.ID = domIDService.Generate()

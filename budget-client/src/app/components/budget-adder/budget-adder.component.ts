@@ -31,7 +31,7 @@ export class BudgetAdderComponent {
         }
 
         try {
-            const email: string = this.EmailFormControl.value
+            const email = this.EmailFormControl.value as string
             await this.dataflowService.AddJointBudget(email)
         } catch (error) {
             let errorReference: string | undefined

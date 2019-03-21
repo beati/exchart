@@ -1,0 +1,20 @@
+<div mat-dialog-content>
+    <mat-form-field color="accent" appearance="outline" class="month">
+        <mat-label>{{ 'MovementAdder.Month.Label' | translate }}</mat-label>
+        <mat-select *ngIf="End.Month === 0" name="Month" [(ngModel)]="End.Month" disabled="true">
+            <mat-option [value]="0">
+                {{ 'MovementAdder.Month.All' | translate }}
+            </mat-option>
+        </mat-select>
+        <mat-select *ngIf="End.Month !== 0" name="Month" [(ngModel)]="End.Month">
+            <mat-option *ngFor="let month of Months" [value]="month.Code">
+                {{ 'Months.' + month.String | translate }}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+    <app-year-selector name="Year" [(ngModel)]="End.Year" class="year"></app-year-selector>
+</div>
+<div mat-dialog-actions class="dialog-buttons-align-right">
+    <button type="button" (click)="Cancel()" mat-button>Cancel</button>
+    <app-button-spinner type="button" (click)="UpdateMovement()" [Active]="Submitting" SpinnerColor="accent">Ok</app-button-spinner>
+</div>

@@ -16,7 +16,7 @@ export class BudgetAdderDialogComponent {
 
     constructor(
         private readonly dialogRef: MatDialogRef<BudgetAdderDialogComponent>,
-    ) { }
+    ) {}
 
     Cancel(): void {
         this.dialogRef.close()

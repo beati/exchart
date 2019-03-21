@@ -34,12 +34,12 @@ export class ChartLineComponent implements AfterViewInit, OnDestroy {
             this.chart.update(this.Data, this.Options, false)
         }
     }
-    get Options() {
+    get Options(): Chartist.ILineChartOptions {
         return this.options
     }
 
     ID: string
-    private chart: Chartist.IChartistLineChart
+    private chart: Chartist.IChartistLineChart | undefined
 
     constructor(domIDService: DomIDService) {
         this.ID = domIDService.Generate()

@@ -266,6 +266,7 @@ export class CategoryEditorComponent implements OnInit, OnDestroy {
         }
 
         const dialogRef = this.dialog.open(DeleteCategoryDialogComponent, {
+            autoFocus: false,
             data: node.category,
         })
 

@@ -39,6 +39,9 @@ import { CategoryEditorComponent } from './components/category-editor/category-e
 import { ChartLineComponent } from './components/chart-line/chart-line.component'
 import { ChartPieComponent } from './components/chart-pie/chart-pie.component'
 import { DeleteCategoryDialogComponent } from './components/delete-category-dialog/delete-category-dialog.component'
+import { DeleteMovementDialogComponent } from './components/delete-movement-dialog/delete-movement-dialog.component'
+import { DeleteRecurringMovementDialogComponent } from './components/delete-recurring-movement-dialog/delete-recurring-movement-dialog.component'
+import { EditRecurringMovementDialogComponent } from './components/edit-recurring-movement-dialog/edit-recurring-movement-dialog.component'
 import { EmailVerifierComponent } from './components/email-verifier/email-verifier.component'
 import { IconButtonSpinnerComponent } from './components/icon-button-spinner/icon-button-spinner.component'
 import { LandingPageComponent } from './components/landing-page/landing-page.component'
@@ -72,6 +75,9 @@ import { YearSelectorComponent } from './components/year-selector/year-selector.
         ChartLineComponent,
         ChartPieComponent,
         DeleteCategoryDialogComponent,
+        DeleteMovementDialogComponent,
+        DeleteRecurringMovementDialogComponent,
+        EditRecurringMovementDialogComponent,
         EmailVerifierComponent,
         IconButtonSpinnerComponent,
         LandingPageComponent,
@@ -95,6 +101,9 @@ import { YearSelectorComponent } from './components/year-selector/year-selector.
         BudgetAcceptDialogComponent,
         BudgetAdderDialogComponent,
         DeleteCategoryDialogComponent,
+        DeleteMovementDialogComponent,
+        DeleteRecurringMovementDialogComponent,
+        EditRecurringMovementDialogComponent,
         MovementAdderDialogComponent,
     ],
     imports: [

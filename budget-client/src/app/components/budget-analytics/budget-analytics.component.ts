@@ -54,7 +54,7 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
     ) {}
 
     async ngOnInit(): Promise<void> {
-        const categoryTypeTranslations = await this.translate.get('CategoryTypes').toPromise()
+        const categoryTypeTranslations = (await this.translate.get('CategoryTypes').toPromise()) as { [type: string]: string }
         for (const type of CategoryTypes) {
             this.categoryTypeLabels.push(categoryTypeTranslations[type])
         }
@@ -133,10 +133,11 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
             }
         }
 
+        const centFactor = 100
         this.CategoryAmounts = Array.from(categoryAmounts.values())
         for (const categoryAmount of this.CategoryAmounts) {
-            categoryAmount.Ratio = Math.round((categoryAmount.Amount / total) * 100)
-            categoryAmount.Amount /= 100
+            categoryAmount.Ratio = Math.round((categoryAmount.Amount / total) * centFactor)
+            categoryAmount.Amount /= centFactor
         }
         this.CategoryAmounts.sort((a, b) => {
             return b.Amount - a.Amount
@@ -145,9 +146,9 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
         const labels: string[] = []
         for (let i = 0; i < categoryTypeAmounts.length; i += 1) {
             if (categoryTypeAmounts[i] !== 0) {
-                const ratio = Math.round((categoryTypeAmounts[i] / total) * 100)
+                const ratio = Math.round((categoryTypeAmounts[i] / total) * centFactor)
                 labels.push(`${this.categoryTypeLabels[i]}: ${ratio}%`)
-                categoryTypeAmounts[i] /= 100
+                categoryTypeAmounts[i] /= centFactor
             }
         }
         categoryTypeAmounts = categoryTypeAmounts.filter((amount) => {

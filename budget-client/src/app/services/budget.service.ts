@@ -108,11 +108,8 @@ export class BudgetService {
         })
     }
 
-    async UpdateRecurringMovement(movementID: string, categoryID: string, firstYear: number, firstMonth: number, lastYear: number, lastMonth: number): Promise<void> {
+    async UpdateRecurringMovement(movementID: string, lastYear: number, lastMonth: number): Promise<void> {
         return this.http.post<void>(`/api/recurring_movement/${movementID}`, {
-            CategoryID: categoryID,
-            FirstYear: firstYear,
-            FirstMonth: firstMonth,
             LastYear: lastYear,
             LastMonth: lastMonth,
         })

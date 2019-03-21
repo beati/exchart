@@ -46,8 +46,8 @@ export class LoginComponent implements OnInit {
         }
 
         try {
-            const email: string = this.LoginFormData.Email.value
-            const password: string = this.LoginFormData.Password.value
+            const email = this.LoginFormData.Email.value as string
+            const password = this.LoginFormData.Password.value as string
 
             this.LoginFormData.Submitting = true
             await this.auth.Authenticate(email, password)

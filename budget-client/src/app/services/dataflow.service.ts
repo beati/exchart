@@ -357,17 +357,19 @@ export class DataflowService {
         }
     }
 
-    private movementLoaded(movements: Movement[]): void {
-        this.Movements.next({
-            Type: 'loaded',
-            Movements: movements,
-        })
-    }
-
-    private recurringMovementLoaded(movements: RecurringMovement[]): void {
-        this.RecurringMovements.next({
-            Type: 'loaded',
-            Movements: movements,
-        })
+    async UpdateRecurringMovement(movementID: string, lastYear: number, lastMonth: number): Promise<void> {
+        await this.budgetService.UpdateRecurringMovement(movementID, lastYear, lastMonth)
+        const movementsEvent = this.RecurringMovements.value
+        if (movementsEvent.Type === 'loaded') {
+            const movements = movementsEvent.Movements
+            for (let i = 0; i < movements.length; i += 1) {
+                if (movements[i].ID === movementID) {
+                    movements[i].LastYear = lastYear
+                    movements[i].LastMonth = lastMonth
+                    this.RecurringMovements.next(movementsEvent)
+                    break
+                }
+            }
+        }
     }
 }
