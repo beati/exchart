@@ -72,6 +72,7 @@ export class DataflowService {
     Movements: BehaviorSubject<MovementsEvent>
     RecurringMovements: BehaviorSubject<RecurringMovementsEvent>
 
+    private resetBudget = false
     private period: Period
 
     constructor(
@@ -113,6 +114,11 @@ export class DataflowService {
     }
 
     async SelectBudget(budgetID: string): Promise<void> {
+        if (budgetID === '') {
+            this.resetBudget = true
+            return
+        }
+
         let newBudget: Budget | undefined
         const account = this.Account.value
         for (const budget of account.Budgets) {
@@ -130,10 +136,11 @@ export class DataflowService {
             isNew = true
         }
 
-        if (isNew) {
+        if (isNew || this.resetBudget) {
             this.SelectedBudget.next(newBudget)
             return this.getMovements()
         }
+        this.resetBudget = false
     }
 
     private async getMovements(): Promise<void> {

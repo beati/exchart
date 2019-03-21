@@ -104,8 +104,15 @@ export class ShellComponent implements OnInit, OnDestroy {
 
     async SetPageAnalytics(): Promise<void> {
         await Promise.all([
-            this.dataflowService.SelectBudget(''),
+            this.dataflowService.SelectBudget('All'),
             this.SetPage('Analytics'),
+        ])
+    }
+
+    async SetPageSettings(): Promise<void> {
+        await Promise.all([
+            this.dataflowService.SelectBudget(''),
+            this.SetPage('Settings'),
         ])
     }
 
