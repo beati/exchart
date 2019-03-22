@@ -77,8 +77,8 @@ func (uapi *userAPI) changeEmail(w http.ResponseWriter, r *http.Request) (interf
 
 func (uapi *userAPI) changePassword(w http.ResponseWriter, r *http.Request) (interface{}, error) {
 	params := struct {
-		OldPassword string
-		NewPassword string
+		CurrentPassword string
+		NewPassword     string
 	}{}
 	err := json.NewDecoder(r.Body).Decode(&params)
 	if err != nil {
@@ -87,7 +87,7 @@ func (uapi *userAPI) changePassword(w http.ResponseWriter, r *http.Request) (int
 
 	session := getSessionData(r)
 
-	return nil, uapi.userInteractor.ChangePassword(r.Context(), session.UserID, params.OldPassword, params.NewPassword)
+	return nil, uapi.userInteractor.ChangePassword(r.Context(), session.UserID, params.CurrentPassword, params.NewPassword)
 }
 
 func (uapi *userAPI) requestPasswordReset(w http.ResponseWriter, r *http.Request) (interface{}, error) {

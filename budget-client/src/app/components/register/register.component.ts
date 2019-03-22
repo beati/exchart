@@ -48,7 +48,7 @@ export class RegisterComponent {
         try {
             const email = this.RegisterFormData.Email.value as string
             const password = this.RegisterFormData.Password.value as string
-            const name = this.RegisterFormData.Password.value as string
+            const name = this.RegisterFormData.Name.value as string
 
             this.RegisterFormData.Submitting = true
             await this.userService.Register(email, password, name)

@@ -1,0 +1,7 @@
+<div mat-dialog-content>
+    {{ 'Settings.JointBudgetList.Delete' | translate }} {{ Budget.With }} ?
+</div>
+<div mat-dialog-actions class="dialog-buttons-align-right">
+    <button (click)="Cancel()" mat-button>{{ 'Settings.JointBudgetList.Cancel' | translate }}</button>
+    <button (click)="Delete()" mat-button>{{ 'Settings.JointBudgetList.Yes' | translate }}</button>
+</div>

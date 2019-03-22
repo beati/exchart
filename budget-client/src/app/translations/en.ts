@@ -50,6 +50,7 @@ export const en = {
     Errors: {
         Default: 'Operation not curently possible',
         UserNotFound: 'User not found',
+        WrongPassword: 'Wrong password',
     },
     LoadingIndication: {
         Loading: 'Loading',
@@ -186,6 +187,49 @@ export const en = {
         Data: 'Analytics',
         Movements: 'Movements',
         Categories: 'Categories',
+    },
+    Settings: {
+        ChangeName: {
+            Title: 'Change Name',
+            Label: 'New name',
+            Empty: 'Enter your new name',
+            Submit: 'Change name',
+            Success: 'Your name has been successfuly changed.',
+        },
+        ChangeEmail: {
+            Title: 'Change Email',
+            Password: {
+                Label: 'Password',
+                Empty: 'Enter your password',
+            },
+            Email: {
+                Label: 'New email',
+                Empty: 'Enter your new email address',
+                Invalid: 'Enter a valid email address',
+            },
+            Submit: 'Change email',
+            Success: 'An email to validate your change of address has been sent to you.',
+        },
+        ChangePassword: {
+            Title: 'Change Password',
+            CurrentPassword: {
+                Label: 'Current password',
+                Empty: 'Enter your password',
+            },
+            NewPassword: {
+                Label: 'New Password',
+                Empty: 'Chose a new password',
+            },
+            Submit: 'Change password',
+            Success: 'Your password has been successfuly changed.',
+        },
+        JointBudgetList: {
+            Title: 'Joint Budgets',
+            With: 'With',
+            Delete: 'Are you sure you want to delete your joint budget with',
+            Cancel: 'Cancel',
+            Yes: 'Yes',
+        },
     },
     Shell: {
         Menu: {

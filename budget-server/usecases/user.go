@@ -369,7 +369,7 @@ func (interactor *UserInteractor) ChangeUserEmail(ctx context.Context, userID do
 }
 
 // ChangePassword changes a user password.
-func (interactor *UserInteractor) ChangePassword(ctx context.Context, userID domain.EntityID, oldPassword, newPassword string) (err error) {
+func (interactor *UserInteractor) ChangePassword(ctx context.Context, userID domain.EntityID, currentPassword, newPassword string) (err error) {
 	tx, err := interactor.repo.NewTx(ctx)
 	if err != nil {
 		return
@@ -381,7 +381,7 @@ func (interactor *UserInteractor) ChangePassword(ctx context.Context, userID dom
 		return
 	}
 
-	err = user.CheckPassword(interactor.hash, oldPassword)
+	err = user.CheckPassword(interactor.hash, currentPassword)
 	if err != nil {
 		return
 	}

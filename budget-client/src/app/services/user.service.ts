@@ -25,9 +25,9 @@ export class UserService {
         })
     }
 
-    async ChangePassword(oldPassword: string, newPassword: string): Promise<void> {
+    async ChangePassword(currentPassword: string, newPassword: string): Promise<void> {
         return this.http.post<void>('/api/user/password', {
-            OldPassword: oldPassword,
+            CurrentPassword: currentPassword,
             NewPassword: newPassword,
         })
     }

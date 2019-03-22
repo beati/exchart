@@ -1,0 +1,12 @@
+<div *ngIf="Budgets.length === 0" class="empty-list">
+    No joint budget
+</div>
+<mat-list *ngIf="Budgets.length > 0">
+    <mat-list-item *ngFor="let entry of Budgets">
+        <button *ngIf="!entry.Submitting" mat-icon-button (click)="DeleteBudget(entry)">
+            <mat-icon>delete</mat-icon>
+        </button>
+        <app-icon-button-spinner *ngIf="entry.Submitting" color="accent"></app-icon-button-spinner>
+        {{ 'Settings.JointBudgetList.With' | translate }} {{ entry.Budget.With }}
+    </mat-list-item>
+</mat-list>

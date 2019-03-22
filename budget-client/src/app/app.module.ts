@@ -38,20 +38,26 @@ import { CategoryEditorContainerComponent } from './components/category-editor-c
 import { CategoryEditorComponent } from './components/category-editor/category-editor.component'
 import { ChartLineComponent } from './components/chart-line/chart-line.component'
 import { ChartPieComponent } from './components/chart-pie/chart-pie.component'
+import { DeleteBudgetDialogComponent } from './components/delete-budget-dialog/delete-budget-dialog.component'
 import { DeleteCategoryDialogComponent } from './components/delete-category-dialog/delete-category-dialog.component'
 import { DeleteMovementDialogComponent } from './components/delete-movement-dialog/delete-movement-dialog.component'
 import { DeleteRecurringMovementDialogComponent } from './components/delete-recurring-movement-dialog/delete-recurring-movement-dialog.component'
 import { EditRecurringMovementDialogComponent } from './components/edit-recurring-movement-dialog/edit-recurring-movement-dialog.component'
+import { EmailChangerComponent } from './components/email-changer/email-changer.component'
 import { EmailVerifierComponent } from './components/email-verifier/email-verifier.component'
 import { IconButtonSpinnerComponent } from './components/icon-button-spinner/icon-button-spinner.component'
+import { JointBudgetListComponent } from './components/joint-budget-list/joint-budget-list.component'
 import { LandingPageComponent } from './components/landing-page/landing-page.component'
 import { LoadingIndicationComponent } from './components/loading-indication/loading-indication.component'
 import { LoginComponent } from './components/login/login.component'
 import { MainComponent } from './components/main/main.component'
+import { MessageDialogComponent } from './components/message-dialog/message-dialog.component'
 import { MovementAdderDialogComponent } from './components/movement-adder-dialog/movement-adder-dialog.component'
 import { MovementAdderComponent } from './components/movement-adder/movement-adder.component'
 import { MovementListComponent } from './components/movement-list/movement-list.component'
+import { NameChangerComponent } from './components/name-changer/name-changer.component'
 import { OverallAnalyticsComponent } from './components/overall-analytics/overall-analytics.component'
+import { PasswordChangerComponent } from './components/password-changer/password-changer.component'
 import { PasswordResetRequesterComponent } from './components/password-reset-requester/password-reset-requester.component'
 import { PasswordResetterComponent } from './components/password-resetter/password-resetter.component'
 import { PeriodSelectorComponent } from './components/period-selector/period-selector.component'
@@ -74,20 +80,26 @@ import { YearSelectorComponent } from './components/year-selector/year-selector.
         CategoryEditorComponent,
         ChartLineComponent,
         ChartPieComponent,
+        DeleteBudgetDialogComponent,
         DeleteCategoryDialogComponent,
         DeleteMovementDialogComponent,
         DeleteRecurringMovementDialogComponent,
         EditRecurringMovementDialogComponent,
+        EmailChangerComponent,
         EmailVerifierComponent,
         IconButtonSpinnerComponent,
+        JointBudgetListComponent,
         LandingPageComponent,
         LoadingIndicationComponent,
         LoginComponent,
         MainComponent,
+        MessageDialogComponent,
         MovementAdderDialogComponent,
         MovementAdderComponent,
         MovementListComponent,
+        NameChangerComponent,
         OverallAnalyticsComponent,
+        PasswordChangerComponent,
         PasswordResetRequesterComponent,
         PasswordResetterComponent,
         PeriodSelectorComponent,
@@ -100,10 +112,12 @@ import { YearSelectorComponent } from './components/year-selector/year-selector.
     entryComponents: [
         BudgetAcceptDialogComponent,
         BudgetAdderDialogComponent,
+        DeleteBudgetDialogComponent,
         DeleteCategoryDialogComponent,
         DeleteMovementDialogComponent,
         DeleteRecurringMovementDialogComponent,
         EditRecurringMovementDialogComponent,
+        MessageDialogComponent,
         MovementAdderDialogComponent,
     ],
     imports: [

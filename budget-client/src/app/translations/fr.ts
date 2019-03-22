@@ -50,6 +50,7 @@ export const fr = {
     Errors: {
         Default: 'Opération impossible actuellement',
         UserNotFound: 'Utilisateur non trouvé',
+        WrongPassword: 'Le mot de passe est incorrect',
     },
     LoadingIndication: {
         Loading: 'Chargement',
@@ -186,6 +187,49 @@ export const fr = {
         Data: 'Analyse',
         Movements: 'Mouvements',
         Categories: 'Catégories',
+    },
+    Settings: {
+        ChangeName: {
+            Title: 'Changement de nom',
+            Label: 'Nouveau nom',
+            Empty: 'Saisissez votre nouveau nom',
+            Submit: 'Valider',
+            Success: 'Votre nom a été changé avec succès.',
+        },
+        ChangeEmail: {
+            Title: 'Changement d\'adresse email',
+            Password: {
+                Label: 'Mot de passe',
+                Empty: 'Saissisez votre mot de passe',
+            },
+            Email: {
+                Label: 'Nouvelle adresse',
+                Empty: 'Saisissez votre nouvelle adresse email',
+                Invalid: 'Adresse email invalide',
+            },
+            Submit: 'Valider',
+            Success: 'Un email permettant de valider votre changement d\'adresse vous a été envoyé.',
+        },
+        ChangePassword: {
+            Title: 'Changement de mot de passe',
+            CurrentPassword: {
+                Label: 'Mot de passe actuel',
+                Empty: 'Saissisez votre mot de passe',
+            },
+            NewPassword: {
+                Label: 'Nouveau mot de passe',
+                Empty: 'Choisissez un mot de passe',
+            },
+            Submit: 'Valider',
+            Success: 'Votre mot de passe a été changé avec succès.',
+        },
+        JointBudgetList: {
+            Title: 'Budgets communs',
+            With: 'Avec',
+            Delete: 'Êtes vous sur de vouloir supprimer votre budget commun avec',
+            Cancel: 'Annuler',
+            Yes: 'Oui',
+        },
     },
     Shell: {
         Menu: {

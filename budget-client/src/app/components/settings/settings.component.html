@@ -1,3 +1,18 @@
-<div>
-    settings works!
+<div class="container">
+    <mat-card>
+        <mat-card-title>{{ 'Settings.ChangeName.Title' | translate }}</mat-card-title>
+        <app-name-changer></app-name-changer>
+    </mat-card>
+    <mat-card>
+        <mat-card-title>{{ 'Settings.ChangeEmail.Title' | translate }}</mat-card-title>
+        <app-email-changer></app-email-changer>
+    </mat-card>
+    <mat-card>
+        <mat-card-title>{{ 'Settings.ChangePassword.Title' | translate }}</mat-card-title>
+        <app-password-changer></app-password-changer>
+    </mat-card>
+    <mat-card>
+        <mat-card-title>{{ 'Settings.JointBudgetList.Title' | translate }}</mat-card-title>
+        <app-joint-budget-list></app-joint-budget-list>
+    </mat-card>
 </div>

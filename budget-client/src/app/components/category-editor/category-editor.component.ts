@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core'
+import { Component, OnDestroy, OnInit } from '@angular/core'
 import { AbstractControl, FormControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms'
 
 import { Subscription } from 'rxjs'
@@ -308,6 +308,7 @@ export class CategoryEditorComponent implements OnInit, OnDestroy {
             return false
         }
 
+        node.form.formControl.updateValueAndValidity()
         if (node.form.formControl.hasError('required') || node.form.formControl.hasError('alreadyExists')) {
             return true
         }
@@ -341,6 +342,7 @@ export class CategoryEditorComponent implements OnInit, OnDestroy {
         node.submitting = false
         if (node.form != undefined) {
             node.form.formControl.reset('')
+            node.form.formControl.setErrors(null)
         }
 
         this.categoriesDataSource.data = this.categoryTree

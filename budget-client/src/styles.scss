@@ -86,3 +86,18 @@ mat-tab-group, mat-tab-group > div {
     align-items: center;
     justify-content: center;
 }
+
+// settings
+
+.settings-form-container {
+    display: flex;
+    align-items: center;
+}
+
+.settings-input {
+    max-width: 300px;
+}
+
+.settings-button {
+    margin-top: 10px;
+}

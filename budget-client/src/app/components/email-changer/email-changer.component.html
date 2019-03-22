@@ -1,0 +1,22 @@
+<form (ngSubmit)="ChangeEmail()">
+    <div class="settings-form-container">
+        <mat-icon class="pre-shell-field-icon">lock</mat-icon>
+        <mat-form-field color="primary" class="pre-shell-field-input settings-input">
+            <mat-label>{{ 'Settings.ChangeEmail.Password.Label' | translate }}</mat-label>
+            <input type="password" name="Password" [formControl]="Password" matInput>
+            <mat-error *ngIf="Password.hasError('required')">{{ 'Settings.ChangeEmail.Password.Empty' | translate }}</mat-error>
+        </mat-form-field>
+    </div>
+    <div class="settings-form-container">
+        <mat-icon class="pre-shell-field-icon">mail</mat-icon>
+        <mat-form-field color="primary" class="pre-shell-field-input settings-input">
+            <mat-label>{{ 'Settings.ChangeEmail.Email.Label' | translate }}</mat-label>
+            <input type="email" name="Email" [formControl]="Email" matInput>
+            <mat-error *ngIf="Email.hasError('required')">{{ 'Settings.ChangeEmail.Email.Empty' | translate }}</mat-error>
+            <mat-error *ngIf="Email.hasError('email')">{{ 'Settings.ChangeEmail.Email.Invalid' | translate }}</mat-error>
+        </mat-form-field>
+    </div>
+    <div class="settings-button">
+        <app-button-spinner type="submit" [Active]="Submitting" SpinnerColor="accent">{{ 'Settings.ChangeEmail.Submit' | translate }}</app-button-spinner>
+    </div>
+</form>
