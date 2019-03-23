@@ -1,12 +1,12 @@
-<ng-container *ngIf="Account == undefined">
+<ng-container *ngIf="AccountEvent.Type !== 'loaded'">
     <mat-toolbar color="primary">
         <span>Budget</span>
     </mat-toolbar>
     <div class="shell-content-vertical-center">
-        <app-loading-indication [Failed]="LoadingFailed" (Retry)="Refresh()"></app-loading-indication>
+        <app-loading-indication [Failed]="AccountEvent.Type === 'error'" (Retry)="Refresh()"></app-loading-indication>
     </div>
 </ng-container>
-<ng-container *ngIf="Account != undefined">
+<ng-container *ngIf="AccountEvent.Type === 'loaded'">
     <mat-toolbar *ngIf="!Mobile" color="primary">
         <button type="button" (click)="Sidenav.toggle()" mat-icon-button class="toolbar-main-button">
             <mat-icon>menu</mat-icon>
@@ -28,7 +28,7 @@
                     <mat-icon>timeline</mat-icon>
                     <span class="menu-entry-text">{{ 'Shell.Menu.Analytics' | translate }}</span>
                 </a>
-                <a *ngFor="let budget of Account.Budgets" (click)="BudgetMenuAction(budget)" [class.menu-entry-selected]="Page === budget.ID" mat-list-item>
+                <a *ngFor="let budget of AccountEvent.Account.Budgets" (click)="BudgetMenuAction(budget)" [class.menu-entry-selected]="Page === budget.ID" mat-list-item>
                     <ng-container [ngSwitch]="budget.Status">
                         <!--<mat-icon *ngSwitchCase="BudgetStatus.Main">attach_money</mat-icon>-->
                         <!--<mat-icon *ngSwitchCase="BudgetStatus.Main">local_atm</mat-icon>-->

@@ -8,7 +8,7 @@ import { MatDrawerToggleResult, MatSidenav } from '@angular/material/sidenav'
 import { Account, Budget, BudgetStatus } from '../../domain/domain'
 
 import { AuthService } from '../../services/auth.service'
-import { DataflowService } from '../../services/dataflow.service'
+import { AccountEvent, DataflowService } from '../../services/dataflow.service'
 import { ErrorService } from '../../services/error.service'
 import { PeriodService } from '../../services/period.service'
 import { DisplayType, ResponsiveService } from '../../services/responsive.service'
@@ -34,14 +34,13 @@ export class ShellComponent implements OnInit, OnDestroy {
 
     Mobile: boolean
     Loading = false
-    LoadingFailed = false
     Page = 'Analytics'
     SubPage = ''
 
     @ViewChild('budgetAdder') BudgetAdder: BudgetAdderComponent
     @ViewChild('movementAdder') MovementAdder: MovementAdderComponent
 
-    Account: Account
+    AccountEvent: AccountEvent
 
     constructor(
         private readonly dialog: MatDialog,
@@ -65,20 +64,17 @@ export class ShellComponent implements OnInit, OnDestroy {
 
         this.periodService.Init()
 
-        try {
-            await this.dataflowService.Init()
-        } catch (error) {
-            this.LoadingFailed = true
-        }
-
-        this.accountSub = this.dataflowService.Account.subscribe((account) => {
-            this.Account = account
+        this.AccountEvent = this.dataflowService.Account.value
+        this.accountSub = this.dataflowService.Account.subscribe((accountEvent) => {
+            this.AccountEvent = accountEvent
         })
+        await this.dataflowService.LoadData()
     }
 
     ngOnDestroy(): void {
         this.displayChangeSub.unsubscribe()
         this.accountSub.unsubscribe()
+        this.dataflowService.ClearData()
     }
 
     async Logout(): Promise<void> {
@@ -91,6 +87,7 @@ export class ShellComponent implements OnInit, OnDestroy {
 
     async Refresh(): Promise<void> {
         this.Loading = true
+        await this.dataflowService.LoadData()
         this.Loading = false
     }
 

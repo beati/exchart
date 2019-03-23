@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 
-import { BehaviorSubject } from 'rxjs'
+import { BehaviorSubject, Subscription } from 'rxjs'
 
 import { Account, Budget, BudgetStatus, Category, CategoryType, Month, Movement, RecurringMovement } from '../domain/domain'
 
@@ -51,15 +51,20 @@ const isRecurringMovementInPeriod = (movement: RecurringMovement, period: Period
     }
 }
 
-export type MovementEventType = 'loading' | 'error' | 'loaded'
+export type EventType = 'loading' | 'error' | 'loaded'
+
+export interface AccountEvent {
+    Type: EventType
+    Account: Account | undefined
+}
 
 export interface MovementsEvent {
-    Type: MovementEventType
+    Type: EventType
     Movements: Movement[]
 }
 
 export interface RecurringMovementsEvent {
-    Type: MovementEventType
+    Type: EventType
     Movements: RecurringMovement[]
 }
 
@@ -67,7 +72,7 @@ export interface RecurringMovementsEvent {
     providedIn: 'root',
 })
 export class DataflowService {
-    Account: BehaviorSubject<Account>
+    Account: BehaviorSubject<AccountEvent>
     SelectedBudget: BehaviorSubject<Budget | undefined>
     Movements: BehaviorSubject<MovementsEvent>
     RecurringMovements: BehaviorSubject<RecurringMovementsEvent>
@@ -78,9 +83,14 @@ export class DataflowService {
     constructor(
         private readonly budgetService: BudgetService,
         private readonly periodService: PeriodService,
-    ) {}
+    ) {
+        this.Account = new BehaviorSubject<AccountEvent>({
+            Type: 'loading',
+            Account: undefined,
+        })
 
-    async Init(): Promise<void> {
+        this.SelectedBudget = new BehaviorSubject(undefined)
+
         this.Movements = new BehaviorSubject<MovementsEvent>({
             Type: 'loading',
             Movements: [],
@@ -90,20 +100,64 @@ export class DataflowService {
             Movements: [],
         })
 
-        const account = await this.budgetService.GetAcount()
-        account.Budgets.sort(orderBudget)
-        this.Account = new BehaviorSubject(account)
-
-        this.SelectedBudget = new BehaviorSubject(undefined)
-
+        this.period = this.periodService.PeriodChange.value
         this.periodService.PeriodChange.subscribe(async (period) => {
             this.period = period
             await this.getMovements()
         })
     }
 
+    async LoadData(): Promise<void> {
+        try {
+            this.Account.next({
+                Type: 'loading',
+                Account: undefined,
+            })
+            const account = await this.budgetService.GetAcount()
+            account.Budgets.sort(orderBudget)
+            this.Account.next({
+                Type: 'loaded',
+                Account: account,
+            })
+        } catch (error) {
+            this.Account.next({
+                Type: 'error',
+                Account: undefined,
+            })
+            return
+        }
+
+        return this.getMovements()
+    }
+
+    async LoadMovementData(): Promise<void> {
+        return this.getMovements()
+    }
+
+    ClearData(): void {
+        this.Account.next({
+            Type: 'loading',
+            Account: undefined,
+        })
+
+        this.SelectedBudget.next(undefined)
+
+        this.Movements.next({
+            Type: 'loading',
+            Movements: [],
+        })
+        this.RecurringMovements.next({
+            Type: 'loading',
+            Movements: [],
+        })
+    }
+
     OpenBudgets(): Budget[] {
-        const account = this.Account.value
+        if (this.Account.value.Type !== 'loaded' || this.Account.value.Account == undefined) {
+            return []
+        }
+
+        const account = this.Account.value.Account
         const openBudgets: Budget[] = []
         for (const budget of account.Budgets) {
             if (budget.Status === BudgetStatus.Main || budget.Status === BudgetStatus.Open) {
@@ -114,13 +168,17 @@ export class DataflowService {
     }
 
     async SelectBudget(budgetID: string): Promise<void> {
+        if (this.Account.value.Type !== 'loaded' || this.Account.value.Account == undefined) {
+            return
+        }
+
         if (budgetID === '') {
             this.resetBudget = true
             return
         }
 
         let newBudget: Budget | undefined
-        const account = this.Account.value
+        const account = this.Account.value.Account
         for (const budget of account.Budgets) {
             if (budget.ID === budgetID) {
                 newBudget = budget
@@ -144,6 +202,10 @@ export class DataflowService {
     }
 
     private async getMovements(): Promise<void> {
+        if (this.Account.value.Type !== 'loaded') {
+            return
+        }
+
         this.Movements.next({
             Type: 'loading',
             Movements: [],
@@ -228,18 +290,28 @@ export class DataflowService {
     }
 
     async AddJointBudget(email: string): Promise<void> {
+        const accountEvent = this.Account.value
+        if (accountEvent.Type !== 'loaded' || accountEvent.Account == undefined) {
+            return
+        }
+
         const budget = await this.budgetService.AddJointBudget(email)
 
-        const account = this.Account.value
+        const account = accountEvent.Account
         account.Budgets.push(budget)
         account.Budgets.sort(orderBudget)
-        this.Account.next(account)
+        this.Account.next(accountEvent)
     }
 
     async AcceptJointBudget(budgetID: string): Promise<void> {
+        const accountEvent = this.Account.value
+        if (accountEvent.Type !== 'loaded' || accountEvent.Account == undefined) {
+            return
+        }
+
         await this.budgetService.AcceptJointBudget(budgetID)
 
-        const account = this.Account.value
+        const account = accountEvent.Account
         for (const budget of account.Budgets) {
             if (budget.ID === budgetID) {
                 budget.Status = BudgetStatus.Open
@@ -247,13 +319,18 @@ export class DataflowService {
             }
         }
         account.Budgets.sort(orderBudget)
-        this.Account.next(account)
+        this.Account.next(accountEvent)
     }
 
     async DisableJointBudget(budgetID: string): Promise<void> {
+        const accountEvent = this.Account.value
+        if (accountEvent.Type !== 'loaded' || accountEvent.Account == undefined) {
+            return
+        }
+
         await this.budgetService.DisableJointBudget(budgetID)
 
-        const account = this.Account.value
+        const account = accountEvent.Account
         for (let i = 0; i < account.Budgets.length; i += 1) {
             if (budgetID === account.Budgets[i].ID) {
                 account.Budgets.splice(i, 1)
@@ -261,18 +338,23 @@ export class DataflowService {
             }
         }
         account.Budgets.sort(orderBudget)
-        this.Account.next(account)
+        this.Account.next(accountEvent)
     }
 
     async AddCategory(budgetID: string, type: CategoryType, name: string): Promise<Category> {
+        const accountEvent = this.Account.value
+        if (accountEvent.Type !== 'loaded' || accountEvent.Account == undefined) {
+            throw new Error('Account not loaded')
+        }
+
         const category = await this.budgetService.AddCategory(budgetID, type, name)
 
-        const account = this.Account.value
+        const account = accountEvent.Account
         for (const budget of account.Budgets) {
             if (budget.ID === budgetID) {
                 budget.Categories.push(category)
                 this.SelectedBudget.next(budget)
-                this.Account.next(account)
+                this.Account.next(accountEvent)
                 break
             }
         }
@@ -281,16 +363,21 @@ export class DataflowService {
     }
 
     async UpdateCategory(categoryID: string, name: string): Promise<void> {
+        const accountEvent = this.Account.value
+        if (accountEvent.Type !== 'loaded' || accountEvent.Account == undefined) {
+            return
+        }
+
         await this.budgetService.UpdateCategory(categoryID, name)
 
-        const account = this.Account.value
+        const account = accountEvent.Account
         loop:
         for (const budget of account.Budgets) {
             for (const category of budget.Categories) {
                 if (category.ID === categoryID) {
                     category.Name = name
                     this.SelectedBudget.next(budget)
-                    this.Account.next(account)
+                    this.Account.next(accountEvent)
                     break loop
                 }
             }
@@ -298,16 +385,21 @@ export class DataflowService {
     }
 
     async DeleteCategory(categoryID: string): Promise<void> {
+        const accountEvent = this.Account.value
+        if (accountEvent.Type !== 'loaded' || accountEvent.Account == undefined) {
+            return
+        }
+
         await this.budgetService.DeleteCategory(categoryID)
 
-        const account = this.Account.value
+        const account = accountEvent.Account
         loop:
         for (const budget of account.Budgets) {
             for (let i = 0; i < budget.Categories.length; i += 1) {
                 if (budget.Categories[i].ID === categoryID) {
                     budget.Categories.splice(i, 1)
                     this.SelectedBudget.next(budget)
-                    this.Account.next(account)
+                    this.Account.next(accountEvent)
                     break loop
                 }
             }

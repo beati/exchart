@@ -33,9 +33,13 @@ export class JointBudgetListComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit(): void {
-        this.accountSub = this.dataflowService.Account.subscribe((account) => {
+        this.accountSub = this.dataflowService.Account.subscribe((accountEvent) => {
+            if (accountEvent.Type !== 'loaded' || accountEvent.Account == undefined) {
+                return
+            }
+
             this.Budgets = []
-            for (const budget of account.Budgets) {
+            for (const budget of accountEvent.Account.Budgets) {
                 if (budget.Status === BudgetStatus.Open || budget.Status === BudgetStatus.NotAccepted) {
                     this.Budgets.push({
                         Budget: budget,

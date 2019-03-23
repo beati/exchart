@@ -1,7 +1,7 @@
 <app-period-selector></app-period-selector>
 <div class="after-period-selector-container">
     <div *ngIf="LoadingState !== 'loaded'" class="loading-indication-container">
-        <app-loading-indication [Failed]="LoadingState === 'error'"></app-loading-indication>
+        <app-loading-indication [Failed]="LoadingState === 'error'" (Retry)="Reload()"></app-loading-indication>
     </div>
     <ng-container *ngIf="LoadingState === 'loaded'">
         <mat-card class="no-margin-top">

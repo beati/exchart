@@ -4,5 +4,5 @@
 </div>
 <div *ngIf="Failed" class="indication-container">
     <div class="indication-text">{{ 'LoadingIndication.LoadingFailed' | translate }}</div>
-    <button color="primary" mat-raised-button class="top-space">{{ 'LoadingIndication.Retry' | translate }}</button>
+    <button (click)="Retry.emit()" color="primary" mat-raised-button class="top-space">{{ 'LoadingIndication.Retry' | translate }}</button>
 </div>

@@ -7,5 +7,5 @@ import { Component, EventEmitter, Input, Output } from '@angular/core'
 })
 export class LoadingIndicationComponent {
     @Input() Failed = false
-    @Output() Reload = new EventEmitter<void>()
+    @Output() Retry = new EventEmitter<void>()
 }

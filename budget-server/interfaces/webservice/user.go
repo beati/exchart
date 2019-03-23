@@ -7,15 +7,18 @@ import (
 	"github.com/go-chi/chi"
 
 	"bitbucket.org/beati/budget/budget-server/domain"
+	"bitbucket.org/beati/budget/budget-server/interfaces/session"
 	"bitbucket.org/beati/budget/budget-server/usecases"
 )
 
 type userAPI struct {
+	sessionManager *session.Manager
 	userInteractor *usecases.UserInteractor
 }
 
-func newUserAPI(userInteractor *usecases.UserInteractor) *userAPI {
+func newUserAPI(sessionManager *session.Manager, userInteractor *usecases.UserInteractor) *userAPI {
 	return &userAPI{
+		sessionManager: sessionManager,
 		userInteractor: userInteractor,
 	}
 }
@@ -72,7 +75,14 @@ func (uapi *userAPI) changeEmail(w http.ResponseWriter, r *http.Request) (interf
 
 	session := getSessionData(r)
 
-	return nil, uapi.userInteractor.ChangeUserEmail(r.Context(), session.UserID, params.Password, params.Email)
+	err = uapi.userInteractor.ChangeUserEmail(r.Context(), session.UserID, params.Password, params.Email)
+
+	err = uapi.sessionManager.Revoke(session.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	return nil, uapi.sessionManager.New(session.UserID, w, &session)
 }
 
 func (uapi *userAPI) changePassword(w http.ResponseWriter, r *http.Request) (interface{}, error) {
@@ -87,7 +97,17 @@ func (uapi *userAPI) changePassword(w http.ResponseWriter, r *http.Request) (int
 
 	session := getSessionData(r)
 
-	return nil, uapi.userInteractor.ChangePassword(r.Context(), session.UserID, params.CurrentPassword, params.NewPassword)
+	err = uapi.userInteractor.ChangePassword(r.Context(), session.UserID, params.CurrentPassword, params.NewPassword)
+	if err != nil {
+		return nil, err
+	}
+
+	err = uapi.sessionManager.Revoke(session.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	return nil, uapi.sessionManager.New(session.UserID, w, &session)
 }
 
 func (uapi *userAPI) requestPasswordReset(w http.ResponseWriter, r *http.Request) (interface{}, error) {
@@ -113,7 +133,12 @@ func (uapi *userAPI) resetPassword(w http.ResponseWriter, r *http.Request) (inte
 		return nil, domain.ErrBadParameters
 	}
 
-	return nil, uapi.userInteractor.ResetPassword(r.Context(), params.ID, params.Token, params.Password)
+	err = uapi.userInteractor.ResetPassword(r.Context(), params.ID, params.Token, params.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	return nil, uapi.sessionManager.Revoke(params.ID)
 }
 
 func (uapi *userAPI) routes(r chi.Router, authMiddleware func(http.Handler) http.Handler) {

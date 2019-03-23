@@ -6,7 +6,7 @@ import { TranslateService } from '@ngx-translate/core'
 
 import { Budget, Category, CategoryType, CategoryTypes } from '../../domain/domain'
 
-import { DataflowService, MovementEventType, MovementsEvent, RecurringMovementsEvent } from '../../services/dataflow.service'
+import { DataflowService, EventType, MovementsEvent, RecurringMovementsEvent } from '../../services/dataflow.service'
 
 interface categoryAmount {
     Category: Category
@@ -38,7 +38,7 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
     }
     private recurringMovementsEventSub: Subscription
 
-    LoadingState: MovementEventType = 'loading'
+    LoadingState: EventType = 'loading'
 
     CategoryAmountColumns = ['Type', 'Category', 'Amount', 'Ratio']
     CategoryAmounts: categoryAmount[] = []
@@ -79,6 +79,10 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
         this.budgetSub.unsubscribe()
         this.movementsEventSub.unsubscribe()
         this.recurringMovementsEventSub.unsubscribe()
+    }
+
+    async Reload(): Promise<void> {
+        await this.dataflowService.LoadMovementData()
     }
 
     private init(): void {

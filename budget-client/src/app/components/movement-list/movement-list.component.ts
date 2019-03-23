@@ -7,7 +7,7 @@ import { MatDialog } from '@angular/material/dialog'
 
 import { Budget, Category, CategoryTypes, Months, Movement, RecurringMovement } from '../../domain/domain'
 
-import { DataflowService, MovementEventType, MovementsEvent, RecurringMovementsEvent } from '../../services/dataflow.service'
+import { DataflowService, EventType, MovementsEvent, RecurringMovementsEvent } from '../../services/dataflow.service'
 
 import { DeleteMovementDialogComponent } from '../delete-movement-dialog/delete-movement-dialog.component'
 import { DeleteRecurringMovementDialogComponent } from '../delete-recurring-movement-dialog/delete-recurring-movement-dialog.component'
@@ -29,7 +29,7 @@ export class MovementListComponent implements OnInit, OnDestroy {
     Months = Months
     CategoryTypes = CategoryTypes
 
-    LoadingState: MovementEventType = 'loading'
+    LoadingState: EventType = 'loading'
 
     private budget: Budget | undefined
     private budgetSub: Subscription
@@ -87,6 +87,10 @@ export class MovementListComponent implements OnInit, OnDestroy {
         this.budgetSub.unsubscribe()
         this.movementsEventSub.unsubscribe()
         this.recurringMovementsEventSub.unsubscribe()
+    }
+
+    async Reload(): Promise<void> {
+        await this.dataflowService.LoadMovementData()
     }
 
     private init(): void {

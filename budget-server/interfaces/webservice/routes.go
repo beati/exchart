@@ -17,7 +17,7 @@ func Routes(
 	checkOrigin := checkOriginMiddleware(allowedOrigins)
 	auth := authMiddleware(sessionManager)
 	authAPI := newAuthAPI(sessionManager, userIntercator)
-	userAPI := newUserAPI(userIntercator)
+	userAPI := newUserAPI(sessionManager, userIntercator)
 	budgetAPI := newBudgetAPI(budgetInteractor)
 
 	r := chi.NewRouter()
