@@ -78,6 +78,31 @@ export const fr = {
             ForgotPassword: 'Mot de passe oublié ?',
         },
     },
+    MovementList: {
+        RecurringMovements: {
+            Title: 'Mouvements récurrents',
+            Columns: {
+                Recurrence: 'Récurrence',
+                Start: 'Début',
+                End: 'Fin',
+                Amount: 'Montant',
+            },
+            Ongoing: 'En cours',
+            Recurrence: {
+                Monthly: 'Mensuel',
+                Yearly: 'Annuel',
+            },
+        },
+        Movements: {
+            Title: 'Mouvements',
+            Columns: {
+                Month: 'Mois',
+                Year: 'Année',
+                Amount: 'Montant',
+            },
+            OverTheYear: 'Sur l\'année',
+        },
+    },
     Months: {
         January: 'Janvier',
         February: 'Février',

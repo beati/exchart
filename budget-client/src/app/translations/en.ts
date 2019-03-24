@@ -125,6 +125,31 @@ export const en = {
             Ok: 'Ok',
         },
     },
+    MovementList: {
+        RecurringMovements: {
+            Title: 'Recurring movements',
+            Columns: {
+                Recurrence: 'Recurrence',
+                Start: 'Start',
+                End: 'End',
+                Amount: 'Amount',
+            },
+            Ongoing: 'Ongoing',
+            Recurrence: {
+                Monthly: 'Monthly',
+                Yearly: 'Yearly',
+            },
+        },
+        Movements: {
+            Title: 'Movements',
+            Columns: {
+                Month: 'Month',
+                Year: 'Year',
+                Amount: 'Amount',
+            },
+            OverTheYear: 'Over the year',
+        },
+    },
     PasswordResetRequester: {
         Title: 'Password reset',
         Email: {
