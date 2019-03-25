@@ -77,11 +77,6 @@ func (interactor *BudgetInteractor) DeleteCategory(ctx context.Context, accountI
 		return
 	}
 
-	err = category.IsDeletable()
-	if err != nil {
-		return err
-	}
-
 	budget, err := tx.LockBudget(category.BudgetID)
 	if err != nil {
 		return
@@ -93,22 +88,4 @@ func (interactor *BudgetInteractor) DeleteCategory(ctx context.Context, accountI
 	}
 
 	return tx.DeleteCategory(categoryID)
-}
-
-func addDefaultCategories(tx Tx, budgetID domain.EntityID) ([]domain.Category, error) {
-	categories := make([]domain.Category, 0, domain.CategoryTypeCount)
-	for i := domain.CategoryType(0); i < domain.CategoryTypeCount; i++ {
-		category, err := domain.NewDefaultCategory(budgetID, i)
-		if err != nil {
-			return nil, err
-		}
-
-		err = tx.AddCategory(category)
-		if err != nil {
-			return nil, err
-		}
-
-		categories = append(categories, *category)
-	}
-	return categories, nil
 }

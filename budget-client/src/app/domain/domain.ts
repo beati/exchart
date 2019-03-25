@@ -12,11 +12,21 @@ export interface Budget {
     Categories: Category[]
 }
 
-export enum CategoryType { Housing, Transport, CategoryTypeCount }
+export enum CategoryType { 
+    Housing,
+    Transport,
+    DailyLife,
+    Healthcare,
+    Leisure,
+    CategoryTypeCount
+}
 
 export const CategoryTypes = [
     'Housing',
     'Transport',
+    'DailyLife',
+    'Healthcare',
+    'Leisure',
 ]
 
 export interface Category {

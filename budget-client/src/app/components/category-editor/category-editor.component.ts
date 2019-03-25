@@ -118,14 +118,12 @@ export class CategoryEditorComponent implements OnInit, OnDestroy {
         }
 
         for (const category of budget.Categories) {
-            if (category.Name !== 'default') {
-                const children = this.categoryTree[category.Type].children
-                if (children != undefined) {
-                    children.push({
-                        category: category,
-                        submitting: false,
-                    })
-                }
+            const children = this.categoryTree[category.Type].children
+            if (children != undefined) {
+                children.push({
+                    category: category,
+                    submitting: false,
+                })
             }
         }
 

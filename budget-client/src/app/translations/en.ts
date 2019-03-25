@@ -39,6 +39,9 @@ export const en = {
     CategoryTypes: {
         Housing: 'Housing',
         Transport: 'Transport',
+        DailyLife: 'DailyLife',
+        Healthcare: 'Healthcare',
+        Leisure: 'Leisure',
     },
     EmailVerifier: {
         Title: 'Email verification',

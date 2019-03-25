@@ -54,13 +54,8 @@ func (interactor *BudgetInteractor) tryAddJointBudget(ctx context.Context, accou
 		return
 	}
 
-	categories, err := addDefaultCategories(tx, budget.ID)
-	if err != nil {
-		return
-	}
-
 	budgetData = budget.Data(accountID, requestedAccount.Name)
-	budgetData.Categories = categories
+	budgetData.Categories = []domain.Category{}
 	return
 }
 
