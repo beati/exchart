@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs'
 
 import { TranslateService } from '@ngx-translate/core'
 
-import { Budget, Category, CategoryType, CategoryTypes } from '../../domain/domain'
+import { Account, Budget, BudgetStatus, Category, CategoryType, CategoryTypes } from '../../domain/domain'
 
 import { DataflowService, EventType, MovementsEvent, RecurringMovementsEvent } from '../../services/dataflow.service'
 
@@ -12,6 +12,11 @@ interface categoryAmount {
     Category: Category
     Amount: number
     Ratio: number
+}
+
+interface categoryRef {
+    category: Category
+    main: boolean
 }
 
 @Component({
@@ -23,6 +28,10 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
     CategoryTypes = CategoryTypes
 
     private readonly categoryTypeLabels: string[] = []
+
+    private account: Account | undefined
+    private accountEventSub: Subscription
+    private categories: Map<string, categoryRef>
 
     private budget: Budget | undefined
     private budgetSub: Subscription
@@ -59,6 +68,28 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
             this.categoryTypeLabels.push(categoryTypeTranslations[type])
         }
 
+        this.accountEventSub = this.dataflowService.Account.subscribe((accountEvent) => {
+            if (accountEvent.Type === 'loaded') {
+                this.account = accountEvent.Account
+                if (this.account === undefined) {
+                    return
+                }
+                
+                this.categories = new Map<string, categoryRef>()
+                for (const budget of this.account.Budgets) {
+                    for (const category of budget.Categories) {
+                        this.categories.set(category.ID, {
+                            category: category,
+                            main: budget.Status === BudgetStatus.Main,
+                        })
+                    }
+                }
+            } else {
+                this.account = undefined
+            }
+            this.init()
+        })
+
         this.budgetSub = this.dataflowService.SelectedBudget.subscribe((budget) => {
             this.budget = budget
             this.init()
@@ -76,6 +107,7 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        this.accountEventSub.unsubscribe()
         this.budgetSub.unsubscribe()
         this.movementsEventSub.unsubscribe()
         this.recurringMovementsEventSub.unsubscribe()
@@ -86,7 +118,7 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
     }
 
     private init(): void {
-        if (this.budget == undefined) {
+        if (this.account == undefined) {
             return
         }
 
@@ -100,47 +132,56 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
 
         this.LoadingState = 'loaded'
 
-        const categoryAmounts = new Map<string, categoryAmount>()
-        for (const category of this.budget.Categories) {
-            categoryAmounts.set(category.ID, {
-                Category: category,
-                Ratio: 0,
-                Amount: 0,
-            })
-        }
+        let total = 0
 
         let categoryTypeAmounts = new Array<number>(CategoryType.CategoryTypeCount)
         for (let i = 0; i < categoryTypeAmounts.length; i += 1) {
             categoryTypeAmounts[i] = 0
         }
 
-        let total = 0
+        const categoryAmounts = new Map<string, categoryAmount>()
 
-        for (const movement of this.movementsEvent.Movements) {
-            if (movement.Amount < 0) {
-                const categoryAmount = categoryAmounts.get(movement.CategoryID)
-                if (categoryAmount != undefined) {
-                    total -= movement.Amount
-                    categoryAmount.Amount -= movement.Amount
-                    categoryTypeAmounts[categoryAmount.Category.Type] -= movement.Amount
+        const handleMovement = (categoryID: string, amount: number) => {
+            if (amount < 0) {
+                const categoryRef = this.categories.get(categoryID)
+                if (categoryRef === undefined) {
+                    return
+                }
+
+                total -= amount
+                categoryTypeAmounts[categoryRef.category.Type] -= amount
+
+                let categoryAmount = categoryAmounts.get(categoryRef.category.Name)
+                if (categoryAmount == undefined) {
+                    categoryAmount = {
+                        Category: categoryRef.category,
+                        Ratio: 0,
+                        Amount: 0,
+                    }
+                    categoryAmounts.set(categoryRef.category.Name, categoryAmount)
+                }
+                if (this.budget == undefined && !categoryRef.main) {
+                    categoryAmount.Amount -= amount / 2
+                } else {
+                    categoryAmount.Amount -= amount
                 }
             }
         }
+        for (const movement of this.movementsEvent.Movements) {
+            handleMovement(movement.CategoryID, movement.Amount)
+        }
         for (const movement of this.recurringMovementEvent.Movements) {
-            if (movement.Amount < 0) {
-                const categoryAmount = categoryAmounts.get(movement.CategoryID)
-                if (categoryAmount != undefined) {
-                    total -= movement.Amount
-                    categoryAmount.Amount -= movement.Amount
-                    categoryTypeAmounts[categoryAmount.Category.Type] -= movement.Amount
-                }
-            }
+            handleMovement(movement.CategoryID, movement.Amount)
         }
 
         const centFactor = 100
         this.CategoryAmounts = Array.from(categoryAmounts.values())
         for (const categoryAmount of this.CategoryAmounts) {
-            categoryAmount.Ratio = Math.round((categoryAmount.Amount / total) * centFactor)
+            if (total === 0) {
+                categoryAmount.Ratio = 0
+            } else {
+                categoryAmount.Ratio = Math.round((categoryAmount.Amount / total) * centFactor)
+            }
             categoryAmount.Amount /= centFactor
         }
         this.CategoryAmounts.sort((a, b) => {

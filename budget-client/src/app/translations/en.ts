@@ -107,6 +107,7 @@ export const en = {
         Category: {
             Label: 'Category',
             Choose: 'Choose a category',
+            NoCategory: 'You do not have categories for this budget yet',
         },
         Amount: {
             Label: 'Amount',
@@ -152,6 +153,7 @@ export const en = {
             },
             OverTheYear: 'Over the year',
         },
+        NoMovements: 'No movements for this period.',
     },
     PasswordResetRequester: {
         Title: 'Password reset',
@@ -253,6 +255,7 @@ export const en = {
         },
         JointBudgetList: {
             Title: 'Joint Budgets',
+            NoJointBudgets: 'No joint budgets.',
             With: 'With',
             Delete: 'Are you sure you want to delete your joint budget with',
             Cancel: 'Cancel',

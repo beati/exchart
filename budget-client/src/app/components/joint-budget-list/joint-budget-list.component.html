@@ -1,5 +1,5 @@
 <div *ngIf="Budgets.length === 0" class="empty-list">
-    No joint budget
+    {{ 'Settings.JointBudgetList.NoJointBudgets' | translate }}
 </div>
 <mat-list *ngIf="Budgets.length > 0">
     <mat-list-item *ngFor="let entry of Budgets">

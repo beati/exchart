@@ -25,17 +25,20 @@
     </div>
 
     <div *ngIf="MovementFormData.Sign === '-1'" class="category-container full-width">
-        <button type="button" [matMenuTriggerFor]="categoryMenu" mat-stroked-button>{{ 'MovementAdder.Category.Label' | translate }}</button>
-        <mat-menu #categoryMenu="matMenu">
-            <ng-container *ngFor="let categoryType of CategoryTypes; index as i">
-                <button [matMenuTriggerFor]="subMenu" mat-menu-item>{{ 'CategoryTypes.' + categoryType | translate }}</button>
-                <mat-menu #subMenu="matMenu">
-                    <button *ngFor="let category of Categories[i]" (click)="SetCategory(category)" mat-menu-item>{{ category.Name }}</button>
-                </mat-menu>
-            </ng-container>
-        </mat-menu>
-        <span *ngIf="MovementFormData.Category == undefined" [class.color-warn]="MovementFormData.CategoryEmpty" class="category-name">{{ 'MovementAdder.Category.Choose' | translate }}</span>
-        <span *ngIf="MovementFormData.Category != undefined" class="category-name">{{ MovementFormData.Category.Name }}</span>
+        <ng-container *ngIf="!NoCategory">
+            <button type="button" [matMenuTriggerFor]="categoryMenu" mat-stroked-button>{{ 'MovementAdder.Category.Label' | translate }}</button>
+            <mat-menu #categoryMenu="matMenu">
+                <ng-container *ngFor="let categoryType of CategoryTypes; index as i">
+                    <button [matMenuTriggerFor]="subMenu" mat-menu-item>{{ 'CategoryTypes.' + categoryType | translate }}</button>
+                    <mat-menu #subMenu="matMenu">
+                        <button *ngFor="let category of Categories[i]" (click)="SetCategory(category)" mat-menu-item>{{ category.Name }}</button>
+                    </mat-menu>
+                </ng-container>
+            </mat-menu>
+            <span *ngIf="MovementFormData.Category == undefined" [class.color-warn]="MovementFormData.CategoryEmpty" class="category-name">{{ 'MovementAdder.Category.Choose' | translate }}</span>
+            <span *ngIf="MovementFormData.Category != undefined" class="category-name">{{ MovementFormData.Category.Name }}</span>
+        </ng-container>
+        <span *ngIf="NoCategory" class="color-warn">{{ 'MovementAdder.Category.NoCategory' | translate }}</span>
     </div>
 
     <div>

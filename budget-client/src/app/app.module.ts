@@ -56,7 +56,6 @@ import { MovementAdderDialogComponent } from './components/movement-adder-dialog
 import { MovementAdderComponent } from './components/movement-adder/movement-adder.component'
 import { MovementListComponent } from './components/movement-list/movement-list.component'
 import { NameChangerComponent } from './components/name-changer/name-changer.component'
-import { OverallAnalyticsComponent } from './components/overall-analytics/overall-analytics.component'
 import { PasswordChangerComponent } from './components/password-changer/password-changer.component'
 import { PasswordResetRequesterComponent } from './components/password-reset-requester/password-reset-requester.component'
 import { PasswordResetterComponent } from './components/password-resetter/password-resetter.component'
@@ -98,7 +97,6 @@ import { YearSelectorComponent } from './components/year-selector/year-selector.
         MovementAdderComponent,
         MovementListComponent,
         NameChangerComponent,
-        OverallAnalyticsComponent,
         PasswordChangerComponent,
         PasswordResetRequesterComponent,
         PasswordResetterComponent,

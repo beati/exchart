@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs'
 import { MatDialog } from '@angular/material/dialog'
 import { MatDrawerToggleResult, MatSidenav } from '@angular/material/sidenav'
 
-import { Account, Budget, BudgetStatus } from '../../domain/domain'
+import { Budget, BudgetStatus } from '../../domain/domain'
 
 import { AuthService } from '../../services/auth.service'
 import { AccountEvent, DataflowService } from '../../services/dataflow.service'
@@ -28,7 +28,6 @@ export class ShellComponent implements OnInit, OnDestroy {
     BudgetStatus = BudgetStatus
 
     private displayChangeSub: Subscription
-    private accountSub: Subscription
 
     @ViewChild('sidenav') Sidenav: MatSidenav
 
@@ -41,6 +40,7 @@ export class ShellComponent implements OnInit, OnDestroy {
     @ViewChild('movementAdder') MovementAdder: MovementAdderComponent
 
     AccountEvent: AccountEvent
+    private accountEventSub: Subscription
 
     constructor(
         private readonly dialog: MatDialog,
@@ -65,7 +65,7 @@ export class ShellComponent implements OnInit, OnDestroy {
         this.periodService.Init()
 
         this.AccountEvent = this.dataflowService.Account.value
-        this.accountSub = this.dataflowService.Account.subscribe((accountEvent) => {
+        this.accountEventSub = this.dataflowService.Account.subscribe((accountEvent) => {
             this.AccountEvent = accountEvent
         })
         await this.dataflowService.LoadData()
@@ -73,7 +73,7 @@ export class ShellComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.displayChangeSub.unsubscribe()
-        this.accountSub.unsubscribe()
+        this.accountEventSub.unsubscribe()
         this.dataflowService.ClearData()
     }
 

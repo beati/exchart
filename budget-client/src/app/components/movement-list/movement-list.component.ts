@@ -37,7 +37,7 @@ export class MovementListComponent implements OnInit, OnDestroy {
 
     MovementsColumns = ['Month', 'Year', 'Amount']
     Movements = new BehaviorSubject<Movement[]>([])
-    private movementsEvent: MovementsEvent = {
+    MovementsEvent: MovementsEvent = {
         Type: 'loading',
         Movements: [],
     }
@@ -46,7 +46,7 @@ export class MovementListComponent implements OnInit, OnDestroy {
 
     RecurringMovementsColumns = ['Period', 'Start', 'End', 'Amount']
     RecurringMovements = new BehaviorSubject<RecurringMovement[]>([])
-    private recurringMovementEvent: RecurringMovementsEvent = {
+    RecurringMovementsEvent: RecurringMovementsEvent = {
         Type: 'loading',
         Movements: [],
     }
@@ -71,14 +71,14 @@ export class MovementListComponent implements OnInit, OnDestroy {
         })
 
         this.movementsEventSub = this.dataflowService.Movements.subscribe((movementsEvent) => {
-            this.movementsEvent = movementsEvent
-            this.Movements.next(this.movementsEvent.Movements)
+            this.MovementsEvent = movementsEvent
+            this.Movements.next(this.MovementsEvent.Movements)
             this.init()
         })
 
         this.recurringMovementsEventSub = this.dataflowService.RecurringMovements.subscribe((movementsEvent) => {
-            this.recurringMovementEvent = movementsEvent
-            this.RecurringMovements.next(this.recurringMovementEvent.Movements)
+            this.RecurringMovementsEvent = movementsEvent
+            this.RecurringMovements.next(this.RecurringMovementsEvent.Movements)
             this.init()
         })
     }
@@ -101,10 +101,10 @@ export class MovementListComponent implements OnInit, OnDestroy {
             return
         }
 
-        if (this.movementsEvent.Type === 'error' || this.recurringMovementEvent.Type === 'error') {
+        if (this.MovementsEvent.Type === 'error' || this.RecurringMovementsEvent.Type === 'error') {
             this.LoadingState = 'error'
             return
-        } else if (this.movementsEvent.Type === 'loading' || this.recurringMovementEvent.Type === 'loading') {
+        } else if (this.MovementsEvent.Type === 'loading' || this.RecurringMovementsEvent.Type === 'loading') {
             this.LoadingState = 'loading'
             return
         }

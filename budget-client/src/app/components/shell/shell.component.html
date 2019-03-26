@@ -92,7 +92,7 @@
             </mat-toolbar>
             <div class="shell-content">
                 <ng-container *ngIf="SubPage === ''" [ngSwitch]="Page">
-                    <app-overall-analytics *ngSwitchCase="'Analytics'"></app-overall-analytics>
+                    <app-budget-analytics *ngSwitchCase="'Analytics'"></app-budget-analytics>
                     <app-settings *ngSwitchCase="'Settings'"></app-settings>
                     <app-budget-tabs *ngSwitchDefault></app-budget-tabs>
                 </ng-container>

@@ -26,3 +26,8 @@ tr.movement-row:not(.expanded-row):active {
 .expanded-content {
   overflow: hidden;
 }
+
+.no-rows {
+    text-align: center;
+    margin: 16px 0;
+}

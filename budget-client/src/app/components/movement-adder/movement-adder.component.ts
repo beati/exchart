@@ -24,6 +24,7 @@ export class MovementAdderComponent implements OnInit {
 
     Budgets: Budget[]
     Categories: Category[][] = new Array<Category[]>(CategoryType.CategoryTypeCount)
+    NoCategory = true
 
     MovementFormData = {
         Sign: '-1',
@@ -63,11 +64,14 @@ export class MovementAdderComponent implements OnInit {
             this.Categories[i] = []
         }
 
+        this.NoCategory = true
         for (const budget of this.Budgets) {
             if (budget.ID === budgetID) {
                 for (const category of budget.Categories) {
                     this.Categories[category.Type].push(category)
+                    this.NoCategory = false
                 }
+                break
             }
         }
 

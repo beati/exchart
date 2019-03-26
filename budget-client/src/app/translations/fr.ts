@@ -105,6 +105,7 @@ export const fr = {
             },
             OverTheYear: 'Sur l\'année',
         },
+        NoMovements: 'Pas de mouvements pour cette période.',
     },
     Months: {
         January: 'Janvier',
@@ -132,6 +133,7 @@ export const fr = {
         Category: {
             Label: 'Catégorie',
             Choose: 'Choisissez une catégories',
+            NoCategory: 'Vous n\'avez pas encore de catégorie pour ce budget',
         },
         Amount: {
             Label: 'Montant',
@@ -253,6 +255,7 @@ export const fr = {
         },
         JointBudgetList: {
             Title: 'Budgets communs',
+            NoJointBudgets: 'Pas de budget commun.',
             With: 'Avec',
             Delete: 'Êtes vous sur de vouloir supprimer votre budget commun avec',
             Cancel: 'Annuler',

@@ -4,8 +4,8 @@
         <app-loading-indication [Failed]="LoadingState === 'error'" (Retry)="Reload()"></app-loading-indication>
     </div>
     <ng-container *ngIf="LoadingState === 'loaded'">
-        <mat-card class="no-margin-top">
-            <app-chart-pie *ngIf="CategoryTypeAmountsChartData != undefined" [Data]="CategoryTypeAmountsChartData" [Options]="CategoryTypeAmountsChartOption" [AspectRatio]="'golden-section'"></app-chart-pie>
+        <mat-card *ngIf="CategoryTypeAmountsChartData != undefined && CategoryTypeAmountsChartData.series.length > 0" class="no-margin-top">
+            <app-chart-pie [Data]="CategoryTypeAmountsChartData" [Options]="CategoryTypeAmountsChartOption" [AspectRatio]="'golden-section'"></app-chart-pie>
         </mat-card>
         <mat-card>
             <table mat-table [dataSource]="CategoryAmounts">
