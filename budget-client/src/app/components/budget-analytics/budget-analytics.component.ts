@@ -49,6 +49,10 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
 
     LoadingState: EventType = 'loading'
 
+    Incomes = 0
+    Expenses = 0
+    Balance = 0
+
     CategoryAmountColumns = ['Type', 'Category', 'Amount', 'Ratio']
     CategoryAmounts: categoryAmount[] = []
 
@@ -132,7 +136,8 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
 
         this.LoadingState = 'loaded'
 
-        let total = 0
+        let incomes = 0
+        let expenses = 0
 
         let categoryTypeAmounts = new Array<number>(CategoryType.CategoryTypeCount)
         for (let i = 0; i < categoryTypeAmounts.length; i += 1) {
@@ -148,7 +153,7 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
                     return
                 }
 
-                total -= amount
+                expenses -= amount
                 categoryTypeAmounts[categoryRef.category.Type] -= amount
 
                 let categoryAmount = categoryAmounts.get(categoryRef.category.Name)
@@ -165,6 +170,8 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
                 } else {
                     categoryAmount.Amount -= amount
                 }
+            } else {
+                incomes += amount
             }
         }
         for (const movement of this.movementsEvent.Movements) {
@@ -177,10 +184,10 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
         const centFactor = 100
         this.CategoryAmounts = Array.from(categoryAmounts.values())
         for (const categoryAmount of this.CategoryAmounts) {
-            if (total === 0) {
+            if (expenses === 0) {
                 categoryAmount.Ratio = 0
             } else {
-                categoryAmount.Ratio = Math.round((categoryAmount.Amount / total) * centFactor)
+                categoryAmount.Ratio = Math.round((categoryAmount.Amount / expenses) * centFactor)
             }
             categoryAmount.Amount /= centFactor
         }
@@ -191,7 +198,7 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
         const labels: string[] = []
         for (let i = 0; i < categoryTypeAmounts.length; i += 1) {
             if (categoryTypeAmounts[i] !== 0) {
-                const ratio = Math.round((categoryTypeAmounts[i] / total) * centFactor)
+                const ratio = Math.round((categoryTypeAmounts[i] / expenses) * centFactor)
                 labels.push(`${this.categoryTypeLabels[i]}: ${ratio}%`)
                 categoryTypeAmounts[i] /= centFactor
             }
@@ -203,5 +210,9 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
             labels: labels,
             series: categoryTypeAmounts,
         }
+
+        this.Incomes = incomes / centFactor
+        this.Expenses = - expenses / centFactor
+        this.Balance = (incomes - expenses) / centFactor
     }
 }

@@ -97,7 +97,7 @@ export const en = {
     },
     MovementAdder: {
         Sign: {
-            Revenue: 'Revenue',
+            Revenue: 'Income',
             Expense: 'Expense',
         },
         With: {
