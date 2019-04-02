@@ -52,6 +52,7 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
     Incomes = 0
     Expenses = 0
     Balance = 0
+    Provision = 0
 
     CategoryAmountColumns = ['Type', 'Category', 'Amount', 'Ratio']
     CategoryAmounts: categoryAmount[] = []
@@ -138,6 +139,7 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
 
         let incomes = 0
         let expenses = 0
+        let provision = 0
 
         let categoryTypeAmounts = new Array<number>(CategoryType.CategoryTypeCount)
         for (let i = 0; i < categoryTypeAmounts.length; i += 1) {
@@ -146,14 +148,22 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
 
         const categoryAmounts = new Map<string, categoryAmount>()
 
-        const handleMovement = (categoryID: string, amount: number) => {
+        const handleMovement = (categoryID: string, amount: number, overTheYear: boolean) => {
             if (amount < 0) {
                 const categoryRef = this.categories.get(categoryID)
                 if (categoryRef === undefined) {
                     return
                 }
 
+                if (this.budget == undefined && !categoryRef.main) {
+                    amount = Math.round(amount / 2)
+                }
+
                 expenses -= amount
+                if (overTheYear) {
+                    const monthInYear = 12
+                    provision -= Math.round(amount / monthInYear)
+                }
                 categoryTypeAmounts[categoryRef.category.Type] -= amount
 
                 let categoryAmount = categoryAmounts.get(categoryRef.category.Name)
@@ -165,20 +175,16 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
                     }
                     categoryAmounts.set(categoryRef.category.Name, categoryAmount)
                 }
-                if (this.budget == undefined && !categoryRef.main) {
-                    categoryAmount.Amount -= amount / 2
-                } else {
-                    categoryAmount.Amount -= amount
-                }
+                categoryAmount.Amount -= amount
             } else {
                 incomes += amount
             }
         }
         for (const movement of this.movementsEvent.Movements) {
-            handleMovement(movement.CategoryID, movement.Amount)
+            handleMovement(movement.CategoryID, movement.Amount, movement.Month === 0)
         }
         for (const movement of this.recurringMovementEvent.Movements) {
-            handleMovement(movement.CategoryID, movement.Amount)
+            handleMovement(movement.CategoryID, movement.Amount, false)
         }
 
         const centFactor = 100
@@ -214,5 +220,6 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
         this.Incomes = incomes / centFactor
         this.Expenses = - expenses / centFactor
         this.Balance = (incomes - expenses) / centFactor
+        this.Provision = provision / centFactor
     }
 }

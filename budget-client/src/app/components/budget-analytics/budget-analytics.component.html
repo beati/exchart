@@ -4,7 +4,10 @@
         <app-loading-indication [Failed]="LoadingState === 'error'" (Retry)="Reload()"></app-loading-indication>
     </div>
     <ng-container *ngIf="LoadingState === 'loaded'">
-        <mat-card *ngIf="CategoryTypeAmountsChartData != undefined && CategoryTypeAmountsChartData.series.length > 0" class="no-margin-top">
+        <mat-card class="no-margin-top">
+            <div>{{ Provision }}</div>
+        </mat-card>
+        <mat-card class="no-margin-top">
             <div>{{ Incomes }}</div>
             <div>{{ Expenses }}</div>
             <div>{{ Balance }}</div>
