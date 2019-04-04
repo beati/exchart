@@ -4,19 +4,46 @@
         <app-loading-indication [Failed]="LoadingState === 'error'" (Retry)="Reload()"></app-loading-indication>
     </div>
     <ng-container *ngIf="LoadingState === 'loaded'">
-        <mat-card class="no-margin-top">
-            <div>{{ Provision }}</div>
-        </mat-card>
-        <mat-card class="no-margin-top">
-            <div>{{ Incomes }}</div>
-            <div>{{ Expenses }}</div>
-            <div>{{ Balance }}</div>
-        </mat-card>
-        <mat-card *ngIf="CategoryTypeAmountsChartData != undefined && CategoryTypeAmountsChartData.series.length > 0" class="no-margin-top">
+        <div *ngIf="Budget == undefined" class="card-row">
+            <mat-card class="card-in-row card-in-row-1">
+                <div class="number-card">
+                    <div>
+                        {{ 'BudgetAnalytics.Income' | translate }} :
+                        <span [class.color-accent]="Incomes > 0">
+                            {{ Incomes > 0 ? '+' : '' }}{{ Incomes }} €
+                        </span>
+                    </div>
+                    <div>
+                        {{ 'BudgetAnalytics.Expense' | translate }} :
+                        <span [class.color-warn]="Expenses < 0">
+                            {{ Expenses > 0 ? '+' : '' }}{{ Expenses }} €
+                        </span>
+                    </div>
+                    <div class="balance-text">{{ 'BudgetAnalytics.Balance' | translate }}</div>
+                    <div class="balance">
+                        <span [class.color-accent]="Balance > 0" [class.color-warn]="Balance < 0">
+                            {{ Balance > 0 ? '+' : '' }}{{ Balance }} €
+                        </span>
+                    </div>
+                </div>
+            </mat-card>
+            <mat-card class="card-in-row card-in-row-2">
+                <div class="number-card">
+                    <div class="provision-text">{{ 'BudgetAnalytics.Provision' | translate }}</div>
+                    <div class="number-main">
+                        <span [class.color-warn]="Provision > 0">
+                            {{ Provision }} €
+                        </span>
+                    </div>
+                </div>
+            </mat-card>
+        </div>
+        <mat-card *ngIf="CategoryTypeAmountsChartData != undefined && CategoryTypeAmountsChartData.series.length > 0">
             <app-chart-pie [Data]="CategoryTypeAmountsChartData" [Options]="CategoryTypeAmountsChartOption" [AspectRatio]="'golden-section'"></app-chart-pie>
         </mat-card>
         <mat-card>
-            <table mat-table [dataSource]="CategoryAmounts">
+            <div *ngIf="CategoryAmounts.length === 0" class="no-movements">{{ 'BudgetAnalytics.NoMovements' | translate }}</div>
+            <table *ngIf="CategoryAmounts.length !== 0" mat-table [dataSource]="CategoryAmounts">
                 <ng-container matColumnDef="Type">
                     <th mat-header-cell *matHeaderCellDef>{{ 'BudgetAnalytics.CategoryAmountsTable.Type' | translate }}</th>
                     <td mat-cell *matCellDef="let categoryAmount">{{ 'CategoryTypes.' + CategoryTypes[categoryAmount.Category.Type] | translate }}</td>

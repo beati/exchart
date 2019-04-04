@@ -33,7 +33,7 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
     private accountEventSub: Subscription
     private categories: Map<string, categoryRef>
 
-    private budget: Budget | undefined
+    Budget: Budget | undefined
     private budgetSub: Subscription
 
     private movementsEvent: MovementsEvent = {
@@ -96,7 +96,7 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
         })
 
         this.budgetSub = this.dataflowService.SelectedBudget.subscribe((budget) => {
-            this.budget = budget
+            this.Budget = budget
             this.init()
         })
 
@@ -155,15 +155,17 @@ export class BudgetAnalyticsComponent implements OnInit, OnDestroy {
                     return
                 }
 
-                if (this.budget == undefined && !categoryRef.main) {
+                if (this.Budget == undefined && !categoryRef.main) {
                     amount = Math.round(amount / 2)
                 }
 
-                expenses -= amount
                 if (overTheYear) {
                     const monthInYear = 12
-                    provision -= Math.round(amount / monthInYear)
+                    amount = Math.round(amount / monthInYear)
+                    provision -= amount
                 }
+
+                expenses -= amount
                 categoryTypeAmounts[categoryRef.category.Type] -= amount
 
                 let categoryAmount = categoryAmounts.get(categoryRef.category.Name)

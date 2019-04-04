@@ -23,6 +23,7 @@ export class MovementAdderComponent implements OnInit {
     Months = Months
 
     Budgets: Budget[]
+    IncomeCategory: Category
     Categories: Category[][] = new Array<Category[]>(CategoryType.CategoryTypeCount)
     NoCategory = true
 
@@ -46,6 +47,19 @@ export class MovementAdderComponent implements OnInit {
 
     ngOnInit(): void {
         this.Budgets = this.dataflowService.OpenBudgets()
+
+        for (const budget of this.Budgets) {
+            if (budget.Status === BudgetStatus.Main) {
+                for (const category of budget.Categories) {
+                    if (category.Type === CategoryType.Income) {
+                        this.IncomeCategory = category
+                        break
+                    }
+                }
+                break
+            }
+        }
+
         this.resetDate()
         this.setBudgetMain()
     }
@@ -68,8 +82,10 @@ export class MovementAdderComponent implements OnInit {
         for (const budget of this.Budgets) {
             if (budget.ID === budgetID) {
                 for (const category of budget.Categories) {
-                    this.Categories[category.Type].push(category)
-                    this.NoCategory = false
+                    if (category.Type !== CategoryType.Income) {
+                        this.Categories[category.Type].push(category)
+                        this.NoCategory = false
+                    }
                 }
                 break
             }
@@ -93,7 +109,7 @@ export class MovementAdderComponent implements OnInit {
     SignChanged(sign: string): void {
         this.setBudgetMain()
         if (sign === '1') {
-            this.MovementFormData.Category = this.Categories[0][0]
+            this.MovementFormData.Category = this.IncomeCategory
         }
         this.MovementFormData.Period = FormPeriod.OneTime
         this.resetDate()

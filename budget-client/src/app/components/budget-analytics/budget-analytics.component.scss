@@ -7,6 +7,54 @@ mat-card {
     margin: 0 auto 16px auto;
 }
 
-.no-margin-top {
-    margin-top: 0;
+.card-row {
+    max-width: 800px;
+    display: flex;
+    margin: 0 auto;
+}
+
+.card-in-row {
+    width: calc(50% - 8px);
+}
+
+.card-in-row-1 {
+    margin-left: 0;
+}
+
+.card-in-row-2 {
+    margin-right: 0;
+}
+
+.number-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.number-main {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    font-size: 26px;
+    padding-bottom: 10px;
+}
+
+.provision-text {
+    font-size: 20px;
+}
+
+.balance-text {
+    padding-top: 10px;
+    font-size: 20px;
+}
+
+.balance {
+    padding: 10px 0;
+    font-size: 26px;
+    text-align: center;
+}
+
+.no-movements {
+    text-align: center;
 }

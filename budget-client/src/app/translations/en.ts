@@ -17,12 +17,17 @@ export const en = {
         },
     },
     BudgetAnalytics: {
+        Income: 'Income',
+        Expense: 'Expense',
+        Balance: 'Balance',
+        Provision: 'To provision',
         CategoryAmountsTable: {
             Type: 'Type',
             Category: 'Category',
             Amount: 'Amount',
             Ratio: 'Ratio',
         },
+        NoMovements: 'No movements for this period.',
     },
     CategoryEditor: {
         DeleteDialog: {

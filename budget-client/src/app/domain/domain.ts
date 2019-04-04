@@ -13,6 +13,7 @@ export interface Budget {
 }
 
 export enum CategoryType { 
+    Income = -1,
     Housing,
     Transport,
     DailyLife,

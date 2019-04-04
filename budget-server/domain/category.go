@@ -5,6 +5,7 @@ type CategoryType int
 
 // Possible values for a CategoryType.
 const (
+	Income  CategoryType = -1
 	Housing CategoryType = iota
 	Transport
 	DailyLife

@@ -118,6 +118,10 @@ export class CategoryEditorComponent implements OnInit, OnDestroy {
         }
 
         for (const category of budget.Categories) {
+            if (category.Type === CategoryType.Income) {
+                continue
+            }
+
             const children = this.categoryTree[category.Type].children
             if (children != undefined) {
                 children.push({

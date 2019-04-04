@@ -223,6 +223,16 @@ func (interactor *UserInteractor) AddUser(ctx context.Context, email, password, 
 		return
 	}
 
+	incomeCategory, err := domain.NewCategory(budget.ID, domain.Income, "income")
+	if err != nil {
+		return errors.New("error creating income category")
+	}
+
+	err = tx.AddCategory(incomeCategory)
+	if err != nil {
+		return
+	}
+
 	user.AccountID = account.ID
 
 	err = tx.AddUser(user)

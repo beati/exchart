@@ -77,6 +77,10 @@ func (interactor *BudgetInteractor) DeleteCategory(ctx context.Context, accountI
 		return
 	}
 
+	if category.Type == domain.Income {
+		return domain.ErrBadParameters
+	}
+
 	budget, err := tx.LockBudget(category.BudgetID)
 	if err != nil {
 		return
