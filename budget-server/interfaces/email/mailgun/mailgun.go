@@ -31,7 +31,7 @@ func (mg *Mailgun) Send(ctx context.Context, mail *usecases.Mail) error {
 	target := url.URL{
 		Scheme: "https",
 		User:   url.UserPassword("api", mg.apiKey),
-		Host:   "api.mailgun.net",
+		Host:   "api.eu.mailgun.net",
 		Path:   "/v3/" + mg.domain + "/messages",
 	}
 	resp, err := httpclient.PostForm(ctx, target.String(), url.Values{
