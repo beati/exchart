@@ -20,7 +20,7 @@ export const fr = {
         Income: 'Recettes',
         Expense: 'Dépenses',
         Balance: 'Équilibre',
-        Provision: 'À provisioner',
+        Provision: 'À provisionner',
         CategoryAmountsTable: {
             Type: 'Type',
             Category: 'Categorie',

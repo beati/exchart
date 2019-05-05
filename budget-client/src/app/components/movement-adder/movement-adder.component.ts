@@ -188,6 +188,7 @@ export class MovementAdderComponent implements OnInit {
             if (this.MovementFormData.Sign === '-1') {
                 amount = -amount
             }
+            amount = Math.round(amount)
 
             switch (this.MovementFormData.Period) {
             case FormPeriod.OneTime:

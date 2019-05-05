@@ -2,3 +2,4 @@
 *.map
 *.pem
 budget_config.yaml
+budget-server/assets/data/assets_prod.go
