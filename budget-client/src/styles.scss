@@ -78,8 +78,14 @@ mat-tab-group, mat-tab-group > div {
 .after-period-selector-container {
     height: calc(100% - 38px - 32px);
     width: 100%;
-    padding: 0 16px;
+    padding: 0 5px;
     overflow-y: auto;
+}
+
+@media screen and (min-width: 350px) {
+    .after-period-selector-container {
+        padding: 0 16px;
+    }
 }
 
 .loading-indication-container {

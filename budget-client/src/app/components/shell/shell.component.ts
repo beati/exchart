@@ -87,8 +87,7 @@ export class ShellComponent implements OnInit, OnDestroy {
 
     async Refresh(): Promise<void> {
         this.Loading = true
-        await this.dataflowService.LoadData()
-        this.Loading = false
+        window.location.reload(true)
     }
 
     async SetPage(page: string): Promise<void> {

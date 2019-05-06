@@ -2,11 +2,11 @@
     height: 38px;
     display: flex;
     align-items: center;
-    margin: 16px 0px 16px 16px;
+    margin: 16px 5px 16px 5px;
 }
 
 .right-space {
-    margin-right: 20px;
+    margin-right: 10px;
 }
 
 .chevron-button {
@@ -16,10 +16,39 @@
 }
 
 .period-description {
-    font-size: 22px;
+    font-size: 14px;
 }
 
 .mode-button-icon {
     margin-left: 5px;
     margin-right: -10px;
+}
+
+@media screen and (min-width: 350px) {
+    :host {
+        margin: 16px 0px 16px 16px;
+    }
+}
+
+@media screen and (min-width: 450px) {
+    .right-space {
+        margin-right: 20px;
+    }
+
+    .period-description {
+        font-size: 22px;
+    }
+}
+
+@media screen and (max-width: 349px) {
+    .period-description {
+        max-width: 10px;
+    }
+}
+
+@media screen and (max-width: 449px) {
+    .button-padding {
+        padding: 0 5px;
+        font-size: 12px;
+    }
 }

@@ -55,10 +55,14 @@
                 <ng-container matColumnDef="Expanded">
                     <td mat-cell *matCellDef="let movement" colspan="4">
                         <div [@rowExpand]="(ExpandedRecurringMovement != undefined && movement.ID === ExpandedRecurringMovement.ID) ? 'expanded' : 'collapsed'" class="expanded-content">
-                            <div>{{ CategoryTypes[Categories[movement.CategoryID].Type] }}</div>
-                            <div>{{ Categories[movement.CategoryID].Name }}</div>
-                            <button (click)="DeleteRecurringMovement(movement)" mat-button>Delete</button>
-                            <button (click)="UpdateRecurringMovement(movement)" mat-button>Edit</button>
+                            <div>
+                                <div>{{ CategoryTypes[Categories[movement.CategoryID].Type] }}</div>
+                                <div>{{ Categories[movement.CategoryID].Name }}</div>
+                            </div>
+                            <div>
+                                <button (click)="DeleteRecurringMovement(movement)" mat-button>Delete</button>
+                                <button (click)="UpdateRecurringMovement(movement)" mat-button>Edit</button>
+                            </div>
                         </div>
                     </td>
                 </ng-container>
@@ -101,10 +105,12 @@
                 <ng-container matColumnDef="Expanded">
                     <td mat-cell *matCellDef="let movement" colspan="3">
                         <div [@rowExpand]="(ExpandedMovement != undefined && movement.ID === ExpandedMovement.ID) ? 'expanded' : 'collapsed'" class="expanded-content">
-                            <ng-container *ngIf="movement.Amount < 0">
-                                <div>{{ CategoryTypes[Categories[movement.CategoryID].Type] }}</div>
-                                <div>{{ Categories[movement.CategoryID].Name }}</div>
-                            </ng-container>
+                            <div>
+                                <ng-container *ngIf="movement.Amount < 0">
+                                    <div>{{ CategoryTypes[Categories[movement.CategoryID].Type] }}</div>
+                                    <div>{{ Categories[movement.CategoryID].Name }}</div>
+                                </ng-container>
+                            </div>
                             <button (click)="DeleteMovement(movement)" mat-button>Delete</button>
                         </div>
                     </td>

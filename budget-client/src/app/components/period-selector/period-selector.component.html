@@ -1,4 +1,4 @@
-<button [matMenuTriggerFor]="menu" mat-stroked-button class="right-space">
+<button [matMenuTriggerFor]="menu" mat-stroked-button class="right-space button-padding">
     <span>{{ 'PeriodSelector.Mode.' + Duration() | translate }}</span>
     <mat-icon class="mode-button-icon">arrow_drop_down</mat-icon>
 </button>
@@ -8,7 +8,7 @@
     <button (click)="SetDuration(PeriodDuration.Year)" mat-menu-item>{{ 'PeriodSelector.Mode.Year' | translate }}</button>
 </mat-menu>
 <ng-container *ngIf="Period.Duration !== PeriodDuration.All">
-    <button (click)="Today()" mat-stroked-button class="right-space">{{ 'PeriodSelector.Today' | translate }}</button>
+    <button (click)="Today()" mat-stroked-button class="right-space button-padding">{{ 'PeriodSelector.Today' | translate }}</button>
     <button (click)="Previous()" mat-icon-button class="chevron-button">
         <mat-icon>chevron_left</mat-icon>
     </button>
