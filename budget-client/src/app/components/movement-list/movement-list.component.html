@@ -56,7 +56,7 @@
                     <td mat-cell *matCellDef="let movement" colspan="4">
                         <div [@rowExpand]="(ExpandedRecurringMovement != undefined && movement.ID === ExpandedRecurringMovement.ID) ? 'expanded' : 'collapsed'" class="expanded-content">
                             <div>
-                                <div>{{ CategoryTypes[Categories[movement.CategoryID].Type] }}</div>
+                                <div>{{ 'CategoryTypes.' + CategoryTypes[Categories[movement.CategoryID].Type] | translate }}</div>
                                 <div>{{ Categories[movement.CategoryID].Name }}</div>
                             </div>
                             <div>
@@ -107,7 +107,7 @@
                         <div [@rowExpand]="(ExpandedMovement != undefined && movement.ID === ExpandedMovement.ID) ? 'expanded' : 'collapsed'" class="expanded-content">
                             <div>
                                 <ng-container *ngIf="movement.Amount < 0">
-                                    <div>{{ CategoryTypes[Categories[movement.CategoryID].Type] }}</div>
+                                    <div>{{ 'CategoryTypes.' + CategoryTypes[Categories[movement.CategoryID].Type] | translate }}</div>
                                     <div>{{ Categories[movement.CategoryID].Name }}</div>
                                 </ng-container>
                             </div>
