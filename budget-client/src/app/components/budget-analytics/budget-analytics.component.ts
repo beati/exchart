@@ -21,6 +21,11 @@ interface categoryRef {
 }
 
 const isMonthInMovement = (movement: RecurringMovement, year: number, month: number): boolean => {
+    if (movement.FirstYear === year && month < movement.FirstMonth) {
+            return false
+    } else if (movement.LastYear === year && movement.LastMonth < month) {
+            return false
+    }
     return true
 }
 
