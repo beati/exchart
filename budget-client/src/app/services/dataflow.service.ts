@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 
-import { BehaviorSubject, Subscription } from 'rxjs'
+import { BehaviorSubject } from 'rxjs'
 
 import { Account, Budget, BudgetStatus, Category, CategoryType, Month, Movement, RecurringMovement } from '../domain/domain'
 
@@ -31,19 +31,15 @@ const orderBudget = (a: Budget, b: Budget): number => {
 
 const isMovementInPeriod = (movement: Movement, period: Period): boolean => {
     switch (period.Duration) {
-    case PeriodDuration.All:
-        return true
     case PeriodDuration.Year:
         return movement.Year === period.Year
     case PeriodDuration.Month:
-        return movement.Year === period.Year && (movement.Month === Month.All || movement.Month === movement.Month)
+        return movement.Year === period.Year && (movement.Month === Month.All || movement.Month === period.Month)
     }
 }
 
 const isRecurringMovementInPeriod = (movement: RecurringMovement, period: Period): boolean => {
     switch (period.Duration) {
-    case PeriodDuration.All:
-        return true
     case PeriodDuration.Year:
         return movement.FirstYear <= period.Year && (movement.LastYear === 0 || period.Year <= movement.LastYear)
     case PeriodDuration.Month:

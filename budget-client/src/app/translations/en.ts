@@ -189,7 +189,6 @@ export const en = {
     PeriodSelector: {
         Today: 'Today',
         Mode: {
-            All: 'All',
             Month: 'Month',
             Year: 'Year',
         },

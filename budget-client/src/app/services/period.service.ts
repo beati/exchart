@@ -4,7 +4,7 @@ import { BehaviorSubject } from 'rxjs'
 
 import { DateTime } from 'luxon'
 
-export enum PeriodDuration { All, Year, Month }
+export enum PeriodDuration { Year, Month }
 
 export class Period {
     Duration: PeriodDuration

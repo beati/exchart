@@ -37,8 +37,6 @@ export class PeriodSelectorComponent implements OnInit, OnDestroy {
 
     Duration(): string {
         switch (this.Period.Duration) {
-        case PeriodDuration.All:
-            return 'All'
         case PeriodDuration.Year:
             return 'Year'
         case PeriodDuration.Month:

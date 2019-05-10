@@ -3,21 +3,17 @@
     <mat-icon class="mode-button-icon">arrow_drop_down</mat-icon>
 </button>
 <mat-menu #menu="matMenu">
-    <button (click)="SetDuration(PeriodDuration.All)" mat-menu-item>{{ 'PeriodSelector.Mode.All' | translate }}</button>
     <button (click)="SetDuration(PeriodDuration.Month)" mat-menu-item>{{ 'PeriodSelector.Mode.Month' | translate }}</button>
     <button (click)="SetDuration(PeriodDuration.Year)" mat-menu-item>{{ 'PeriodSelector.Mode.Year' | translate }}</button>
 </mat-menu>
-<ng-container *ngIf="Period.Duration !== PeriodDuration.All">
-    <button (click)="Today()" mat-stroked-button class="right-space button-padding">{{ 'PeriodSelector.Today' | translate }}</button>
-    <button (click)="Previous()" mat-icon-button class="chevron-button">
-        <mat-icon>chevron_left</mat-icon>
-    </button>
-    <button (click)="Next()" mat-icon-button class="chevron-button right-space">
-        <mat-icon>chevron_right</mat-icon>
-    </button>
-</ng-container>
+<button (click)="Today()" mat-stroked-button class="right-space button-padding">{{ 'PeriodSelector.Today' | translate }}</button>
+<button (click)="Previous()" mat-icon-button class="chevron-button">
+    <mat-icon>chevron_left</mat-icon>
+</button>
+<button (click)="Next()" mat-icon-button class="chevron-button right-space">
+    <mat-icon>chevron_right</mat-icon>
+</button>
 <span [ngSwitch]="Period.Duration" class="period-description">
-    <ng-container *ngSwitchCase="PeriodDuration.All">{{ 'PeriodSelector.Mode.All' | translate }}</ng-container>
     <ng-container *ngSwitchCase="PeriodDuration.Year">{{ Period.Year }}</ng-container>
     <ng-container *ngSwitchCase="PeriodDuration.Month">{{ 'Months.' + Months[Period.Month-1].String | translate }} {{ Period.Year }}</ng-container>
 </span>
