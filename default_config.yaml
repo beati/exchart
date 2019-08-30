@@ -1,7 +1,7 @@
 Server:
     Addr: :443
     #HTTPSRedirectAddr: :80
-    Host: budget
+    Host: exchart.net
     Certificates:
         Mode: static # static or auto
         Static: # ignored in auto mode
@@ -30,8 +30,8 @@ Mailgun:
     APIKey: key
 
 PostgreSQL:
-    Database: budget
-    User: budget
+    Database: exchart
+    User: exchart
     #Password:
     Host: localhost
     SSLMode: disable # disable, require, verify-ca or verify-full

@@ -1,7 +1,7 @@
 #!/bin/sh
 
-PROJECT=budget
+PROJECT=exchart
 
-cd $GOPATH/src/bitbucket.org/beati/$PROJECT/$PROJECT-server
+cd $PROJECT-server
 
-go install -v -ldflags "-X bitbucket.org/beati/$PROJECT/$PROJECT-server/cmd.version=$(git describe --tags).dev" -tags dev -race
+go install -v -ldflags "-X github.com/beati/$PROJECT/$PROJECT-server/cmd.version=$(git describe --tags).dev" -tags dev -race

@@ -1,5 +1,5 @@
 *.swp
 *.map
 *.pem
-budget_config.yaml
-budget-server/assets/data/assets_prod.go
+exchart_config.yaml
+exchart-server/assets/data/assets_prod.go

@@ -1,8 +1,8 @@
 #!/bin/sh
 
-PROJECT=budget
+PROJECT=exchart
 
-cd $GOPATH/src/bitbucket.org/beati/$PROJECT/$PROJECT-client
+cd $PROJECT-client
 
 export MSYS2_ARG_CONV_EXCL="/static/"
 ng build --watch --aot --deploy-url /static/
